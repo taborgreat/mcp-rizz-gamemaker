@@ -36,6 +36,7 @@ This is a mix of **humor**, **charm**, and **emergent AI personality** — no tw
 
 **Listens for:**
 
+- Players connected
 - Girl’s position updates
 - Dialogue and chat messages from girl
 
@@ -52,6 +53,7 @@ This is a mix of **humor**, **charm**, and **emergent AI personality** — no tw
   - Player connections/disconnections
   - Message history
   - Turn sequencing
+    --Passes GameState to GameMaker client regularly to sync clients
 - Communicates with the **MCP server** for AI-driven decision-making.
 
 ---
