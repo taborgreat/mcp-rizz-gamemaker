@@ -1,8 +1,15 @@
 import { WebSocketServer } from "ws";
 const wss = new WebSocketServer({ port: 8080 });
 
-let girl = { x: 200, y: 200 }; // shared girl position
-const players = new Map(); // ws -> { name, x, y }
+let girl = { x: 200, y: 200 };
+const players = new Map(); // ws -> { name, posJoined }
+
+//name = string of player name, max 12 characters
+
+//posJoined = 1,2,3,4, ...
+//determines placement of rendering in gamemaker
+//if a lower player leaves, your posJoined automaticaly drops down
+//max players in game is 4, min is 2. game ends if drops below 2. players spectate if join after 4.
 
 function broadcast(msg) {
   for (const [ws] of players)
@@ -19,8 +26,7 @@ wss.on("connection", (ws) => {
     if (data.type === "join") {
       players.set(ws, {
         name: data.name,
-        x: Math.random() * 400,
-        y: Math.random() * 400,
+        //use function to setPos (based on all players in game) and then setPos
       });
 
       // send init state back to new player
@@ -38,11 +44,9 @@ wss.on("connection", (ws) => {
       broadcast({ action: "playerJoined", params: { name: data.name } });
     }
 
-    // Player movement updates
+    // Player movement update (if someone leaves or joins)
     if (data.type === "move") {
       const p = players.get(ws);
-      p.x = data.x;
-      p.y = data.y;
       broadcast({
         action: "updatePlayers",
         params: { players: Array.from(players.values()) },

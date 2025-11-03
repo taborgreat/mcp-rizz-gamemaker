@@ -1,5 +1,16 @@
 {
+  "name": "rizz-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "type": "module",
   "dependencies": {
     "ws": "^8.18.3"
-  }
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "Tabor Holly",
+  "license": "ISC"
 }
