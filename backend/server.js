@@ -1,5 +1,12 @@
+import http from "http";
 import { WebSocketServer } from "ws";
-const wss = new WebSocketServer({ port: 8080 });
+
+const server = http.createServer((req, res) => {
+  res.writeHead(200, { "Content-Type": "text/plain" });
+  res.end("WebSocket server running");
+});
+
+const wss = new WebSocketServer({ server });
 
 let girl = { x: 200, y: 200 };
 const players = new Map(); // ws -> { name, posJoined }
@@ -72,4 +79,7 @@ wss.on("connection", (ws) => {
   });
 });
 
-console.log("Server running on ws://localhost:8080");
+const PORT = 8082;
+server.listen(PORT, () =>
+  console.log(`✅ Server running on http://localhost:${PORT}`)
+);

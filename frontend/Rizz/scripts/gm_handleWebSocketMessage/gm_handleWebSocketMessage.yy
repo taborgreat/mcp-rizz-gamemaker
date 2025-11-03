@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"gm_handleWebSocketMessage",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"gm_handleWebSocketMessage",
+  "parent":{
+    "name":"Rizz",
+    "path":"Rizz.yyp",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}
