@@ -1,4 +1,4 @@
-# 💋 Rizz Game
+# Rizz Game
 
 **Rizz Game** is a multiplayer social AI experience powered by **MCP (Model Context Protocol)**.  
 2–4 players compete in real time to win over the affection of the **AI girl** in the center of the scene.  
@@ -42,6 +42,7 @@ This is a mix of **humor**, **charm**, and **emergent AI personality** — no tw
 
 **Sends:**
 
+- Player join (name)
 - Player messages
 
 ---
