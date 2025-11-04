@@ -1,6 +1,6 @@
-# Rizz Game
+# Rizz (name needs update)
 
-**Rizz Game** is a multiplayer social AI experience powered by **MCP (Model Context Protocol)**.
+**Rizz** is a multiplayer social AI game powered by **MCP (Model Context Protocol)**.
 
 ![Game Concept Photo](./concept.png)
 
