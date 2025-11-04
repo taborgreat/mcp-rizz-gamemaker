@@ -1,9 +1,9 @@
 {
   "$GMScript":"v1",
-  "%Name":"gm_handleWebSocketMessage",
+  "%Name":"gmcallback_handleWebSocketMessage",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"gm_handleWebSocketMessage",
+  "name":"gmcallback_handleWebSocketMessage",
   "parent":{
     "name":"Rizz",
     "path":"Rizz.yyp",

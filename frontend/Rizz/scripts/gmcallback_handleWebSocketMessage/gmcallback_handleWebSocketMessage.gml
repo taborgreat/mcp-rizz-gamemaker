@@ -3,6 +3,7 @@
 function gmcallback_handleWebSocketMessage(rawJson) {
 
     show_debug_message("Received from JS: " + string(rawJson));
+	
 
     if (is_undefined(rawJson)) {
         show_debug_message("handleWebSocketMessage: rawJson undefined.");
@@ -21,7 +22,7 @@ function gmcallback_handleWebSocketMessage(rawJson) {
             if (!is_undefined(msg.params)) {
                 global.players = msg.params.players;
                 global.girl = msg.params.girl;
-                room_goto(rm_mainRoom);
+                room_goto(rm_MainRoom);
             }
             break;
         case "playerJoined":

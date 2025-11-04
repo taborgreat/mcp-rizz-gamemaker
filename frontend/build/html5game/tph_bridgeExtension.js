@@ -2,22 +2,15 @@
   console.log("[Bridge] JS WebSocket bridge loaded.");
 
   window.connectToServer = function (playerName) {
-    console.log("[Bridge] Connecting as:", playerName);
     window.socket = new WebSocket("ws://localhost:8082");
 
     socket.onopen = () => {
-      console.log("[Bridge] WebSocket connected");
       socket.send(JSON.stringify({ type: "join", name: playerName }));
     };
 
     socket.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      console.log("[Bridge] Received:", data);
-
       try {
-        window.gml_Script_gmcallback_handleWebSocketMessage(
-          JSON.stringify(data)
-        );
+        window.gml_Script_gmcallback_handleWebSocketMessage("", "", event.data);
       } catch (e) {
         console.warn("[Bridge] Failed to call gm_handleWebSocketMessage:", e);
       }
@@ -31,6 +24,4 @@
       }
     };
   };
-
-  console.log("[Bridge] window.connectToServer() ready for GameMaker!");
 })();
