@@ -1,6 +1,9 @@
 # Rizz Game
 
-**Rizz Game** is a multiplayer social AI experience powered by **MCP (Model Context Protocol)**.  
+**Rizz Game** is a multiplayer social AI experience powered by **MCP (Model Context Protocol)**.
+
+![Game Concept Photo](./concept.png)
+
 2–4 players compete in real time to win over the affection of the **AI girl** in the center of the scene.  
 Each player takes turns trying to “rizz” (charm or flirt with) the girl through clever dialogue.
 
@@ -9,7 +12,7 @@ The first player to fully attract her **wins**.
 
 ---
 
-## 🎮 Game Overview
+## Game Overview
 
 **Genre:** Social AI Party Game  
 **Players:** 2–4  
@@ -26,9 +29,9 @@ This is a mix of **humor**, **charm**, and **emergent AI personality** — no tw
 
 ---
 
-## ⚙️ Technical Architecture
+## Technical Architecture
 
-### 🕹️ Frontend — GameMaker
+### Frontend — GameMaker
 
 - Handles **graphics**, **animation**, and **input**.
 - Displays the girl and player avatars in a dynamic scene.
@@ -47,7 +50,7 @@ This is a mix of **humor**, **charm**, and **emergent AI personality** — no tw
 
 ---
 
-### 🌐 Backend — Node.js WebSocket Server
+### Backend — Node.js WebSocket Server
 
 - Manages **player sessions** and **real-time game state**.
 - Handles:
@@ -59,7 +62,7 @@ This is a mix of **humor**, **charm**, and **emergent AI personality** — no tw
 
 ---
 
-### 🧠 MCP Client/Server — LLM Logic Core
+### MCP Client/Server — LLM Logic Core
 
 Powered by **Model Context Protocol (MCP)** for advanced contextual reasoning.
 
@@ -80,7 +83,7 @@ Returns structured data back to Node.js, for example:
 
 ---
 
-## 🧪 Developer Note
+## Developer Note
 
 This is **Tabor and Salem Holly’s first test** combining **MCP**, **LLMs**, and **gaming** —  
 an early experiment exploring how large language models can power dynamic, emotional, and adaptive gaming experiences.
