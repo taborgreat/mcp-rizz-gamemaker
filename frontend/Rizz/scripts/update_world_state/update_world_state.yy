@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"update_world_state",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"update_world_state",
+  "parent":{
+    "name":"Rizz",
+    "path":"Rizz.yyp",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

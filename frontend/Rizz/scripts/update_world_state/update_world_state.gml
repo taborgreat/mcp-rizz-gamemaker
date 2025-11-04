@@ -1,0 +1,71 @@
+/// @function update_world_state(world)
+/// @desc Applies the latest world data to GameMaker visuals
+
+function update_world_state(world) {
+    var state = world.gameState;
+	
+    // 1. Players
+    for (var i = 0; i < array_length(chairs); i++) {
+        var chair = chairs[i];
+        var playerForSlot = find_player_by_slot(i + 1);
+
+        if (playerForSlot != undefined) {
+            // Create or update occupant
+            if (!instance_exists(chair.occupant)) {
+                chair.occupant = instance_create_layer(chair.x, chair.y, "Instances", obj_player);
+                chair.occupant.name = playerForSlot.name;
+            } else {
+                chair.occupant.name = playerForSlot.name;
+            }
+        } else if (instance_exists(chair.occupant)) {
+            instance_destroy(chair.occupant);
+            chair.occupant = noone;
+        }
+    }
+
+    // 2. Girl position
+    if (instance_exists(obj_girl)) {
+        obj_girl.x = world.girl.x;
+        obj_girl.y = world.girl.y;
+    }
+
+    // 3. Visual indicators / HUD messages
+    switch (state) {
+        case "awaitingPlayers":
+            global.statusText = "Waiting for more players...";
+            break;
+
+        case "countdown":
+            global.statusText = "Game starting in " + string(global.timeLeft);
+            break;
+
+        case "playersInputting":
+            global.statusText = "Players are typing... (" + string(global.timeLeft) + ")";
+            break;
+
+        case "playerSpeaking":
+            global.statusText = global.currentSpeaker + " is speaking... (" + string(global.timeLeft) + ")";
+            break;
+
+        case "girlSpeaking":
+            global.statusText = "The girl is speaking...";
+            break;
+
+        case "girlMoving":
+            global.statusText = "The girl is moving...";
+            break;
+    }
+}
+
+function find_player_by_slot(slot) {
+    var players = global.world.players;
+    if (is_undefined(players)) return undefined;
+
+    for (var i = 0; i < array_length(players); i++) {
+        if (players[i].slot == slot) {
+            return players[i];
+        }
+    }
+    return undefined;
+}
+

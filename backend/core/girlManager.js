@@ -1,7 +1,7 @@
 export class GirlManager {
   constructor() {
-    this.x = 200;
-    this.y = 200;
+    this.x = 735;
+    this.y = 340;
   }
 
   moveTowards(target, broadcast, players) {

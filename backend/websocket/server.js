@@ -28,11 +28,18 @@ export function startWebSocketServer(httpServer) {
 
       switch (data.type) {
         case "join": {
-          players.addPlayer(ws, data.name);
+          const player = players.addPlayer(ws, data.name);
 
           // Send full init snapshot to the new player
           ws.send(
             JSON.stringify({ action: "worldUpdate", world: getWorldState() })
+          );
+
+          ws.send(
+            JSON.stringify({
+              action: "playerJoined",
+              params: { name: player.name },
+            })
           );
 
           // Broadcast updated world to everyone

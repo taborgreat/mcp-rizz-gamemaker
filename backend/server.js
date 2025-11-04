@@ -8,8 +8,8 @@ const server = http.createServer((req, res) => {
   res.end("HTTP server running — WebSocket also attached.");
 });
 
-server.listen(PORT, () => {
-  console.log(`✅ HTTP server running at http://localhost:${PORT}`);
+server.listen(PORT, "0.0.0.0", () => {
+  console.log(`✅ HTTP server running at http://LAN:${PORT}`);
 });
 
 startWebSocketServer(server);

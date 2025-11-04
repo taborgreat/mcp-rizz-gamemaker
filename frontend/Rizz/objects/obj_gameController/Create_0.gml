@@ -1,9 +1,9 @@
-// Safety check - don't proceed if data not ready
-if (!variable_global_exists("players") || !variable_global_exists("girl")) {
-    show_debug_message("Warning: Global data not ready yet");
-    instance_destroy();
-    exit;
+
+chairs = []; // initialize array first
+with (obj_chair) {
+    array_push(other.chairs, id); // push each chair instance ID into controller’s chairs array
 }
 
-players = global.players;
-girl = global.girl;
+
+
+alarm[0] = room_speed/2;

@@ -1,13 +1,9 @@
 {
   "$GMObject":"",
-  "%Name":"obj_gameController",
-  "eventList":[
-    {"$GMEvent":"v1","%Name":"","collisionObjectId":null,"eventNum":0,"eventType":0,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0",},
-    {"$GMEvent":"v1","%Name":"","collisionObjectId":null,"eventNum":0,"eventType":8,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0",},
-    {"$GMEvent":"v1","%Name":"","collisionObjectId":null,"eventNum":0,"eventType":2,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0",},
-  ],
+  "%Name":"obj_girl",
+  "eventList":[],
   "managed":true,
-  "name":"obj_gameController",
+  "name":"obj_girl",
   "overriddenProperties":[],
   "parent":{
     "name":"MainRoom",
@@ -31,7 +27,10 @@
   "resourceType":"GMObject",
   "resourceVersion":"2.0",
   "solid":false,
-  "spriteId":null,
+  "spriteId":{
+    "name":"spr_girl",
+    "path":"sprites/spr_girl/spr_girl.yy",
+  },
   "spriteMaskId":null,
   "visible":true,
 }
