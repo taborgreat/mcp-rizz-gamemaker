@@ -1,3 +1,5 @@
+import { generateGirlMessage } from "./generateGirlMessage.js";
+
 export class GameStateManager {
   constructor(broadcast, girl, playerManager) {
     this.state = "awaitingPlayers";
@@ -26,6 +28,9 @@ export class GameStateManager {
     this.broadcastWorld();
 
     switch (newState) {
+      case "awaitingPlayers":
+        this.girl.resetPosition(this.broadcast, this.players);
+        break;
       case "countdown":
         this.startCountdown(duration || 10);
         break;
@@ -38,16 +43,42 @@ export class GameStateManager {
         this.startSequentialPlayerSpeaking();
         break;
 
-      case "girlSpeaking":
+      case "girlSpeaking": {
+        const girlMessage = generateGirlMessage(this.players);
+        console.log(`💬 Girl says: ${girlMessage}`);
+
+        this.broadcast(this.players.players, {
+          action: "girlSpeaking",
+          params: { girlMessage },
+        });
+
         this.timer = setTimeout(() => this.setState("girlMoving", 20), 5000);
         break;
+      }
 
-      case "girlMoving":
-        this.timer = setTimeout(
-          () => this.setState("playersInputting", 20),
-          5000
+      case "girlMoving": {
+        // Choose a random active player to move toward
+        const activePlayers = this.players.getActivePlayers();
+        let destination = "center";
+
+        if (activePlayers.length > 0) {
+          const randomIndex = Math.floor(Math.random() * activePlayers.length);
+          destination = activePlayers[randomIndex].name;
+        }
+
+        const newPos = this.girl.moveTowards(
+          destination,
+          this.broadcast,
+          this.players
         );
+        console.log(`💃 Girl moving toward: ${destination}`, newPos);
+
+        this.timer = setTimeout(() => {
+          this.setState("playersInputting", 20);
+        }, 5000);
+
         break;
+      }
     }
   }
 

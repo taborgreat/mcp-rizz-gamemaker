@@ -30,7 +30,6 @@ export function startWebSocketServer(httpServer) {
         case "join": {
           const player = players.addPlayer(ws, data.name);
 
-          // Send full init snapshot to the new player
           ws.send(
             JSON.stringify({ action: "worldUpdate", world: getWorldState() })
           );
@@ -42,7 +41,6 @@ export function startWebSocketServer(httpServer) {
             })
           );
 
-          // Broadcast updated world to everyone
           broadcast(players.players, {
             action: "worldUpdate",
             world: getWorldState(),
@@ -56,12 +54,13 @@ export function startWebSocketServer(httpServer) {
         case "player_inputting_turn": {
           const player = players.players.get(ws);
           if (player) {
-            player.latestMessage = data.text; 
-            console.log(`💭 ${player.name} says: ${player.latestMessage}`);
-
-            
+            player.latestMessage =
+              data.text && data.text.trim() !== ""
+                ? data.text
+                : "Player missed their turn";
+            console.log(`${player.name} says: ${player.latestMessage}`);
           } else {
-            console.warn("⚠️ Received input from unknown player");
+            console.warn("Received input from unknown player");
           }
           break;
         }
@@ -74,7 +73,7 @@ export function startWebSocketServer(httpServer) {
 
         default:
           console.warn("⚠️ Unknown message type:", data.type);
-          console.log(msg)
+          console.log(msg);
       }
     });
 
