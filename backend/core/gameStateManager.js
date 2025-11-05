@@ -1,4 +1,6 @@
 import { generateGirlMessage } from "./generateGirlMessage.js";
+import girlData from "./utils/girlNames.json" with { type: "json" };
+const girlNames = girlData.girlData;
 
 export class GameStateManager {
   constructor(broadcast, girl, playerManager) {
@@ -31,9 +33,26 @@ export class GameStateManager {
       case "awaitingPlayers":
         this.girl.resetPosition(this.broadcast, this.players);
         break;
-      case "countdown":
+      case "countdown": {
+        const randomIndex = Math.floor(Math.random() * girlNames.length);
+        this.girl.name = girlNames[randomIndex];
+
+        console.log(`💁 Girl's name is now: ${this.girl.name}`);
+        this.broadcastWorld();
+
+        this.broadcast(this.players.players, {
+          action: "updateGirl",
+          params: {
+            name: this.girl.name,
+            x: this.girl.x,
+            y: this.girl.y,
+            destination: "center",
+          },
+        });
+
         this.startCountdown(duration || 10);
         break;
+      }
 
       case "playersInputting":
         this.startPlayersInputting(duration || 20);

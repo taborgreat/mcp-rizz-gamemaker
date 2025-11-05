@@ -27,6 +27,8 @@ function update_world_state(world) {
     if (instance_exists(obj_girl)) {
         obj_girl.x = world.girl.x;
         obj_girl.y = world.girl.y;
+		obj_girl.girlName = world.girl.name;
+		global.girlName =  world.girl.name;
     }
 
     // 3. Visual indicators / HUD messages

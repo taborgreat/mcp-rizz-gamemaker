@@ -13,7 +13,6 @@ export function startWebSocketServer(httpServer) {
 
   console.log("💬 WebSocket server initialized.");
 
-  // Utility to gather full current world state
   const getWorldState = () => ({
     gameState: state.state,
     players: players.getAllPlayers(),

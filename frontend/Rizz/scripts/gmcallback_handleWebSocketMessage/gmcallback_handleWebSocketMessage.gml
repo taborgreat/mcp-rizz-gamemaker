@@ -63,37 +63,35 @@ function gmcallback_handleWebSocketMessage(rawJson) {
 
             if (!instance_exists(obj_girlSpeaking)) {
                 var g = instance_create_layer(400, 200, "Instances", obj_girlSpeaking);
-                g.speaker = "Girl";
+                g.speaker = global.girlName;
                 g.text = global.girlMessage;
             } else {
                 with (obj_girlSpeaking) {
-                    speaker = "Girl";
+                    speaker = global.girlName;
                     text = global.girlMessage;
                 }
             }
 
             break;
         }
-		        case "updateGirl": {
-            var newX = msg.params.x;
-            var newY = msg.params.y;
-            var destination = msg.params.destination; // optional: "stay", "center", or player name
+		  case "updateGirl": {
+		    var newX = msg.params.x;
+		    var newY = msg.params.y;
+		    var destination = msg.params.destination;
+		    var girlName = msg.params.name;
 
-            show_debug_message("Girl moving to " + string(newX) + ", " + string(newY) + " (" + string(destination) + ")");
+		    show_debug_message("Girl update → X:" + string(newX) + " Y:" + string(newY) + " Dest:" + string(destination) + " Name:" + string(girlName));
 
-            if (instance_exists(obj_girl)) {
-                with (obj_girl) {
-                    x = newX;
-                    y = newY;
-                    currentDestination = destination; // optional tracking variable
-                }
-            } else {
-                var g = instance_create_layer(newX, newY, "Instances", obj_girl);
-                g.currentDestination = destination;
-            }
+		    if (instance_exists(obj_girl)) {
+		        obj_girl.x = newX;
+		        obj_girl.y = newY;
+		        obj_girl.currentDestination = destination;
+		        obj_girl.girlName = girlName;
+		    }
 
-            break;
-        }
+		    break;
+		}
+
 
 
         case "playerJoined": {

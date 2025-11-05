@@ -22,3 +22,8 @@ switch (string(currentDestination)) {
 
 draw_set_color(c_white);
 draw_text(x, y - sprite_get_height(sprite_index) / 2 - 20, thought);
+
+if (variable_instance_exists(id, "girlName")) {
+    draw_text(x, y - sprite_get_height(sprite_index) / 2 - 60, girlName);
+}
+

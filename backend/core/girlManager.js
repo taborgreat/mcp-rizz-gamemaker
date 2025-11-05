@@ -1,6 +1,7 @@
 export class GirlManager {
   constructor() {
     this.center = { x: 766, y: 340 };
+    this.name = "Waiting to be named";
     this.x = this.center.x;
     this.y = this.center.y;
     this.speed = 70; // pixels per tick
@@ -47,13 +48,11 @@ export class GirlManager {
       this.y += (dy / dist) * step;
     }
 
-    // Broadcast new girl position
     broadcast(players.players, {
       action: "updateGirl",
-      params: { x: this.x, y: this.y, destination },
+      params: { name: this.name, x: this.x, y: this.y, destination },
     });
 
-    // Check for collision (close enough to "touch")
     if (destination !== "center" && destination !== "stay" && dist < 10) {
       broadcast(players.players, {
         action: "playerWon",
@@ -71,12 +70,17 @@ export class GirlManager {
     if (broadcast && players) {
       broadcast(players.players, {
         action: "updateGirl",
-        params: { x: this.x, y: this.y, destination: "center" },
+        params: {
+          name: this.name,
+          x: this.x,
+          y: this.y,
+          destination: "center",
+        },
       });
     }
   }
 
   getState() {
-    return { x: this.x, y: this.y };
+    return { x: this.x, y: this.y, name: this.name };
   }
 }
