@@ -10,7 +10,7 @@ function update_world_state(world) {
         var playerForSlot = find_player_by_slot(i + 1);
 
         if (playerForSlot != undefined) {
-            // Create or update occupant
+            
             if (!instance_exists(chair.occupant)) {
                 chair.occupant = instance_create_layer(chair.x, chair.y, "Instances", obj_player);
                 chair.occupant.name = playerForSlot.name;
@@ -33,6 +33,9 @@ function update_world_state(world) {
     switch (state) {
         case "awaitingPlayers":
             global.statusText = "Waiting for more players...";
+			 if (instance_exists(obj_playerSpeaking)) instance_destroy(obj_playerSpeaking);
+            if (instance_exists(obj_girlSpeaking)) instance_destroy(obj_girlSpeaking);
+
             break;
 
         case "countdown":
@@ -41,8 +44,11 @@ function update_world_state(world) {
 
         case "playersInputting":
 			global.statusText = "Players are typing... (" + string(global.timeLeft) + ")";
-	 
-	        instance_create_layer(0, 0, "Instances", obj_player_message_input);
+			 if (!instance_exists(obj_playerMessageInput)) {
+        instance_create_layer(0, 0, "Instances", obj_playerMessageInput);
+    }
+	
+	       
 	    
 	    break;
 
@@ -69,11 +75,15 @@ function update_world_state(world) {
             break;
 
         case "girlSpeaking":
+		     if (instance_exists(obj_playerSpeaking)) instance_destroy(obj_playerSpeaking);
+
             global.statusText = "The girl is speaking...";
             break;
+		
 
         case "girlMoving":
             global.statusText = "The girl is moving...";
+			 if (instance_exists(obj_girlSpeaking)) instance_destroy(obj_girlSpeaking);
             break;
     }
 }

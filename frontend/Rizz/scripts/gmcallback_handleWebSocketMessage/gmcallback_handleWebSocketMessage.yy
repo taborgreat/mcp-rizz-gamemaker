@@ -5,8 +5,8 @@
   "isDnD":false,
   "name":"gmcallback_handleWebSocketMessage",
   "parent":{
-    "name":"WEBLayer",
-    "path":"folders/WEBLayer.yy",
+    "name":"Rizz",
+    "path":"Rizz.yyp",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

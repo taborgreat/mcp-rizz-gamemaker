@@ -5,8 +5,8 @@
   "isDnD":false,
   "name":"html_elements_scripts",
   "parent":{
-    "name":"WEBLayer",
-    "path":"folders/WEBLayer.yy",
+    "name":"DOM",
+    "path":"folders/BrowserIntegration/HTML/DOM.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

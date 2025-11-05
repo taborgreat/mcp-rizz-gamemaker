@@ -51,8 +51,8 @@
   "optionsFile":"options.json",
   "packageId":"",
   "parent":{
-    "name":"WEBLayer",
-    "path":"folders/WEBLayer.yy",
+    "name":"DOM",
+    "path":"folders/BrowserIntegration/HTML/DOM.yy",
   },
   "productId":"",
   "resourceType":"GMExtension",

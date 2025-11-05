@@ -1,7 +1,7 @@
 
-chairs = []; // initialize array first
+chairs = [];
 with (obj_chair) {
-    array_push(other.chairs, id); // push each chair instance ID into controller’s chairs array
+    array_push(other.chairs, id);
 }
 
 

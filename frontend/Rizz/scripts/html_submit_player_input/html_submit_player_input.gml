@@ -4,8 +4,9 @@ function html_submit_player_input(element) {
     var values = html_form_values(element);
     var playerMessage = values[? "playerMessage"];
     ds_map_destroy(values);
+	
+    if (is_undefined(playerMessage)) playerMessage = "";
 
-    if (string_length(playerMessage) <= 0) return;
 
     var msg = ds_map_create();
     msg[? "type"] = "player_inputting_turn";

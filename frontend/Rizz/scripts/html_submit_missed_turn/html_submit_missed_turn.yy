@@ -1,9 +1,9 @@
 {
   "$GMScript":"v1",
-  "%Name":"html_submit_player_input",
+  "%Name":"html_submit_missed_turn",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"html_submit_player_input",
+  "name":"html_submit_missed_turn",
   "parent":{
     "name":"POST",
     "path":"folders/BrowserIntegration/HTML/POST.yy",

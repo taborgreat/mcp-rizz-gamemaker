@@ -5,8 +5,8 @@
   "isDnD":false,
   "name":"html_submit_name_connect",
   "parent":{
-    "name":"WEBLayer",
-    "path":"folders/WEBLayer.yy",
+    "name":"POST",
+    "path":"folders/BrowserIntegration/HTML/POST.yy",
   },
   "resourceType":"GMScript",
   "resourceVersion":"2.0",

@@ -11,7 +11,7 @@ function gmcallback_handleWebSocketMessage(rawJson) {
 
     switch (action) {
         case "worldUpdate": {
-            // Store the world object globally so your controller can access it
+          
             global.world = msg.world;
             if (instance_exists(obj_gameController)) {
                 with (obj_gameController) {
@@ -57,19 +57,57 @@ function gmcallback_handleWebSocketMessage(rawJson) {
             break;
 
         }
+		 case "girlSpeaking": {
+            global.girlMessage = msg.params.girlMessage;
+            global.statusText = "The girl is speaking...";
+
+            if (!instance_exists(obj_girlSpeaking)) {
+                var g = instance_create_layer(400, 200, "Instances", obj_girlSpeaking);
+                g.speaker = "Girl";
+                g.text = global.girlMessage;
+            } else {
+                with (obj_girlSpeaking) {
+                    speaker = "Girl";
+                    text = global.girlMessage;
+                }
+            }
+
+            break;
+        }
+		        case "updateGirl": {
+            var newX = msg.params.x;
+            var newY = msg.params.y;
+            var destination = msg.params.destination; // optional: "stay", "center", or player name
+
+            show_debug_message("Girl moving to " + string(newX) + ", " + string(newY) + " (" + string(destination) + ")");
+
+            if (instance_exists(obj_girl)) {
+                with (obj_girl) {
+                    x = newX;
+                    y = newY;
+                    currentDestination = destination; // optional tracking variable
+                }
+            } else {
+                var g = instance_create_layer(newX, newY, "Instances", obj_girl);
+                g.currentDestination = destination;
+            }
+
+            break;
+        }
+
 
         case "playerJoined": {
             show_debug_message("Player joined: " + msg.params.name);
 
-            // Store local player info globally
+         
             global.localPlayer = {
                 name: msg.params.name
             };
 
-            // Move to main room after join confirmation
+           
 		
             room_goto(rm_MainRoom);
-            break; // ✅ this was missing
+            break; 
         }
 
         case "playerLeft": {
