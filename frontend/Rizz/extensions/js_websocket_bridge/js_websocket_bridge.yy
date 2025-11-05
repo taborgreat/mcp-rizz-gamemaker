@@ -44,8 +44,8 @@
   "optionsFile":"options.json",
   "packageId":"",
   "parent":{
-    "name":"Rizz",
-    "path":"Rizz.yyp",
+    "name":"WEBLayer",
+    "path":"folders/WEBLayer.yy",
   },
   "productId":"",
   "resourceType":"GMExtension",

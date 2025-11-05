@@ -1,9 +1,9 @@
 {
   "$GMScript":"v1",
-  "%Name":"gmcallback_handleWebSocketMessage",
+  "%Name":"html_submit_name_connect",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"gmcallback_handleWebSocketMessage",
+  "name":"html_submit_name_connect",
   "parent":{
     "name":"WEBLayer",
     "path":"folders/WEBLayer.yy",

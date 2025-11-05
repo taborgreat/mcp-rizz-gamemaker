@@ -2,7 +2,7 @@
   console.log("[Bridge] JS WebSocket bridge loaded.");
 
   window.connectToServer = function (playerName) {
-    window.socket = new WebSocket("ws://10.0.0.89:8082");
+    window.socket = new WebSocket("ws://10.0.0.61:8082");
 
     socket.onopen = () => {
       socket.send(JSON.stringify({ type: "join", name: playerName }));

@@ -49,6 +49,7 @@ function gmcallback_handleWebSocketMessage(rawJson) {
             };
 
             // Move to main room after join confirmation
+		
             room_goto(rm_MainRoom);
             break; // ✅ this was missing
         }
