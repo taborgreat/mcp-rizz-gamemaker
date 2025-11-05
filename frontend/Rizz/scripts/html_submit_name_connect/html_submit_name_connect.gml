@@ -10,10 +10,11 @@ function html_submit_name_connect(element) {
         return;
     }
 
-    global.playerName = name;
+    
     connectToServer(name);
 
-    // 🧹 Clean up HTML after submit
+
     html_element_cleanup(element, true);
     element = undefined;
+	
 }

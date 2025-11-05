@@ -53,6 +53,19 @@ export function startWebSocketServer(httpServer) {
           break;
         }
 
+        case "player_inputting_turn": {
+          const player = players.players.get(ws);
+          if (player) {
+            player.latestMessage = data.text; 
+            console.log(`💭 ${player.name} says: ${player.latestMessage}`);
+
+            
+          } else {
+            console.warn("⚠️ Received input from unknown player");
+          }
+          break;
+        }
+
         case "girlMoveTowards": {
           const player = players.players.get(ws);
           if (player) girl.moveTowards(player, broadcast, players.players);
@@ -61,6 +74,7 @@ export function startWebSocketServer(httpServer) {
 
         default:
           console.warn("⚠️ Unknown message type:", data.type);
+          console.log(msg)
       }
     });
 

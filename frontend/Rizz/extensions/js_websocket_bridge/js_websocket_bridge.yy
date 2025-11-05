@@ -18,6 +18,7 @@
   "files":[
     {"$GMExtensionFile":"v1","%Name":"","constants":[],"copyToTargets":-1,"filename":"bridgeExtension.js","final":"","functions":[
         {"$GMExtensionFunction":"","%Name":"connectToServer","argCount":0,"args":[1,],"documentation":"","externalName":"connectToServer","help":"","hidden":false,"kind":5,"name":"connectToServer","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":1,},
+        {"$GMExtensionFunction":"","%Name":"sendToServer","argCount":0,"args":[1,],"documentation":"","externalName":"sendToServer","help":"","hidden":false,"kind":5,"name":"sendToServer","resourceType":"GMExtensionFunction","resourceVersion":"2.0","returnType":1,},
       ],"init":"","kind":5,"name":"","origname":"","ProxyFiles":[],"resourceType":"GMExtensionFile","resourceVersion":"2.0","uncompress":false,"usesRunnerInterface":false,},
   ],
   "gradleinject":null,

@@ -2,7 +2,7 @@
   console.log("[Bridge] JS WebSocket bridge loaded.");
 
   window.connectToServer = function (playerName) {
-    window.socket = new WebSocket("ws://10.0.0.61:8082");
+    window.socket = new WebSocket("ws://10.0.0.89:8082");
 
     socket.onopen = () => {
       socket.send(JSON.stringify({ type: "join", name: playerName }));
@@ -18,7 +18,7 @@
 
     window.sendToServer = function (msg) {
       if (socket && socket.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify(msg));
+        socket.send(msg);
       } else {
         console.warn("[Bridge] Tried to send but socket not ready.");
       }

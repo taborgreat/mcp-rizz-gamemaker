@@ -2,7 +2,7 @@ import { getUniqueName } from "./utils/utils.js";
 
 export class PlayerManager {
   constructor() {
-    this.players = new Map(); // ws -> { name, slot, isSpectator }
+    this.players = new Map(); // ws -> { name, slot, lastMessage, isSpectator }
     this.maxPlayerSlots = 4;
   }
 

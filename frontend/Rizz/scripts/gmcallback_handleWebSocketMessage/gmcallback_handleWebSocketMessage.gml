@@ -35,9 +35,27 @@ function gmcallback_handleWebSocketMessage(rawJson) {
 
         case "playerSpeakingTick": {
             global.currentSpeaker = msg.params.currentSpeaker;
+			global.playerLatestMessage = msg.params.latestMessage;
             global.timeLeft = msg.params.timeLeft;
             global.statusText = global.currentSpeaker + " is speaking... (" + string(global.timeLeft) + ")";
+	
+           
+			
+		       if (!instance_exists(obj_playerSpeaking)) {
+		        var o = instance_create_layer(200, 200, "Instances", obj_playerSpeaking);
+		        o.speaker = global.currentSpeaker;
+		        o.text = global.playerLatestMessage;
+		    } else {
+		        with (obj_playerSpeaking) {
+		            speaker = global.currentSpeaker;
+		            text = global.playerLatestMessage;
+		        }
+		    }
+		   
+		    
+			
             break;
+
         }
 
         case "playerJoined": {

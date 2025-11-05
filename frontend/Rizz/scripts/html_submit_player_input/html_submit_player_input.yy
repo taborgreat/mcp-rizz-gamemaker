@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"html_submit_player_input",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"html_submit_player_input",
+  "parent":{
+    "name":"WEBLayer",
+    "path":"folders/WEBLayer.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

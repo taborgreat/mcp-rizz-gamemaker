@@ -1,6 +1,8 @@
 if (os_browser == browser_not_a_browser)
     show_message("This demo only works when running the game as HTML5");
 
-name_input = "";
 
 
+form_is_loading = false;
+submitted = false;
+html_init("HTML5Elements");

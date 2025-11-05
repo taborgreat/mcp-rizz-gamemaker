@@ -40,11 +40,32 @@ function update_world_state(world) {
             break;
 
         case "playersInputting":
-            global.statusText = "Players are typing... (" + string(global.timeLeft) + ")";
-            break;
+			global.statusText = "Players are typing... (" + string(global.timeLeft) + ")";
+	 
+	        instance_create_layer(0, 0, "Instances", obj_player_message_input);
+	    
+	    break;
+
+	
+	  
+
 
         case "playerSpeaking":
             global.statusText = global.currentSpeaker + " is speaking... (" + string(global.timeLeft) + ")";
+			
+		       if (!instance_exists(obj_playerSpeaking)) {
+		        var o = instance_create_layer(200, 200, "Instances", obj_playerSpeaking);
+		        o.speaker = global.currentSpeaker;
+		        o.text = global.playerLatestMessage;
+		    } else {
+		        with (obj_playerSpeaking) {
+		            speaker = global.currentSpeaker;
+		            text = global.playerLatestMessage;
+		        }
+		    }
+		   
+		    
+			
             break;
 
         case "girlSpeaking":

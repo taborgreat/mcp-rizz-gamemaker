@@ -95,13 +95,14 @@ export class GameStateManager {
       const player = playerList[currentIndex];
       let timeLeft = 5;
 
-      console.log(`🎤 ${player.name} is speaking...`);
+      console.log(`🎤 ${player.name}: ${player.latestMessage}`);
 
       const tick = () => {
         this.broadcast(this.players.players, {
           action: "playerSpeakingTick",
           params: {
             currentSpeaker: player.name,
+            latestMessage: player.latestMessage,
             timeLeft,
           },
         });
