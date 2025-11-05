@@ -26,7 +26,7 @@ export class PlayerManager {
     this.players.set(ws, {
       name: uniqueName,
       slot,
-      latestMessage: "",
+      latestMessage: "Player missed their turn", //defaults to this in case missed input
       isSpectator,
     });
     return this.players.get(ws);
