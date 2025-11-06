@@ -96,8 +96,20 @@ function gmcallback_handleWebSocketMessage(rawJson) {
 
         case "playerJoined": {
             show_debug_message("Player joined: " + msg.params.name);
-
-         
+			 if (variable_global_exists("html_name_form") && global.html_name_form != undefined) {
+		        html_element_cleanup(global.html_name_form, true);
+		        global.html_name_form = undefined;
+		    }
+			 
+			 if (variable_global_exists("html_name_wrapper") && global.html_name_wrapper != undefined) {
+		        html_element_cleanup(global.html_name_wrapper, true);
+		        global.html_name_wrapper = undefined;
+		    }
+			
+			
+			global.currentRoomId = msg.params.gameRoomId;
+	
+			
             global.localPlayer = {
                 name: msg.params.name
             };
@@ -112,8 +124,33 @@ function gmcallback_handleWebSocketMessage(rawJson) {
             show_debug_message("Player left: " + msg.params.name);
             break;
         }
+		
+		case "roomFull": {
+		    var o;
+		    if (instance_exists(obj_RoomsAlertMessage)) {
+		        o = instance_find(obj_RoomsAlertMessage, 0);
+		    } else {
+		        o = instance_create_layer(room_width / 2, room_height / 2, "Instances", obj_RoomsAlertMessage);
+		    }
+		    o.text = "That room is full!";
+		    o.alarm[0] = room_speed * 3; 
+		    break;
+		}
+
+		case "allRoomsFull": {
+		    var o;
+		    if (instance_exists(obj_RoomsAlertMessage)) {
+		        o = instance_find(obj_RoomsAlertMessage, 0);
+		    } else {
+		        o = instance_create_layer(room_width / 2, room_height / 2, "Instances", obj_RoomsAlertMessage);
+		    }
+		    o.text = "All rooms are full! Try again later.";
+		    o.alarm[0] = room_speed * 3; 
+		    break;
+		}
+
 
         default:
-            show_debug_message("Unrecognized action: " + string(action));
+            show_debug_messagae("Unrecognized action: " + string(action));
     }
 }

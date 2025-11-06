@@ -1,3 +1,12 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
 .game-room {
   display: flex;
   flex-direction: column;
@@ -22,6 +31,8 @@
   grid-template-columns: 200px 1fr 300px;
   gap: 0.5rem;
   padding: 0.5rem;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .player-list {
@@ -36,7 +47,7 @@
   align-items: center;
   justify-content: center;
   border-radius: 8px;
-  overflow: hidden;
+  overflow: hidden; /* ✅ this hides any internal overflow */
 }
 iframe {
   overflow: hidden;

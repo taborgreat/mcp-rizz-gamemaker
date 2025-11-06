@@ -1,15 +1,26 @@
 export default function GameMakerWrapper() {
     return (
-        <div style={{ display: "flex", justifyContent: "center" }}>
+        <div
+            style={{
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                background: "black",
+                overflow: "hidden",
+            }}
+        >
             <iframe
                 id="gameFrame"
                 src="/GameMaker/build/index.html"
                 title="GameMaker Game"
-                width="480"
-                height="270"
                 style={{
                     border: "none",
-                    background: "black",
+                    width: "100%",
+                    height: "100%",
+                    aspectRatio: "16 / 9",
+                    objectFit: "contain",
                 }}
             />
         </div>

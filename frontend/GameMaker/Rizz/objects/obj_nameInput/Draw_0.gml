@@ -21,6 +21,7 @@ html_submit(form, "submit", "Begin", !form_is_loading, form_is_loading ? "loadin
 
 if (html_element_interaction(form)) {
     html_submit_name_connect(form);
-    html_element_cleanup(wrapper, true);
-    form = undefined;
+	global.html_name_wrapper = wrapper; 
+    
+
 }
