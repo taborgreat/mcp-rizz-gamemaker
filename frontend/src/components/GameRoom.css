@@ -1,0 +1,72 @@
+.game-room {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #ffffff;
+  color: white;
+}
+
+.top-bar {
+  height: 60px;
+  background: #222;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+  font-size: 1.25rem;
+}
+
+.main-area {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 200px 1fr 300px;
+  gap: 0.5rem;
+  padding: 0.5rem;
+}
+
+.player-list {
+  background: #1a1a1a;
+  overflow-y: auto;
+  border-radius: 8px;
+}
+
+.game-area {
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  overflow: hidden;
+}
+iframe {
+  overflow: hidden;
+}
+
+.chat-room {
+  background: #1a1a1a;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.ad-banner {
+  height: 80px;
+  background: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+@media (max-width: 992px) {
+  .main-area {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+  }
+
+  .player-list,
+  .chat-room {
+    height: 200px;
+  }
+}
