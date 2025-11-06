@@ -96,8 +96,10 @@ function gmcallback_handleWebSocketMessage(rawJson) {
 
         case "playerJoined": {
             show_debug_message("Player joined: " + msg.params.name);
-
-         
+			
+			global.currentRoomId = msg.params.gameRoomId;
+	
+			
             global.localPlayer = {
                 name: msg.params.name
             };
@@ -114,6 +116,6 @@ function gmcallback_handleWebSocketMessage(rawJson) {
         }
 
         default:
-            show_debug_message("Unrecognized action: " + string(action));
+            show_debug_messagae("Unrecognized action: " + string(action));
     }
 }

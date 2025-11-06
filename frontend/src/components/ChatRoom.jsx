@@ -1,9 +1,8 @@
 import { useEffect, useState, useRef } from "react";
 
-export default function ChatRoom() {
+export default function ChatRoom({ socket }) {
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState("");
-    const [socketReady, setSocketReady] = useState(false);
     const messagesEndRef = useRef(null);
 
     // === Auto-scroll to bottom when messages update ===
@@ -11,43 +10,13 @@ export default function ChatRoom() {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
 
+    // === Set up socket listeners ===
     useEffect(() => {
-        let interval;
-        let socket;
-
-        const tryConnect = () => {
-            const iframe = document.getElementById("gameFrame");
-            const gmWindow = iframe?.contentWindow;
-            if (!gmWindow) return;
-
-            socket = gmWindow.socket;
-            if (!socket) return;
-
-            if (socket.readyState === WebSocket.OPEN) {
-                setupListeners(socket);
-                setSocketReady(true);
-                clearInterval(interval);
-            }
-        };
-
-        interval = setInterval(tryConnect, 500);
-
-        return () => {
-            clearInterval(interval);
-            if (socket?._chatRoomHandler) {
-                socket.removeEventListener("message", socket._chatRoomHandler);
-                delete socket._chatRoomHandler;
-            }
-        };
-    }, []);
-
-    const setupListeners = (socket) => {
-        if (socket._chatRoomHandler) return;
+        if (!socket) return;
 
         const handler = (event) => {
             try {
                 const data = JSON.parse(event.data);
-
                 switch (data.action) {
                     case "chatMessage":
                         setMessages((prev) => [
@@ -74,35 +43,29 @@ export default function ChatRoom() {
                         break;
                 }
             } catch {
-                // ignore bad JSON
+                // ignore non-JSON messages
             }
         };
 
-        socket._chatRoomHandler = handler;
         socket.addEventListener("message", handler);
-    };
+        return () => socket.removeEventListener("message", handler);
+    }, [socket]);
 
+    // === Send message ===
     const sendMessage = () => {
-        const iframe = document.getElementById("gameFrame");
-        const gmWindow = iframe?.contentWindow;
-        const socket = gmWindow?.socket;
-
-        if (!socket) return;
-        if (socket.readyState !== WebSocket.OPEN) return;
-        if (!input.trim()) return;
-
-        const msg = { type: "newMessage", text: input };
-        socket.send(JSON.stringify(msg));
+        if (!socket || socket.readyState !== WebSocket.OPEN || !input.trim()) return;
+        socket.send(JSON.stringify({ type: "newMessage", text: input }));
         setInput("");
     };
 
+    // === Render ===
     return (
         <div
             style={{
                 background: "#111",
                 color: "white",
                 padding: "1rem",
-                height: "70vh", // ensures it fills viewport
+                height: "70vh",
                 display: "flex",
                 flexDirection: "column",
                 boxSizing: "border-box",
@@ -117,7 +80,7 @@ export default function ChatRoom() {
                     borderRadius: "8px",
                     padding: "8px",
                     marginBottom: "8px",
-                    minHeight: 0, // 🔑 fixes flexbox overflow behavior
+                    minHeight: 0,
                     display: "flex",
                     flexDirection: "column",
                 }}
@@ -136,13 +99,13 @@ export default function ChatRoom() {
                 <div ref={messagesEndRef} />
             </div>
 
-            {/* === Fixed bottom input bar === */}
+            {/* === Input bar === */}
             <div style={{ display: "flex", flexShrink: 0 }}>
                 <input
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-                    placeholder={socketReady ? "Type a message..." : "Connecting..."}
+                    placeholder={socket ? "Type a message..." : "Connecting..."}
                     style={{
                         flex: 1,
                         marginRight: "0.5rem",
@@ -151,18 +114,18 @@ export default function ChatRoom() {
                         border: "none",
                         outline: "none",
                     }}
-                    disabled={!socketReady}
+                    disabled={!socket}
                 />
                 <button
                     onClick={sendMessage}
-                    disabled={!socketReady}
+                    disabled={!socket}
                     style={{
                         padding: "0.5rem 1rem",
                         borderRadius: "4px",
                         border: "none",
-                        background: socketReady ? "#444" : "#333",
+                        background: socket ? "#444" : "#333",
                         color: "white",
-                        cursor: socketReady ? "pointer" : "not-allowed",
+                        cursor: socket ? "pointer" : "not-allowed",
                     }}
                 >
                     Send

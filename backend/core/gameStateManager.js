@@ -3,16 +3,24 @@ import girlData from "./utils/girlNames.json" with { type: "json" };
 const girlNames = girlData.girlData;
 
 export class GameStateManager {
-  constructor(broadcast, girl, playerManager) {
+  constructor(broadcast, girl, playerManager, gameRoomId) {
     this.state = "awaitingPlayers";
     this.broadcast = broadcast;
     this.girl = girl;
     this.players = playerManager;
     this.timer = null;
+    this.gameRoomId = gameRoomId; // kept only for identification/logging
+  }
+
+  broadcastRoom(message) {
+    this.broadcast(this.players.players, {
+      ...message,
+      gameRoomId: this.gameRoomId,
+    });
   }
 
   broadcastWorld() {
-    this.broadcast(this.players.players, {
+    this.broadcastRoom({
       action: "worldUpdate",
       world: {
         gameState: this.state,
@@ -26,21 +34,22 @@ export class GameStateManager {
     clearTimeout(this.timer);
     this.state = newState;
 
-    console.log(`🌀 Game state changed to: ${newState}`);
+    console.log(`🌀 [Room ${this.gameRoomId}] State → ${newState}`);
     this.broadcastWorld();
 
     switch (newState) {
       case "awaitingPlayers":
-        this.girl.resetPosition(this.broadcast, this.players);
+        this.girl.resetPosition(this.broadcastRoom.bind(this), this.players);
         break;
+
       case "countdown": {
         const randomIndex = Math.floor(Math.random() * girlNames.length);
         this.girl.name = girlNames[randomIndex];
 
-        console.log(`💁 Girl's name is now: ${this.girl.name}`);
+        console.log(`💁 [Room ${this.gameRoomId}] Girl's name: ${this.girl.name}`);
         this.broadcastWorld();
 
-        this.broadcast(this.players.players, {
+        this.broadcastRoom({
           action: "updateGirl",
           params: {
             name: this.girl.name,
@@ -64,9 +73,9 @@ export class GameStateManager {
 
       case "girlSpeaking": {
         const girlMessage = generateGirlMessage(this.players);
-        console.log(`💬 Girl says: ${girlMessage}`);
+        console.log(`💬 [Room ${this.gameRoomId}] Girl says: ${girlMessage}`);
 
-        this.broadcast(this.players.players, {
+        this.broadcastRoom({
           action: "girlSpeaking",
           params: { girlMessage },
         });
@@ -76,7 +85,6 @@ export class GameStateManager {
       }
 
       case "girlMoving": {
-        // Choose a random active player to move toward
         const activePlayers = this.players.getActivePlayers();
         let destination = "center";
 
@@ -87,15 +95,14 @@ export class GameStateManager {
 
         const newPos = this.girl.moveTowards(
           destination,
-          this.broadcast,
+          this.broadcastRoom.bind(this),
           this.players
         );
-        console.log(`💃 Girl moving toward: ${destination}`, newPos);
+        console.log(`💃 [Room ${this.gameRoomId}] Girl moving toward: ${destination}`, newPos);
 
         this.timer = setTimeout(() => {
           this.setState("playersInputting", 20);
         }, 5000);
-
         break;
       }
     }
@@ -104,10 +111,7 @@ export class GameStateManager {
   startCountdown(seconds) {
     let timeLeft = seconds;
     const tick = () => {
-      this.broadcast(this.players.players, {
-        action: "countdownTick",
-        params: { timeLeft },
-      });
+      this.broadcastRoom({ action: "countdownTick", params: { timeLeft } });
       if (timeLeft-- > 0) this.timer = setTimeout(tick, 1000);
       else this.setState("playersInputting");
     };
@@ -117,10 +121,7 @@ export class GameStateManager {
   startPlayersInputting(seconds) {
     let timeLeft = seconds;
     const tick = () => {
-      this.broadcast(this.players.players, {
-        action: "playersInputtingTick",
-        params: { timeLeft },
-      });
+      this.broadcastRoom({ action: "playersInputtingTick", params: { timeLeft } });
       if (timeLeft-- > 0) this.timer = setTimeout(tick, 1000);
       else this.setState("playerSpeaking");
     };
@@ -145,10 +146,10 @@ export class GameStateManager {
       const player = playerList[currentIndex];
       let timeLeft = 5;
 
-      console.log(`🎤 ${player.name}: ${player.latestMessage}`);
+      console.log(`🎤 [Room ${this.gameRoomId}] ${player.name}: ${player.latestMessage}`);
 
       const tick = () => {
-        this.broadcast(this.players.players, {
+        this.broadcastRoom({
           action: "playerSpeakingTick",
           params: {
             currentSpeaker: player.name,
@@ -171,16 +172,16 @@ export class GameStateManager {
     speakNext();
   }
 
-  onPlayerJoined() {
-    if (this.players.players.size >= 2 && this.state === "awaitingPlayers") {
+  onPlayerJoined(player) {
+    if (this.players.countPlayers() >= 2 && this.state === "awaitingPlayers") {
       this.setState("countdown", 10);
     } else {
       this.broadcastWorld();
     }
   }
 
-  onPlayerLeft() {
-    if (this.players.players.size < 2) {
+  onPlayerLeft(player) {
+    if (this.players.countPlayers() < 2) {
       clearTimeout(this.timer);
       this.setState("awaitingPlayers");
     } else {

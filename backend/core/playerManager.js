@@ -2,7 +2,7 @@ import { getUniqueName } from "./utils/utils.js";
 
 export class PlayerManager {
   constructor() {
-    this.players = new Map(); // ws -> { name, slot, latestMessage, isSpectator }
+    this.players = new Map(); // ws -> player object
     this.maxPlayerSlots = 4;
   }
 
@@ -23,13 +23,15 @@ export class PlayerManager {
       isSpectator = true;
     }
 
-    this.players.set(ws, {
+    const player = {
       name: uniqueName,
       slot,
-      latestMessage: "Player missed their turn", //defaults to this in case missed input
+      latestMessage: "Player missed their turn",
       isSpectator,
-    });
-    return this.players.get(ws);
+    };
+
+    this.players.set(ws, player);
+    return player;
   }
 
   removePlayer(ws) {
@@ -38,6 +40,7 @@ export class PlayerManager {
 
     this.players.delete(ws);
 
+    // maintain slot order
     if (!left.isSpectator) {
       const spectator = this.getSpectators()[0];
       if (spectator) {
@@ -49,22 +52,26 @@ export class PlayerManager {
     return left;
   }
 
-  getPlayerNames() {
-    return Array.from(this.players.values()).map((p) => p.name);
-  }
-
   getAllPlayers() {
     return Array.from(this.players.values());
   }
 
   getActivePlayers() {
-    return Array.from(this.players.values())
+    return this.getAllPlayers()
       .filter((p) => !p.isSpectator)
       .sort((a, b) => a.slot - b.slot);
   }
 
   getSpectators() {
-    return Array.from(this.players.values()).filter((p) => p.isSpectator);
+    return this.getAllPlayers().filter((p) => p.isSpectator);
+  }
+
+  countPlayers() {
+    return this.players.size;
+  }
+
+  getPlayerNames() {
+    return Array.from(this.players.values()).map((p) => p.name);
   }
 
   findFirstOpenSlot(occupiedSlots) {
