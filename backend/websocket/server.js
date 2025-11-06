@@ -40,6 +40,15 @@ export function startWebSocketServer(httpServer) {
             })
           );
 
+          broadcast(
+            players.players,
+            {
+              action: "playerJoinedForChat",
+              params: { name: player.name },
+            },
+            ws
+          );
+
           broadcast(players.players, {
             action: "worldUpdate",
             world: getWorldState(),
@@ -47,6 +56,22 @@ export function startWebSocketServer(httpServer) {
 
           // Check player count for game start
           state.onPlayerJoined();
+          break;
+        }
+
+        case "newMessage": {
+          const player = players.players.get(ws);
+          if (!player) return console.warn("Chat from unknown player");
+
+          const chatData = {
+            action: "chatMessage",
+            from: player.name,
+            text: data.text,
+          };
+
+          console.log(`💬 ${player.name}: ${data.text}`);
+
+          broadcast(players.players, chatData);
           break;
         }
 
@@ -71,15 +96,21 @@ export function startWebSocketServer(httpServer) {
         }
 
         default:
-          console.warn("⚠️ Unknown message type:", data.type);
+          console.warn("Unknown message type:", data.type);
           console.log(msg);
       }
     });
 
     ws.on("close", () => {
+      const player = players.players.get(ws);
+      if (player) {
+        broadcast(players.players, {
+          action: "playerLeftForChat",
+          params: { name: player.name },
+        });
+      }
       players.removePlayer(ws);
       state.onPlayerLeft();
-
       broadcast(players.players, {
         action: "worldUpdate",
         world: getWorldState(),
