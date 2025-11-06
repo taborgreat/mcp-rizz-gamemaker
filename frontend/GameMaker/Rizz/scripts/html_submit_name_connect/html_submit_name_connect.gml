@@ -10,11 +10,18 @@ function html_submit_name_connect(element) {
         return;
     }
 
+
+    var msg = ds_map_create();
+    msg[? "name"] = name;
+
+
     
-    connectToServer(name);
+            msg[? "gameRoomId"] = global.roomSelectedAttempt;
 
+    var msg_json = json_encode(msg);
+    show_debug_message("➡️ Sending join message: " + msg_json);
+    connectToServer(msg_json);
 
-    html_element_cleanup(element, true);
-    element = undefined;
-	
+    ds_map_destroy(msg);
+    global.html_name_form = element;
 }
