@@ -1,15 +1,27 @@
+import express from "express";
 import http from "http";
+import cors from "cors";
 import { startWebSocketServer } from "./websocket/server.js";
+import { roomManager } from "./RoomManagerInstance.js";
 
+const app = express();
+const server = http.createServer(app);
 const PORT = 8082;
 
-const server = http.createServer((req, res) => {
-  res.writeHead(200, { "Content-Type": "text/plain" });
-  res.end("HTTP server running — WebSocket also attached.");
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST"],
+  })
+);
+
+app.get("/rooms", (req, res) => {
+  const rooms = roomManager.getRoomSummaries();
+  res.json({ rooms });
 });
 
 server.listen(PORT, "0.0.0.0", () => {
-  console.log(`✅ HTTP server running at http://LAN:${PORT}`);
+  console.log(`✅ HTTP server running on http://LAN:${PORT}`);
 });
 
 startWebSocketServer(server);

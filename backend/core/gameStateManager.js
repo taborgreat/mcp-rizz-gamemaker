@@ -9,7 +9,7 @@ export class GameStateManager {
     this.girl = girl;
     this.players = playerManager;
     this.timer = null;
-    this.gameRoomId = gameRoomId; // kept only for identification/logging
+    this.gameRoomId = gameRoomId; 
   }
 
   broadcastRoom(message) {
