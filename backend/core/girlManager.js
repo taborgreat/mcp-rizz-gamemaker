@@ -1,10 +1,13 @@
 export class GirlManager {
-  constructor() {
+  constructor(broadcast, players) {
     this.center = { x: 766, y: 340 };
     this.name = "Waiting to be named";
     this.x = this.center.x;
     this.y = this.center.y;
-    this.speed = 70; // pixels per tick
+    this.speed = 70;
+
+    this.broadcast = broadcast;
+    this.players = players;
   }
 
   getChairPosition(slot) {
@@ -22,7 +25,8 @@ export class GirlManager {
     }
   }
 
-  moveTowards(destination, broadcast, players) {
+  moveTowards(destination) {
+    const { broadcast, players } = this;
     let target;
 
     if (destination === "stay") {
@@ -63,21 +67,20 @@ export class GirlManager {
     return { x: this.x, y: this.y };
   }
 
-  resetPosition(broadcast, players) {
+  resetPosition() {
+    const { broadcast, players } = this;
     this.x = this.center.x;
     this.y = this.center.y;
 
-    if (broadcast && players) {
-      broadcast(players.players, {
-        action: "updateGirl",
-        params: {
-          name: this.name,
-          x: this.x,
-          y: this.y,
-          destination: "center",
-        },
-      });
-    }
+    broadcast(players.players, {
+      action: "updateGirl",
+      params: {
+        name: this.name,
+        x: this.x,
+        y: this.y,
+        destination: "center",
+      },
+    });
   }
 
   getState() {
