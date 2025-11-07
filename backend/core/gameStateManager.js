@@ -69,6 +69,15 @@ export class GameStateManager {
 
       case "preparingPlayerSpeaking": {
         console.log(`⏳ [Room ${this.gameRoomId}] Preparing player speaking phase...`);
+         const allPlayers = this.players.getAllPlayers();
+        for (const player of allPlayers) {
+          if (player.currentText === player.latestMessage) {
+            player.latestMessage = "Player missed their turn";
+          }
+//im goin to add if its player missed their turn twice in a row then you get kicked from websocet
+          console.log("mother fucker missed turn, setting manually")
+          player.currentText = player.latestMessage;
+        }
         this.broadcastRoom({ action: "loadingNextPhase" });
         this.timer = setTimeout(() => this.setState("playerSpeaking"), 500); //RAISE THIS TO ALLOW MORE TIME FOR NETWORK REQUESTS TO ARRIVE
         break;
