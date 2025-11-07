@@ -86,20 +86,32 @@ export default function ChatRoom({ socket }) {
                 }}
             >
                 {messages.map((m, i) => (
-                    <div key={i} style={{
-                        color: m.type === "system" ? "#aaa" : "#fff", wordWrap: "break-word",
-                        overflowWrap: "break-word",
-                        whiteSpace: "pre-wrap",
-                    }}>
+                    <div
+                        key={i}
+                        style={{
+                            color: m.type === "system" ? "#aaa" : "#fff",
+                            padding: "1px",
+                            wordWrap: "break-word",
+                            overflowWrap: "break-word",
+                            whiteSpace: "pre-wrap",
+                            marginBottom: "0.75rem",
+                            borderBottom: "1px solid rgba(255,255,255,0.1)",
+                            paddingBottom: "0.25rem",
+                        }}
+                    >
                         {m.type === "chat" ? (
                             <>
-                                <b>{m.from}:</b> {m.text}
+                                <div style={{ fontWeight: "bold", marginBottom: "0.2rem" }}>
+                                    {m.from}:
+                                </div>
+                                <div style={{ paddingLeft: "0.1rem", paddingBottom: "1rem" }}>{m.text}</div>
                             </>
                         ) : (
                             <i>{m.text}</i>
                         )}
                     </div>
                 ))}
+
                 <div ref={messagesEndRef} />
             </div>
 
