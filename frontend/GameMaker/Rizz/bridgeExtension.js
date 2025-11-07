@@ -34,7 +34,7 @@
         );
       }
     };
-
+    /*
     socket.onerror = (err) => {
       console.error("[Bridge] WebSocket error:", err);
       try {
@@ -52,7 +52,7 @@
         );
       }
     };
-
+*/
     window.sendToServer = function (msg) {
       if (socket && socket.readyState === WebSocket.OPEN) {
         socket.send(msg);
