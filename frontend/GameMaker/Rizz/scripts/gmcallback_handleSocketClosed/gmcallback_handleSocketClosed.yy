@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"gmcallback_handleSocketClosed",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"gmcallback_handleSocketClosed",
+  "parent":{
+    "name":"HTML",
+    "path":"folders/BrowserIntegration/HTML.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}
