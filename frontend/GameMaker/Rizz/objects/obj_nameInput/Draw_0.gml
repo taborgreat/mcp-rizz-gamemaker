@@ -16,7 +16,7 @@ var form = html_form(wrapper, "simple-form");
 
 
 
-html_field(form, "username", "text", "Type your name...", true, "", "");
+html_field(form, "username", "text", "Type your name...", true, "", "", 13);
 html_submit(form, "submit", "Begin", !form_is_loading, form_is_loading ? "loading" : "");
 
 if (html_element_interaction(form)) {

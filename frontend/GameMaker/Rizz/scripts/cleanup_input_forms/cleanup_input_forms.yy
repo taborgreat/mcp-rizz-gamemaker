@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"cleanup_input_forms",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"cleanup_input_forms",
+  "parent":{
+    "name":"DOM",
+    "path":"folders/BrowserIntegration/HTML/DOM.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

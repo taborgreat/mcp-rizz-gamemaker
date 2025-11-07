@@ -40,17 +40,28 @@ export function startWebSocketServer(httpServer) {
         case "newMessage": {
           const player = roomManager.getPlayerBySocket(ws);
           if (!player) return;
+
           const room = roomManager.getRoom(player.gameRoomId);
           if (!room) return;
+
           const { players } = room;
+
+          const MAX_CHAT_LENGTH = 150;
+          let text = data.text?.trim() || "";
+
+          if (text.length > MAX_CHAT_LENGTH) {
+            const cutoff = text.lastIndexOf(" ", MAX_CHAT_LENGTH);
+            text = text.slice(0, cutoff > 0 ? cutoff : MAX_CHAT_LENGTH) + "…";
+          }
+
           const chatData = {
             action: "chatMessage",
             from: player.name,
-            text: data.text,
+            text,
           };
-          console.log(
-            `💬 [Room ${player.gameRoomId}] ${player.name}: ${data.text}`
-          );
+
+          console.log(`💬 [Room ${player.gameRoomId}] ${player.name}: ${text}`);
+
           broadcast(players.players, chatData);
           break;
         }
@@ -60,8 +71,21 @@ export function startWebSocketServer(httpServer) {
           if (!player) return;
           const room = roomManager.getRoom(player.gameRoomId);
           if (!room) return;
-          player.latestMessage =
-            data.text?.trim() !== "" ? data.text : "Player missed their turn";
+
+          const MAX_INPUT_LENGTH = 130;
+          let text = data.text?.trim() || "";
+
+          // Limit to 150 chars (cut at nearest space if possible)
+          if (text.length > MAX_INPUT_LENGTH) {
+            console.log("trimming", text);
+            const cutoff = text.lastIndexOf(" ", MAX_INPUT_LENGTH);
+            text =
+              text.slice(0, cutoff > 0 ? cutoff : MAX_INPUT_LENGTH) + ". . .";
+          }
+          if (!text) text = "Player missed their turn";
+
+          player.latestMessage = text;
+
           console.log(
             `🎙️ [Room ${player.gameRoomId}] ${player.name}: ${player.latestMessage}`
           );

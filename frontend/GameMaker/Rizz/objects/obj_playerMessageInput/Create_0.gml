@@ -7,3 +7,4 @@ destroy_time = current_time + 20000;
 form_is_loading = false;
 submitted = false;
 html_init("HTML5Elements");
+

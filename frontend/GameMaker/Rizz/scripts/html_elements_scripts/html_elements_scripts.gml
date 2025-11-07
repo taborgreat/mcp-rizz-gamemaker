@@ -113,6 +113,7 @@ function html_field() {
 	var required = argument_count > 4 ? argument[4] : false;
 	var classes = argument_count > 5 ? argument[5] : "";
 	var initial_value = argument_count > 6 ? argument[6] : "";
+	var maxlength = argument_count > 7 ? argument[7] : 170;
 
 	var input = html_element(
 		parent, 
@@ -126,6 +127,7 @@ function html_field() {
 		"type", type, 
 		"placeholder", placeholder, 
 		"required", required, 
+		"maxlength", string(maxlength),
 		"value", initial_value
 	);
 

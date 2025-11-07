@@ -7,7 +7,14 @@ export class PlayerManager {
   }
 
   addPlayer(ws, name) {
-    const uniqueName = getUniqueName(name, this.getPlayerNames());
+    const MAX_NAME_LENGTH = 13;
+    let rawName = (name ?? "").trim();
+    if (!rawName) rawName = "Player";
+
+    if (rawName.length > MAX_NAME_LENGTH) {
+      rawName = rawName.slice(0, MAX_NAME_LENGTH);
+    }
+    const ensuredUnique = getUniqueName(rawName, this.getPlayerNames());
 
     // find open slot (1–4)
     const occupiedSlots = this.getActivePlayers().map((p) => p.slot);
@@ -24,7 +31,7 @@ export class PlayerManager {
     }
 
     const player = {
-      name: uniqueName,
+      name: ensuredUnique,
       slot,
       latestMessage: "Player missed their turn",
       isSpectator,

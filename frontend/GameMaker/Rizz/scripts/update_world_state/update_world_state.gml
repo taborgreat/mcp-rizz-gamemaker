@@ -2,7 +2,9 @@
 /// @desc Applies the latest world data to GameMaker visuals
 
 function update_world_state(world) {
+	
     var state = world.gameState;
+	global.gameState = state;
 	
     // 1. Players
     for (var i = 0; i < array_length(chairs); i++) {
@@ -49,6 +51,9 @@ function update_world_state(world) {
 			 if (!instance_exists(obj_playerMessageInput)) {
         instance_create_layer(0, 0, "Instances", obj_playerMessageInput);
     }
+	if (!instance_exists(obj_playerMessageRemaining)) {
+        instance_create_layer(0, 0, "Instances", obj_playerMessageRemaining);
+    }
 	
 	       
 	    
@@ -60,7 +65,7 @@ function update_world_state(world) {
 
         case "playerSpeaking":
             global.statusText = global.currentSpeaker + " is speaking... (" + string(global.timeLeft) + ")";
-			
+			if (instance_exists(obj_playerMessageRemaining)) instance_destroy(obj_playerMessageRemaining);
 		       if (!instance_exists(obj_playerSpeaking)) {
 		        var o = instance_create_layer(200, 200, "Instances", obj_playerSpeaking);
 		        o.speaker = global.currentSpeaker;
