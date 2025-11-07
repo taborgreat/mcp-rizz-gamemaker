@@ -86,7 +86,11 @@ export default function ChatRoom({ socket }) {
                 }}
             >
                 {messages.map((m, i) => (
-                    <div key={i} style={{ color: m.type === "system" ? "#aaa" : "#fff" }}>
+                    <div key={i} style={{
+                        color: m.type === "system" ? "#aaa" : "#fff", wordWrap: "break-word",
+                        overflowWrap: "break-word",
+                        whiteSpace: "pre-wrap",
+                    }}>
                         {m.type === "chat" ? (
                             <>
                                 <b>{m.from}:</b> {m.text}
@@ -106,6 +110,7 @@ export default function ChatRoom({ socket }) {
                     onChange={(e) => setInput(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && sendMessage()}
                     placeholder={socket ? "Type a message..." : "Connecting..."}
+                    maxLength={120}
                     style={{
                         flex: 1,
                         marginRight: "0.5rem",

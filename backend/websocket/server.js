@@ -46,7 +46,7 @@ export function startWebSocketServer(httpServer) {
 
           const { players } = room;
 
-          const MAX_CHAT_LENGTH = 150;
+          const MAX_CHAT_LENGTH = 120;
           let text = data.text?.trim() || "";
 
           if (text.length > MAX_CHAT_LENGTH) {
