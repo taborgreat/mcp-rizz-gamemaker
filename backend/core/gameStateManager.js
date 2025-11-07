@@ -67,6 +67,13 @@ export class GameStateManager {
         this.startPlayersInputting(duration || 20);
         break;
 
+      case "preparingPlayerSpeaking": {
+        console.log(`⏳ [Room ${this.gameRoomId}] Preparing player speaking phase...`);
+        this.broadcastRoom({ action: "loadingNextPhase" });
+        this.timer = setTimeout(() => this.setState("playerSpeaking"), 500); //RAISE THIS TO ALLOW MORE TIME FOR NETWORK REQUESTS TO ARRIVE
+        break;
+      }
+
       case "playerSpeaking":
         this.startSequentialPlayerSpeaking();
         break;
@@ -123,7 +130,7 @@ export class GameStateManager {
     const tick = () => {
       this.broadcastRoom({ action: "playersInputtingTick", params: { timeLeft } });
       if (timeLeft-- > 0) this.timer = setTimeout(tick, 1000);
-      else this.setState("playerSpeaking");
+      else this.setState("preparingPlayerSpeaking")
     };
     tick();
   }
