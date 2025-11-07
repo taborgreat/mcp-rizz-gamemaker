@@ -19,6 +19,16 @@ export default function GameRoom() {
 
             const sock = gmWindow.socket;
             if (sock && sock.readyState === WebSocket.OPEN) {
+
+                if (!sock._hasCloseHandler) {
+                    sock._hasCloseHandler = true;
+                    sock.addEventListener("close", () => {
+                        console.warn("🔌 Socket closed");
+                        setSocketReady(false);
+                        setSocket(null);
+                    });
+                }
+
                 setSocket(sock);
                 setSocketReady(true);
                 clearInterval(interval);
@@ -27,12 +37,26 @@ export default function GameRoom() {
 
         interval = setInterval(tryConnect, 500);
         return () => clearInterval(interval);
-    }, []);
+    }, [socketReady]);
+
+    const handleBack = () => {
+        if (socket && socket.readyState === WebSocket.OPEN) {
+            console.log("👋 Closing socket and returning to room list");
+            socket.close(1000, "User left room");
+        }
+        setSocketReady(false);
+        setSocket(null);
+    };
 
     return (
         <div className="game-room">
             <header className="top-bar">
-                <div>RIZZ</div>
+                <div
+                    className={`rizz-logo ${socketReady ? "clickable" : ""}`}
+                    onClick={socketReady ? handleBack : undefined}
+                >
+                    RIZZ
+                </div>
                 <div>⚙️</div>
             </header>
 

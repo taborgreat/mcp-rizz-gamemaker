@@ -16,6 +16,43 @@
       }
     };
 
+    socket.onclose = (event) => {
+      console.warn("[Bridge] WebSocket closed:", event);
+      try {
+        window.gml_Script_gmcallback_handleSocketClosed(
+          "",
+          "",
+          JSON.stringify({
+            reason: event.reason || "Connection closed",
+            code: event.code,
+          })
+        );
+      } catch (e) {
+        console.warn(
+          "[Bridge] Failed to call gmcallback_handleSocketClosed:",
+          e
+        );
+      }
+    };
+
+    socket.onerror = (err) => {
+      console.error("[Bridge] WebSocket error:", err);
+      try {
+        window.gml_Script_gmcallback_handleSocketClosed(
+          "",
+          "",
+          JSON.stringify({
+            reason: "Network error",
+          })
+        );
+      } catch (e) {
+        console.warn(
+          "[Bridge] Failed to call gmcallback_handleSocketClosed:",
+          e
+        );
+      }
+    };
+
     window.sendToServer = function (msg) {
       if (socket && socket.readyState === WebSocket.OPEN) {
         socket.send(msg);

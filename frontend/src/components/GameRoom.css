@@ -47,7 +47,7 @@ body {
   align-items: center;
   justify-content: center;
   border-radius: 8px;
-  overflow: hidden; /* ✅ this hides any internal overflow */
+  overflow: hidden;
 }
 iframe {
   overflow: hidden;
@@ -80,4 +80,21 @@ iframe {
   .chat-room {
     height: 200px;
   }
+}
+
+.rizz-logo {
+  font-weight: bold;
+  font-size: 1.5rem;
+  cursor: default;
+  transition: transform 0.2s, color 0.2s;
+}
+
+.rizz-logo.clickable {
+  cursor: pointer;
+  color: #ff5555; /* or whatever fits your theme */
+}
+
+.rizz-logo.clickable:hover {
+  transform: scale(1.1);
+  color: #ff7777;
 }

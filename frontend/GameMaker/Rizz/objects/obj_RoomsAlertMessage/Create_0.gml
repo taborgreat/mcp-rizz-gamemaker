@@ -1,2 +1,3 @@
-text = "Room full"; // default fallback
+
 image_alpha = 1;
+alarm[1] = room_speed * 6;
