@@ -14,7 +14,7 @@ export class RoomManager {
   initRooms() {
     for (let i = 0; i < this.maxRooms; i++) {
       const players = new PlayerManager();
-      const girl = new GirlManager();
+      const girl = new GirlManager(broadcast, players);
       const state = new GameStateManager(broadcast, girl, players, i);
       this.rooms.set(i, { players, girl, state });
     }
@@ -41,36 +41,28 @@ export class RoomManager {
   }
 
   joinRoom(ws, name, requestedRoomId) {
-    const roomId = Number(requestedRoomId);
+    const roomId = requestedRoomId != null ? Number(requestedRoomId) : null;
 
+    console.log(requestedRoomId);
     // determine which room to assign
     let assignedRoom = null;
 
-    if (this.rooms.has(roomId)) {
+    if (roomId !== null && this.rooms.has(roomId)) {
       const room = this.rooms.get(roomId);
-
       if (room.players.players.size >= this.maxPlayersPerRoom) {
-        console.warn(
-          `🚫 Room ${roomId} is full (${room.players.players.size}/${this.maxPlayersPerRoom})`
-        );
         ws.send(JSON.stringify({ action: "roomFull", gameRoomId: roomId }));
         ws.close(1000, "Room is full");
         return null;
       }
-
       assignedRoom = roomId;
     } else {
-      console.warn(
-        `❌ Requested room ${roomId} not found, finding open room...`
-      );
+      console.warn(`❌ No valid room requested, finding open room...`);
       const openRoom = this.findAvailableRoom();
       if (openRoom === null) {
-        console.error("🚨 All rooms are full!");
         ws.send(JSON.stringify({ action: "allRoomsFull" }));
         ws.close(1000, "All rooms are full");
         return null;
       }
-
       assignedRoom = openRoom;
     }
 
