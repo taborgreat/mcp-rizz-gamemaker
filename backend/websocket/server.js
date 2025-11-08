@@ -45,9 +45,36 @@ export function startWebSocketServer(httpServer) {
           if (!room) return;
 
           const { players } = room;
-
           const MAX_CHAT_LENGTH = 120;
           let text = data.text?.trim() || "";
+          if (!text) return;
+
+          const now = Date.now();
+          const spamWindow = 5000;
+          const spamLimit = 3;
+
+          if (!player._spam) player._spam = { count: 0, lastTime: 0 };
+
+          if (now - player._spam.lastTime < spamWindow) {
+            player._spam.count++;
+          } else {
+            player._spam.count = 1;
+          }
+
+          player._spam.lastTime = now;
+
+          if (player._spam.count > spamLimit) {
+            const kickNotice = {
+              action: "chatMessage",
+              from: "Server",
+              text: `${player.name} was kicked for spam.`,
+            };
+            broadcast(players.players, kickNotice);
+            try {
+              ws.close();
+            } catch (e) {}
+            return;
+          }
 
           if (text.length > MAX_CHAT_LENGTH) {
             const cutoff = text.lastIndexOf(" ", MAX_CHAT_LENGTH);
@@ -59,10 +86,18 @@ export function startWebSocketServer(httpServer) {
             from: player.name,
             text,
           };
+          broadcast(players.players, chatData);
+
+          if (player._spam.count === spamLimit) {
+            const warning = {
+              action: "chatMessage",
+              from: "Server",
+              text: `${player.name} is sending messages too quickly.`,
+            };
+            broadcast(players.players, warning);
+          }
 
           console.log(`💬 [Room ${player.gameRoomId}] ${player.name}: ${text}`);
-
-          broadcast(players.players, chatData);
           break;
         }
 
@@ -72,10 +107,19 @@ export function startWebSocketServer(httpServer) {
           const room = roomManager.getRoom(player.gameRoomId);
           if (!room) return;
 
+          if (
+            room.state.state !== "playersInputting" &&
+            room.state.state !== "preparingPlayerSpeaking"
+          ) {
+            console.log(
+              `🚫 [Room ${player.gameRoomId}] Ignored input from ${player.name} — not in input phase (${room.state.state})`
+            );
+            return;
+          }
+
           const MAX_INPUT_LENGTH = 130;
           let text = data.text?.trim() || "";
 
-          // Limit to 150 chars (cut at nearest space if possible)
           if (text.length > MAX_INPUT_LENGTH) {
             console.log("trimming", text);
             const cutoff = text.lastIndexOf(" ", MAX_INPUT_LENGTH);
