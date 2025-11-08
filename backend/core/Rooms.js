@@ -1,13 +1,13 @@
-import { GameStateManager } from "./gameStateManager.js";
-import { GirlManager } from "./girlManager.js";
-import { PlayerManager } from "./playerManager.js";
-import { broadcast } from "./broadcaster.js";
+import { GameState } from "./GameState.js";
+import { Girl } from "./Girl.js";
+import { Players } from "./Players.js";
+import { broadcast } from "./Broadcaster.js";
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export class RoomManager {
+export class Rooms {
   constructor(maxRooms, maxPlayersPerRoom) {
     this.maxRooms = maxRooms;
     this.maxPlayersPerRoom = maxPlayersPerRoom;
@@ -17,9 +17,9 @@ export class RoomManager {
 
   initRooms() {
     for (let i = 0; i < this.maxRooms; i++) {
-      const players = new PlayerManager();
-      const girl = new GirlManager(broadcast, players);
-      const state = new GameStateManager(broadcast, girl, players, i);
+      const players = new Players();
+      const girl = new Girl(broadcast, players);
+      const state = new GameState(broadcast, girl, players, i);
       this.rooms.set(i, { players, girl, state });
     }
     console.log(`🛏️ Initialized ${this.maxRooms} rooms`);
@@ -133,7 +133,7 @@ export class RoomManager {
     state.onPlayerLeft(player);
     state.broadcastWorld();
   }
-  getRoomSummaries() {
+  getRoomsSummaries() {
     const summaries = [];
     for (const [id, { players }] of this.rooms.entries()) {
       summaries.push({

@@ -1,16 +1,16 @@
-import { generateGirlMessage } from "./generateGirlMessage.js";
+import { generateGirlMessage } from "./utils/generateGirlMessage.js";
 import girlData from "./utils/girlNames.json" with { type: "json" };
 const girlNames = girlData.girlData;
 
 
 
 
-export class GameStateManager {
-  constructor(broadcast, girl, playerManager, gameRoomId) {
+export class GameState {
+  constructor(broadcast, girl, players, gameRoomId) {
     this.state = "awaitingPlayers";
     this.broadcast = broadcast;
     this.girl = girl;
-    this.players = playerManager;
+    this.players = players;
     this.timer = null;
     this.gameRoomId = gameRoomId; 
   }

@@ -1,6 +1,6 @@
 import { WebSocketServer } from "ws";
-import { roomManager } from "../RoomManagerInstance.js";
-import { broadcast } from "../core/broadcaster.js";
+import { roomsInstance } from "../RoomsInstance.js";
+import { broadcast } from "../core/Broadcaster.js";
 
 import { sanitizeMessage, sanitizeHtmlOnly } from "../core/utils/utils.js";
 
@@ -56,15 +56,15 @@ export function startWebSocketServer(httpServer) {
             return;
           }
 
-          roomManager.joinRoom(ws, sanitizeMessage(playerName), gameRoomId);
+          roomsInstance.joinRoom(ws, sanitizeMessage(playerName), gameRoomId);
           break;
         }
 
         case "newMessage": {
-          const player = roomManager.getPlayerBySocket(ws);
+          const player = roomsInstance.getPlayerBySocket(ws);
           if (!player) return;
 
-          const room = roomManager.getRoom(player.gameRoomId);
+          const room = roomsInstance.getRoom(player.gameRoomId);
           if (!room) return;
 
           const { players } = room;
@@ -132,9 +132,9 @@ export function startWebSocketServer(httpServer) {
         }
 
         case "player_inputting_turn": {
-          const player = roomManager.getPlayerBySocket(ws);
+          const player = roomsInstance.getPlayerBySocket(ws);
           if (!player) return;
-          const room = roomManager.getRoom(player.gameRoomId);
+          const room = roomsInstance.getRoom(player.gameRoomId);
           if (!room) return;
 
           if (
@@ -172,7 +172,7 @@ export function startWebSocketServer(httpServer) {
     });
 
     ws.on("close", () => {
-      roomManager.handlePlayerDisconnect(ws);
+      roomsInstance.handlePlayerDisconnect(ws);
     });
   });
 }

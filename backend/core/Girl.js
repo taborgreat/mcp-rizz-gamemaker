@@ -1,4 +1,4 @@
-export class GirlManager {
+export class Girl {
   constructor(broadcast, players) {
     this.center = { x: 240, y: 120 };
     this.name = "Waiting to be named";

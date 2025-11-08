@@ -1,6 +1,6 @@
 import { getUniqueName } from "./utils/utils.js";
 
-export class PlayerManager {
+export class Players {
   constructor() {
     this.players = new Map(); // ws -> player object
     this.maxPlayerSlots = 4;

@@ -2,7 +2,7 @@ import express from "express";
 import http from "http";
 import cors from "cors";
 import { startWebSocketServer } from "./websocket/server.js";
-import { roomManager } from "./RoomManagerInstance.js";
+import { roomsInstance } from "./RoomsInstance.js";
 
 const app = express();
 const server = http.createServer(app);
@@ -15,8 +15,8 @@ app.use(
   })
 );
 
-app.get("/rooms", (req, res) => {
-  const rooms = roomManager.getRoomSummaries();
+app.get("/roomsSummaries", (req, res) => {
+  const rooms = roomsInstance.getRoomsSummaries();
   res.json({ rooms });
 });
 
