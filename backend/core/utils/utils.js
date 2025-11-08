@@ -31,12 +31,9 @@ export function sanitizeMessage(input) {
   ];
 
   let clean = input
-    .replace(/[\u200B-\u200D\uFEFF]/g, "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#x27;")
+    .replace(/[\u200B-\u200D\uFEFF]/g, "") // remove zero-width chars
+    .replace(/<[^>]*>/g, "") // remove any HTML tags
+    .replace(/[&<>]/g, "") // remove stray symbols
     .normalize("NFKC");
 
   for (const word of badWords) {
@@ -52,10 +49,7 @@ export function sanitizeHtmlOnly(input) {
 
   return input
     .replace(/[\u200B-\u200D\uFEFF]/g, "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#x27;")
+    .replace(/<[^>]*>/g, "") // remove tags like <b>, <script>, etc.
+    .replace(/[&<>]/g, "") // remove leftover HTML special chars
     .normalize("NFKC");
 }
