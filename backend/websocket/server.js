@@ -2,8 +2,14 @@ import { WebSocketServer } from "ws";
 import { roomManager } from "../RoomManagerInstance.js";
 import { broadcast } from "../core/broadcaster.js";
 
+import { sanitizeMessage, sanitizeHtmlOnly } from "../core/utils/utils.js";
+
 export function startWebSocketServer(httpServer) {
-  const wss = new WebSocketServer({ server: httpServer });
+  const wss = new WebSocketServer({
+    server: httpServer,
+    maxPayload: 64 * 1024,
+    perMessageDeflate: false,
+  });
 
   console.log("💬 WebSocket server initialized");
 
@@ -20,20 +26,37 @@ export function startWebSocketServer(httpServer) {
       }
 
       switch (data.type) {
+        //butchered data here from front end side so jenk fix
+
         case "join": {
-          //butchered data here from front end side so jenk fix
-          let parsed;
-          try {
-            parsed = JSON.parse(data.name);
-          } catch (err) {
-            console.warn("⚠️ Failed to parse name field:", err);
+          let parsed = null;
+
+          if (typeof data.name === "string") {
+            try {
+              parsed = JSON.parse(data.name);
+            } catch (err) {
+              console.warn("⚠️ Invalid join JSON string:", err);
+              return;
+            }
+          } else {
+            console.warn("⚠️ data.name was not a string:", data.name);
             return;
           }
 
-          const playerName = parsed.name;
-          const gameRoomId = parsed.gameRoomId;
+          // Validate the parsed shape
+          const playerName =
+            typeof parsed.name === "string" ? parsed.name.trim() : null;
+          const gameRoomId =
+            parsed.gameRoomId === null || typeof parsed.gameRoomId === "string"
+              ? parsed.gameRoomId
+              : null;
 
-          roomManager.joinRoom(ws, playerName, gameRoomId);
+          if (!playerName) {
+            console.warn("⚠️ Missing or invalid player name in join request");
+            return;
+          }
+
+          roomManager.joinRoom(ws, sanitizeMessage(playerName), gameRoomId);
           break;
         }
 
@@ -80,11 +103,11 @@ export function startWebSocketServer(httpServer) {
             const cutoff = text.lastIndexOf(" ", MAX_CHAT_LENGTH);
             text = text.slice(0, cutoff > 0 ? cutoff : MAX_CHAT_LENGTH) + "…";
           }
-
+          let sanitized = sanitizeMessage(text);
           const chatData = {
             action: "chatMessage",
             from: player.name,
-            text,
+            text: sanitized,
           };
           broadcast(players.players, chatData);
 
@@ -128,7 +151,7 @@ export function startWebSocketServer(httpServer) {
           }
           if (!text) text = "Player missed their turn";
 
-          player.latestMessage = text;
+          player.latestMessage = sanitizeHtmlOnly(text);
 
           console.log(
             `🎙️ [Room ${player.gameRoomId}] ${player.name}: ${player.latestMessage}`
