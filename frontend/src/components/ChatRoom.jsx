@@ -5,18 +5,17 @@ export default function ChatRoom({ socket }) {
     const [input, setInput] = useState("");
     const messagesEndRef = useRef(null);
 
-    // === Auto-scroll to bottom when messages update ===
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
 
-    // === Set up socket listeners ===
     useEffect(() => {
         if (!socket) return;
 
         const handler = (event) => {
             try {
                 const data = JSON.parse(event.data);
+
                 switch (data.action) {
                     case "chatMessage":
                         setMessages((prev) => [
@@ -25,25 +24,26 @@ export default function ChatRoom({ socket }) {
                         ]);
                         break;
 
-                    case "playerJoinedForChat":
-                        setMessages((prev) => [
-                            ...prev,
-                            { type: "system", text: `${data.params.name} joined the game.` },
-                        ]);
-                        break;
+                    case "chatSystemMessage": {
+                        const { type, text, name } = data.params;
+                        let messageText = text;
 
-                    case "playerLeftForChat":
+                        if (!messageText) {
+                            if (type === "playerJoined") messageText = `${name} joined the game.`;
+                            else if (type === "playerLeft") messageText = `${name} left the game.`;
+                        }
+
                         setMessages((prev) => [
                             ...prev,
-                            { type: "system", text: `${data.params.name} left the game.` },
+                            { type, text: messageText },
                         ]);
                         break;
+                    }
 
                     default:
                         break;
                 }
             } catch {
-                // ignore non-JSON messages
             }
         };
 
@@ -51,14 +51,13 @@ export default function ChatRoom({ socket }) {
         return () => socket.removeEventListener("message", handler);
     }, [socket]);
 
-    // === Send message ===
     const sendMessage = () => {
         if (!socket || socket.readyState !== WebSocket.OPEN || !input.trim()) return;
         socket.send(JSON.stringify({ type: "newMessage", text: input }));
         setInput("");
     };
 
-    // === Render ===
+
     return (
         <div
             style={{
@@ -71,7 +70,7 @@ export default function ChatRoom({ socket }) {
                 boxSizing: "border-box",
             }}
         >
-            {/* === Scrollable message area === */}
+            {/* Scrollable message area */}
             <div
                 style={{
                     flex: 1,
@@ -85,37 +84,47 @@ export default function ChatRoom({ socket }) {
                     flexDirection: "column",
                 }}
             >
-                {messages.map((m, i) => (
-                    <div
-                        key={i}
-                        style={{
-                            color: m.type === "system" ? "#aaa" : "#fff",
-                            padding: "1px",
-                            wordWrap: "break-word",
-                            overflowWrap: "break-word",
-                            whiteSpace: "pre-wrap",
-                            marginBottom: "0.75rem",
-                            borderBottom: "1px solid rgba(255,255,255,0.1)",
-                            paddingBottom: "0.25rem",
-                        }}
-                    >
-                        {m.type === "chat" ? (
-                            <>
-                                <div style={{ fontWeight: "bold", marginBottom: "0.2rem" }}>
-                                    {m.from}:
-                                </div>
-                                <div style={{ paddingLeft: "0.1rem", paddingBottom: "1rem" }}>{m.text}</div>
-                            </>
-                        ) : (
-                            <i>{m.text}</i>
-                        )}
-                    </div>
-                ))}
+                {messages.map((m, i) => {
+                    const color =
+                        m.type === "chat" ? "#fff" :
+                            m.type === "warning" ? "orange" :
+                                m.type === "kicked" ? "red" :
+                                    "#aaa";
+
+                    return (
+                        <div
+                            key={i}
+                            style={{
+                                color,
+                                padding: "1px",
+                                wordWrap: "break-word",
+                                overflowWrap: "break-word",
+                                whiteSpace: "pre-wrap",
+                                marginBottom: "0.75rem",
+                                borderBottom: "1px solid rgba(255,255,255,0.1)",
+                                paddingBottom: "0.25rem",
+                            }}
+                        >
+                            {m.type === "chat" ? (
+                                <>
+                                    <div style={{ fontWeight: "bold", marginBottom: "0.2rem" }}>
+                                        {m.from}:
+                                    </div>
+                                    <div style={{ paddingLeft: "0.1rem", paddingBottom: "1rem" }}>
+                                        {m.text}
+                                    </div>
+                                </>
+                            ) : (
+                                <i>{m.text}</i>
+                            )}
+                        </div>
+                    );
+                })}
 
                 <div ref={messagesEndRef} />
             </div>
 
-            {/* === Input bar === */}
+            {/* Input bar */}
             <div style={{ display: "flex", flexShrink: 0 }}>
                 <input
                     value={input}

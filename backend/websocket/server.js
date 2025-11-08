@@ -73,8 +73,8 @@ export function startWebSocketServer(httpServer) {
           if (!text) return;
 
           const now = Date.now();
-          const spamWindow = 5000;
-          const spamLimit = 3;
+          const spamWindow = 3000;
+          const spamLimit = 4;
 
           if (!player._spam) player._spam = { count: 0, lastTime: 0 };
 
@@ -88,9 +88,11 @@ export function startWebSocketServer(httpServer) {
 
           if (player._spam.count > spamLimit) {
             const kickNotice = {
-              action: "chatMessage",
-              from: "Server",
-              text: `${player.name} was kicked for spam.`,
+              action: "chatSystemMessage",
+              params: {
+                type: "kicked",
+                text: `${player.name} was kicked for spam`,
+              },
             };
             broadcast(players.players, kickNotice);
             try {
@@ -111,13 +113,18 @@ export function startWebSocketServer(httpServer) {
           };
           broadcast(players.players, chatData);
 
-          if (player._spam.count === spamLimit) {
+          const remaining = spamLimit - player._spam.count;
+
+          if (remaining <= 1 && remaining >= 0) {
             const warning = {
-              action: "chatMessage",
-              from: "Server",
-              text: `${player.name} is sending messages too quickly.`,
+              action: "chatSystemMessage",
+              params: {
+                type: "warning",
+                text:
+                  remaining === 1 ? `Spam detected` : `Stop spamming please`,
+              },
             };
-            broadcast(players.players, warning);
+            ws.send(JSON.stringify(warning));
           }
 
           console.log(`💬 [Room ${player.gameRoomId}] ${player.name}: ${text}`);

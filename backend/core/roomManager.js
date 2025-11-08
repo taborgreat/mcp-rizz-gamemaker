@@ -90,8 +90,11 @@ export class RoomManager {
 
     await sleep(500); //small delay to let frontend load
     broadcast(players.players, {
-      action: "playerJoinedForChat",
-      params: { name: player.name },
+      action: "chatSystemMessage",
+      params: {
+        type: "playerJoined",
+        name: player.name,
+      },
     });
     ws.send(
       JSON.stringify({
@@ -119,8 +122,11 @@ export class RoomManager {
     const { players, state } = room;
 
     broadcast(players.players, {
-      action: "playerLeftForChat",
-      params: { name: player.name },
+      action: "chatSystemMessage",
+      params: {
+        type: "playerLeft",
+        name: player.name,
+      },
     });
 
     players.removePlayer(ws);
