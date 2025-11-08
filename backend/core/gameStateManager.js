@@ -2,6 +2,9 @@ import { generateGirlMessage } from "./generateGirlMessage.js";
 import girlData from "./utils/girlNames.json" with { type: "json" };
 const girlNames = girlData.girlData;
 
+
+
+
 export class GameStateManager {
   constructor(broadcast, girl, playerManager, gameRoomId) {
     this.state = "awaitingPlayers";
@@ -55,7 +58,7 @@ export class GameStateManager {
             name: this.girl.name,
             x: this.girl.x,
             y: this.girl.y,
-            destination: "center",
+            destination: "stay",
           },
         });
 
@@ -72,10 +75,11 @@ export class GameStateManager {
          const allPlayers = this.players.getAllPlayers();
         for (const player of allPlayers) {
           if (player.currentText === player.latestMessage) {
+            console.log("missed turn, setting manually", player)
             player.latestMessage = "Player missed their turn";
           }
 //im goin to add if its player missed their turn twice in a row then you get kicked from websocet
-          console.log("mother fucker missed turn, setting manually")
+        
           player.currentText = player.latestMessage;
         }
         this.broadcastRoom({ action: "loadingNextPhase" });
@@ -144,53 +148,80 @@ export class GameStateManager {
     tick();
   }
 
-  startSequentialPlayerSpeaking() {
-    const playerList = this.players.getActivePlayers();
-    if (playerList.length === 0) {
-      this.setState("awaitingPlayers");
+
+startSequentialPlayerSpeaking() {
+  const playerList = this.players.getActivePlayers();
+  if (playerList.length === 0) {
+    this.setState("awaitingPlayers");
+    return;
+  }
+
+  let currentIndex = 0;
+
+  const speakNext = () => {
+    if (currentIndex >= playerList.length) {
+      this.setState("girlSpeaking");
       return;
     }
 
-    let currentIndex = 0;
+    const player = playerList[currentIndex];
+    const message = player.latestMessage || "";
 
-    const speakNext = () => {
-      if (currentIndex >= playerList.length) {
-        this.setState("girlSpeaking");
-        return;
+    // 🕒 Calculate how long this player's speech should last
+    let speakingDuration;
+    if (message === "Player missed their turn") {
+      speakingDuration = 3; 
+    } else {
+      const messageLength = message.length;
+      const minDuration = 4; 
+      const maxDuration = 11; 
+      const baseTime = 2; // base seconds before scaling
+      const charsPerSecond = 20; // reading pace
+
+      const estimatedTime = baseTime + messageLength / charsPerSecond;
+      const clampedTime = Math.max(minDuration, Math.min(estimatedTime, maxDuration));
+
+      //10% variation
+      const variedTime = clampedTime * (0.9 + Math.random() * 0.2);
+
+      speakingDuration = Math.round(variedTime);
+    }
+
+    console.log(
+      `🎤 [Room ${this.gameRoomId}] ${player.name}: "${message}" (${speakingDuration}s)`
+    );
+
+    let remainingSeconds = speakingDuration;
+
+    const tick = () => {
+      this.broadcastRoom({
+        action: "playerSpeakingTick",
+        params: {
+          currentSpeaker: player.name,
+          latestMessage: message,
+          timeLeft: remainingSeconds,
+        },
+      });
+
+      if (remainingSeconds-- > 0) {
+        this.timer = setTimeout(tick, 1000);
+      } else {
+        currentIndex++;
+        speakNext();
       }
-
-      const player = playerList[currentIndex];
-      let timeLeft = 5;
-
-      console.log(`🎤 [Room ${this.gameRoomId}] ${player.name}: ${player.latestMessage}`);
-
-      const tick = () => {
-        this.broadcastRoom({
-          action: "playerSpeakingTick",
-          params: {
-            currentSpeaker: player.name,
-            latestMessage: player.latestMessage,
-            timeLeft,
-          },
-        });
-
-        if (timeLeft-- > 0) {
-          this.timer = setTimeout(tick, 1000);
-        } else {
-          currentIndex++;
-          speakNext();
-        }
-      };
-
-      tick();
     };
 
-    speakNext();
-  }
+    tick();
+  };
+
+  speakNext();
+}
+
+
 
   onPlayerJoined(player) {
     if (this.players.countPlayers() >= 2 && this.state === "awaitingPlayers") {
-      this.setState("countdown", 10);
+      this.setState("countdown", 5);
     } else {
       this.broadcastWorld();
     }
