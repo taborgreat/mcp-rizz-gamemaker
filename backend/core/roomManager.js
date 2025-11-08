@@ -3,6 +3,10 @@ import { GirlManager } from "./girlManager.js";
 import { PlayerManager } from "./playerManager.js";
 import { broadcast } from "./broadcaster.js";
 
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export class RoomManager {
   constructor(maxRooms, maxPlayersPerRoom) {
     this.maxRooms = maxRooms;
@@ -40,10 +44,9 @@ export class RoomManager {
     return null;
   }
 
-  joinRoom(ws, name, requestedRoomId) {
+  async joinRoom(ws, name, requestedRoomId) {
     const roomId = requestedRoomId != null ? Number(requestedRoomId) : null;
 
-    console.log(requestedRoomId);
     // determine which room to assign
     let assignedRoom = null;
 
@@ -87,11 +90,11 @@ export class RoomManager {
       })
     );
 
+    await sleep(500); //small delay to let frontend load
     broadcast(players.players, {
       action: "playerJoinedForChat",
       params: { name: player.name },
     });
-
     ws.send(
       JSON.stringify({
         action: "worldUpdate",
