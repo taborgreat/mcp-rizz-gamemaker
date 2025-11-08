@@ -1,7 +1,7 @@
 /// @function cleanup_input_form()
 /// @desc Submits or misses turn, destroys form and wrapper if they exist
 function cleanup_input_form() {
-    if (variable_global_exists("inputForm") && global.inputForm != undefined) {
+    if (variable_global_exists("inputForm")) {
         var form = global.inputForm;
         var wrapper = global.inputWrapper;
         var playerText = "";
@@ -25,4 +25,7 @@ function cleanup_input_form() {
         if (instance_exists(obj_playerMessageInput))
             with (obj_playerMessageInput) instance_destroy();
     }
+	if (instance_exists(obj_playerMessageRemaining))
+    with (obj_playerMessageRemaining) instance_destroy();
+
 }
