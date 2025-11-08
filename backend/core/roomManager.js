@@ -53,7 +53,6 @@ export class RoomManager {
     if (roomId !== null && this.rooms.has(roomId)) {
       const room = this.rooms.get(roomId);
       if (room.players.players.size >= this.maxPlayersPerRoom) {
-        ws.send(JSON.stringify({ action: "roomFull", gameRoomId: roomId }));
         ws.close(1000, "Room is full");
         return null;
       }
@@ -62,7 +61,6 @@ export class RoomManager {
       console.warn(`❌ No valid room requested, finding open room...`);
       const openRoom = this.findAvailableRoom();
       if (openRoom === null) {
-        ws.send(JSON.stringify({ action: "allRoomsFull" }));
         ws.close(1000, "All rooms are full");
         return null;
       }

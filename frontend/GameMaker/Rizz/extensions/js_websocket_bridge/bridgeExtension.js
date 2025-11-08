@@ -6,7 +6,6 @@
       if (typeof playerName !== "string")
         playerName = String(playerName || "Player");
 
-      // ✅ Create socket safely
       window.socket = new WebSocket("ws://10.0.0.89:8082");
 
       socket.onopen = () => {
@@ -32,8 +31,10 @@
       socket.onclose = (event) => {
         console.warn("[Bridge] WebSocket closed:", event);
         try {
-          const safeReason = String(event?.reason || "Connection closed");
-          const safeCode = String(event?.code ?? 1006);
+          let safeCode = event?.code ?? 1000;
+          if (safeCode === 1006) safeCode = 1000;
+
+          const safeReason = String(event?.reason || "Connection was lost");
 
           window.gml_Script_gmcallback_handleSocketClosed(
             "",
@@ -56,14 +57,13 @@
         try {
           const state = socket?.readyState;
 
-          // Only call close handler if it’s a *real* failure
           if (state === WebSocket.CLOSING || state === WebSocket.CLOSED) {
             window.gml_Script_gmcallback_handleSocketClosed(
               "",
               "",
               JSON.stringify({
                 reason: "Network error or connection lost",
-                code: "error",
+                code: "1006",
               })
             );
           } else {

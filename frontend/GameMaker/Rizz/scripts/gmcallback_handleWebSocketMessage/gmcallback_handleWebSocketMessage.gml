@@ -120,6 +120,9 @@ function gmcallback_handleWebSocketMessage(rawJson) {
                 global.html_name_wrapper = undefined;
             }
 
+
+			//set player settings
+			
             global.currentRoomId = msg.params.gameRoomId;
             global.localPlayer = { name: msg.params.name };
 
@@ -132,31 +135,6 @@ function gmcallback_handleWebSocketMessage(rawJson) {
             break;
         }
 
-        case "roomFull": {
-            var o;
-            if (instance_exists(obj_RoomsAlertMessage)) {
-                o = instance_find(obj_RoomsAlertMessage, 0);
-            } else {
-                o = instance_create_layer(room_width / 2, room_height / 2, "Instances", obj_RoomsAlertMessage);
-            }
-
-            o.text = "That room is full!";
-            o.alarm[0] = room_speed * 3;
-            break;
-        }
-
-        case "allRoomsFull": {
-            var o;
-            if (instance_exists(obj_RoomsAlertMessage)) {
-                o = instance_find(obj_RoomsAlertMessage, 0);
-            } else {
-                o = instance_create_layer(room_width / 2, room_height / 2, "Instances", obj_RoomsAlertMessage);
-            }
-
-            o.text = "All rooms are full! Try again later.";
-            o.alarm[0] = room_speed * 3;
-            break;
-        }
 
         default: {
             show_debug_message("Unrecognized action: " + string(action));

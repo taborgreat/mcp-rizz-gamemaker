@@ -94,7 +94,7 @@ export function startWebSocketServer(httpServer) {
             };
             broadcast(players.players, kickNotice);
             try {
-              ws.close();
+              ws.close(1000, "Kicked for spam");
             } catch (e) {}
             return;
           }
