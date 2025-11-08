@@ -91,12 +91,7 @@ function gmcallback_handleWebSocketMessage(rawJson) {
             var destination = msg.params.destination;
             var girlName = msg.params.name;
 
-            show_debug_message(
-                "Girl update → X:" + string(newX) +
-                " Y:" + string(newY) +
-                " Dest:" + string(destination) +
-                " Name:" + string(girlName)
-            );
+          
 
             if (instance_exists(obj_girl)) {
                 obj_girl.x = newX;

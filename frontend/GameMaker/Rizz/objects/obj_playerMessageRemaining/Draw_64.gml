@@ -16,8 +16,11 @@ else {
     col = make_color_rgb(139, 0, 0);
 }
 
+var screen_w = 1920;
+var screen_h = 1080;
 
 draw_set_color(col);
-draw_text(20, 100,
-    string(remaining) + " characters left");
-draw_set_color(c_white); 
+draw_text(screen_w / 2, screen_h - 100, string(remaining) + " characters left");
+
+
+

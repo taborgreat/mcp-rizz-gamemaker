@@ -25,6 +25,12 @@ function update_world_state(world) {
             if (!instance_exists(chair.occupant)) {
                 chair.occupant = instance_create_layer(chair.x, chair.y, "Instances", obj_player);
                 chair.occupant.name = playerForSlot.name;
+				   switch (i + 1) {
+            case 1: chair.occupant.sprite_index = spr_player_1; break;
+            case 2: chair.occupant.sprite_index = spr_player_2; break;
+            case 3: chair.occupant.sprite_index = spr_player_3; break;
+            case 4: chair.occupant.sprite_index = spr_player_4; break;
+        }
             } else {
                 chair.occupant.name = playerForSlot.name;
             }

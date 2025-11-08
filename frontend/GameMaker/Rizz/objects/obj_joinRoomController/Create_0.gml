@@ -5,3 +5,5 @@ if (variable_global_exists("connectionLostMessage") && global.connectionLostMess
     o.alarm[0] = room_speed * 3;
     global.connectionLostMessage = undefined;
 }
+
+

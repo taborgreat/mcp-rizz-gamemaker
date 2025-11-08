@@ -1,5 +1,4 @@
 
-draw_self();
 
 
 var thought = "";
@@ -20,10 +19,24 @@ switch (string(currentDestination)) {
         break;
 }
 
-draw_set_color(c_white);
-draw_text(x, y - sprite_get_height(sprite_index) / 2 - 20, thought);
+draw_set_halign(fa_center);
+draw_set_valign(fa_middle);
+
 
 if (variable_instance_exists(id, "girlName")) {
-    draw_text(x, y - sprite_get_height(sprite_index) / 2 - 60, girlName);
+//shadow
+draw_set_color(c_black);
+draw_text(x * 4 + 3, (y + 20) * 4 + 4, girlName);
+
+draw_set_color(make_color_rgb(255, 190, 210));
+draw_text(x * 4, (y + 20) * 4, girlName);
 }
+
+
+
+draw_set_color(c_white);
+draw_text(x * 4, (y*4) - sprite_get_height(sprite_index) / 2 - 88, thought);
+
+
+    
 
