@@ -1,6 +1,3 @@
-
-
-
 /// @function gmcallback_handleWebSocketMessage(rawJson)
 /// @desc Called from JS bridge when data arrives
 function gmcallback_handleWebSocketMessage(rawJson) {
@@ -11,10 +8,12 @@ function gmcallback_handleWebSocketMessage(rawJson) {
     if (is_undefined(msg) || is_undefined(msg.action)) exit;
 
     var action = msg.action;
+	
 
     switch (action) {
+
         case "worldUpdate": {
-            // --- Track previous state before overwriting world ---
+           
             var prevState = undefined;
             if (variable_global_exists("world") && is_struct(global.world)) {
                 if (variable_struct_exists(global.world, "gameState"))
@@ -24,10 +23,7 @@ function gmcallback_handleWebSocketMessage(rawJson) {
             global.world = msg.world;
             var state = global.world.gameState;
 
-            // --- Detect phase change ---
-            if (prevState == "playersInputting" && state != "playersInputting") {
-                cleanup_input_form();
-            }
+          
 
             if (instance_exists(obj_gameController)) {
                 with (obj_gameController) {
@@ -95,7 +91,12 @@ function gmcallback_handleWebSocketMessage(rawJson) {
             var destination = msg.params.destination;
             var girlName = msg.params.name;
 
-            show_debug_message("Girl update → X:" + string(newX) + " Y:" + string(newY) + " Dest:" + string(destination) + " Name:" + string(girlName));
+            show_debug_message(
+                "Girl update → X:" + string(newX) +
+                " Y:" + string(newY) +
+                " Dest:" + string(destination) +
+                " Name:" + string(girlName)
+            );
 
             if (instance_exists(obj_girl)) {
                 obj_girl.x = newX;
@@ -120,10 +121,7 @@ function gmcallback_handleWebSocketMessage(rawJson) {
             }
 
             global.currentRoomId = msg.params.gameRoomId;
-
-            global.localPlayer = {
-                name: msg.params.name
-            };
+            global.localPlayer = { name: msg.params.name };
 
             room_goto(rm_MainRoom);
             break;
@@ -141,7 +139,7 @@ function gmcallback_handleWebSocketMessage(rawJson) {
             } else {
                 o = instance_create_layer(room_width / 2, room_height / 2, "Instances", obj_RoomsAlertMessage);
             }
-			
+
             o.text = "That room is full!";
             o.alarm[0] = room_speed * 3;
             break;
@@ -154,12 +152,15 @@ function gmcallback_handleWebSocketMessage(rawJson) {
             } else {
                 o = instance_create_layer(room_width / 2, room_height / 2, "Instances", obj_RoomsAlertMessage);
             }
+
             o.text = "All rooms are full! Try again later.";
             o.alarm[0] = room_speed * 3;
             break;
         }
 
-        default:
+        default: {
             show_debug_message("Unrecognized action: " + string(action));
+            break;
+        }
     }
 }
