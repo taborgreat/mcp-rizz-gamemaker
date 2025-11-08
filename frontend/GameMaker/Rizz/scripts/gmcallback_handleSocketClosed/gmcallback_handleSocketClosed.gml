@@ -17,6 +17,18 @@ function gmcallback_handleSocketClosed(rawJson) {
 	html_init("HTML5Elements");
 
 	 }
+	 
+	 global.world = undefined;
+	 global.gameState = undefined;
+     global.timeLeft = undefined;
+     global.statusText = undefined;
+     global.currentSpeaker = undefined;
+     global.playerLatestMessage = undefined;
+     global.girlMessage = undefined;
+     global.girlName = undefined;
+     global.currentRoomId = undefined;
+     global.localPlayer = undefined;
+
         room_goto(rm_JoinRoom);
 global.connectionLostMessage = "Connection failed";
             
