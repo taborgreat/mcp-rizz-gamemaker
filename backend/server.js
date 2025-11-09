@@ -10,7 +10,11 @@ const PORT = 8082;
 
 app.use(
   cors({
-    origin: ["https://rizz.tabors.site", "http://localhost:5173"],
+    origin: [
+      "https://rizz.tabors.site",
+      "http://rizz.tabors.site",
+      "http://localhost:5173",
+    ],
     methods: ["GET", "POST"],
   })
 );
