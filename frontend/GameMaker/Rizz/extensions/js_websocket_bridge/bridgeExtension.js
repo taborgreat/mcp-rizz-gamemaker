@@ -6,7 +6,7 @@
       if (typeof playerName !== "string")
         playerName = String(playerName || "Player");
 
-      window.socket = new WebSocket("wss://rizz.tabors.site/ws/");
+      window.socket = new WebSocket("ws://localhost:8082"); //injected from /frontend/injectENV.js
 
       socket.onopen = () => {
         try {
