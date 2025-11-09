@@ -1,9 +1,9 @@
 # Local dev
 WS_SERVER=ws://localhost:8082/
-SERVER=http://localhost:8082/
+VITE_SERVER=http://localhost:8082/
 FRONTEND_URL=http://localhost:5173/
 
 # Production
 # WS_SERVER=wss://rizz.tabors.site/ws/
-# SERVER=https://rizz.tabors.site/api/
-# FRONTEND_URL=https://rizz.tabors.site
+# VITE_SERVER=https://rizz.tabors.site/api/
+# FRONTEND_URL=https://rizz.tabors.site/
