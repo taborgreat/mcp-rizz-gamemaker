@@ -29,6 +29,20 @@ This is a mix of **humor**, **charm**, and **emergent AI personality** — no tw
 
 ---
 
+## Project Setup
+
+### Installation
+
+Clone the repository, duplicate `.example.env` into `.env` (and fill custom variables if needed), and then type:
+
+```bash
+npm run dev
+```
+
+If you want to open it on another device (like your phone or tablet) on the same LAN, use the Network URL.
+
+---
+
 ## Technical Architecture
 
 ### Frontend — GameMaker
@@ -82,6 +96,8 @@ Returns structured data back to Node.js, for example:
 ```
 
 ---
+
+
 
 ## Developer Note
 
