@@ -1,17 +1,19 @@
-{
-  "name": "rizz-game",
-  "scripts": {
-    "setup": "npm run setupfrontend && npm run setupbackend",
+  {
+    "name": "rizz-game",
+    "scripts": {
+      
+      "setup": "npm run setupfrontend && npm run setupbackend  && npm run injectenv",
 
-    "setupfrontend": "node -e \"const fs=require('fs');if(!fs.existsSync('frontend/node_modules')){require('child_process').execSync('cd frontend && npm install && node injectENV.js',{stdio:'inherit'})}\"",
-    "setupbackend": "node -e \"const fs=require('fs');if(!fs.existsSync('backend/node_modules')){require('child_process').execSync('cd backend && npm install',{stdio:'inherit'})}\"",
-    
-    "frontend": "cd frontend && npm run dev -- --host 0.0.0.0",
-    "backend": "cd backend && node server",
-    "start": "npm run setup &&  concurrently -n FRONTEND,BACKEND -c cyan,magenta \"npm run frontend\" \"npm run backend\""
-  },
-  "dependencies": {
-    "concurrently": "^9.2.1",
-    "dotenv": "^17.2.3"
+      "setupfrontend": "node -e \"const fs=require('fs');if(!fs.existsSync('frontend/node_modules')){require('child_process').execSync('cd frontend && npm install',{stdio:'inherit'})}\"",
+      "setupbackend": "node -e \"const fs=require('fs');if(!fs.existsSync('backend/node_modules')){require('child_process').execSync('cd backend && npm install',{stdio:'inherit'})}\"",
+      "injectenv": "cd frontend && node injectENV.js",
+
+      "frontend": "cd frontend && npm run dev -- --host 0.0.0.0",
+      "backend": "cd backend && node server",
+      "start": "npm run setup &&  concurrently -n FRONTEND,BACKEND -c cyan,magenta \"npm run frontend\" \"npm run backend\""
+    },
+    "dependencies": {
+      "concurrently": "^9.2.1",
+      "dotenv": "^17.2.3"
+    }
   }
-}

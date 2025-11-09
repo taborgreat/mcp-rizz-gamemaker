@@ -5,11 +5,15 @@ export default function GameRoomsList() {
   const [loading, setLoading] = useState(true);
   const [selectedRoom, setSelectedRoom] = useState(null);
 
-  const API_URL = import.meta.env.VITE_SERVER;
+  const API_URL = import.meta.env.VITE_SERVER_URL;
 
+
+  useEffect(() => {
+    console.log("🌐 API_URL from env:", API_URL);
+  }, []);
   const fetchRooms = async () => {
     try {
-      const res = await fetch(`${API_URL}roomsSummaries`);
+      const res = await fetch(`${API_URL}/roomsSummaries`);
       const data = await res.json();
       setRooms(data.rooms || []);
       setLoading(false);

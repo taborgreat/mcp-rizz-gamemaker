@@ -33,13 +33,12 @@ This is a mix of **humor**, **charm**, and **emergent AI personality** — no tw
 
 ### Installation
 
-Clone the repository, duplicate `.example.env` as `.env` (and fill custom variables if want), and then type:
+Clone the repository, duplicate `.env.example` as `.env` (and fill custom variables if want), and then type:
 
 ```bash
 npm install
 npm run start
 ```
-
 
 ---
 
@@ -96,8 +95,6 @@ Returns structured data back to Node.js, for example:
 ```
 
 ---
-
-
 
 ## Developer Note
 
