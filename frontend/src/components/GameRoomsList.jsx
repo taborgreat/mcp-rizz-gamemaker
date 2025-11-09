@@ -8,7 +8,7 @@ export default function GameRoomsList() {
 
     const fetchRooms = async () => {
         try {
-            const res = await fetch("http://localhost:8082/roomsSummaries");
+            const res = await fetch("https://rizz.tabors.site/api/roomsSummaries");
             const data = await res.json();
             setRooms(data.rooms || []);
             setLoading(false);
