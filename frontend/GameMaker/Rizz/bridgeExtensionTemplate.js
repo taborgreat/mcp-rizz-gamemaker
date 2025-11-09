@@ -22,7 +22,12 @@
             typeof event.data === "string"
               ? event.data
               : JSON.stringify(event.data || {});
-          window.gml_Script_gmcallback_handleWebSocketMessage("", "", safeData);
+          safeGameMakerCall(
+            "gml_Script_gmcallback_handleWebSocketMessage",
+            "",
+            "",
+            safeData
+          );
         } catch (e) {
           console.warn("[Bridge] Failed to call gm_handleWebSocketMessage:", e);
         }
@@ -30,26 +35,30 @@
 
       socket.onclose = (event) => {
         console.warn("[Bridge] WebSocket closed:", event);
-        try {
-          let safeCode = event?.code ?? 1000;
-          if (safeCode === 1006) safeCode = 1000;
 
-          const safeReason = String(event?.reason || "Connection was lost");
+        // slight delay to avoid colliding with GameMaker room teardown
+        setTimeout(() => {
+          try {
+            let safeCode = event?.code ?? 1000;
+            if (safeCode === 1006) safeCode = 1000;
 
-          window.gml_Script_gmcallback_handleSocketClosed(
-            "",
-            "",
-            JSON.stringify({
-              reason: safeReason,
-              code: safeCode,
-            })
-          );
-        } catch (e) {
-          console.warn(
-            "[Bridge] Failed to call gmcallback_handleSocketClosed:",
-            e
-          );
-        }
+            const safeReason = String(event?.reason || "Connection was lost");
+
+            window.gml_Script_gmcallback_handleSocketClosed(
+              "",
+              "",
+              JSON.stringify({
+                reason: safeReason,
+                code: safeCode,
+              })
+            );
+          } catch (e) {
+            console.warn(
+              "[Bridge] Failed to call gmcallback_handleSocketClosed (delayed):",
+              e
+            );
+          }
+        }, 400); // tweak delay as needed — 300–500 ms usually works great
       };
 
       socket.onerror = (err) => {
@@ -95,3 +104,26 @@
     }
   };
 })();
+
+function safeGameMakerCall(fnName, ...args) {
+  const start = Date.now();
+  function tryCall() {
+    try {
+      const fn = window[fnName];
+      if (typeof fn === "function") {
+        fn(...args);
+      } else if (Date.now() - start < 3000) {
+        console.warn(
+          `[Bridge] GameMaker function ${fnName} not ready, retrying...`
+        );
+        setTimeout(tryCall, 500);
+      } else {
+        console.warn(`[Bridge] Gave up waiting for ${fnName} after 10s.`);
+      }
+    } catch (err) {
+      console.warn(`[Bridge] Failed GM callback ${fnName}:`, err);
+    }
+  }
+
+  tryCall();
+}
