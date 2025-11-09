@@ -30,11 +30,34 @@ export default function PlayerList({ socket }) {
     }, [socket]);
 
     return (
-        <div style={{ background: "#111", color: "white", padding: "1rem" }}>
-            <h3 style={{ marginBottom: "8px" }}>Players</h3>
-            <ul style={{ listStyle: "none", padding: 0 }}>
+        <div style={{
+            display: "flex",
+            flexDirection: "column",
+            height: "100%",
+            width: "100%"
+        }}>
+            <h3 style={{
+                marginTop: 0,
+                marginBottom: "12px",
+                color: "white"
+            }}>
+                Players
+            </h3>
+            <ul style={{
+                listStyle: "none",
+                padding: 0,
+                margin: 0,
+                color: "white",
+                overflowY: "auto",
+                flex: 1
+            }}>
                 {players.map((p) => (
-                    <li key={p.name} style={{ marginBottom: "4px" }}>
+                    <li key={p.name} style={{
+                        marginBottom: "8px",
+                        padding: "4px 8px",
+                        background: "#333",
+                        borderRadius: "4px"
+                    }}>
                         {p.name} {p.spectator ? "(Spectator)" : ""}
                     </li>
                 ))}

@@ -5,9 +5,7 @@ export default function ChatRoom({ socket }) {
     const [input, setInput] = useState("");
     const messagesEndRef = useRef(null);
 
-    useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [messages]);
+
 
     useEffect(() => {
         if (!socket) return;
@@ -61,13 +59,10 @@ export default function ChatRoom({ socket }) {
     return (
         <div
             style={{
-                background: "#111",
-                color: "white",
-                padding: "1rem",
-                height: "70vh",
                 display: "flex",
                 flexDirection: "column",
-                boxSizing: "border-box",
+                height: "100%",
+                width: "100%",
             }}
         >
             {/* Scrollable message area */}

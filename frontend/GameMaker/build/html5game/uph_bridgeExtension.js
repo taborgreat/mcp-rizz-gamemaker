@@ -58,7 +58,7 @@
               e
             );
           }
-        }, 400); // tweak delay
+        }, 700); // tweak delay
       };
 
       socket.onerror = (err) => {
