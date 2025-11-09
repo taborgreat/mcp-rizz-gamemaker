@@ -58,7 +58,7 @@
               e
             );
           }
-        }, 400); // tweak delay as needed — 300–500 ms usually works great
+        }, 400); // tweak delay
       };
 
       socket.onerror = (err) => {
@@ -107,21 +107,26 @@
 
 function safeGameMakerCall(fnName, ...args) {
   const start = Date.now();
+  const maxWait = 8000;
+  const retryDelay = 500;
+
   function tryCall() {
     try {
       const fn = window[fnName];
       if (typeof fn === "function") {
         fn(...args);
-      } else if (Date.now() - start < 3000) {
-        console.warn(
-          `[Bridge] GameMaker function ${fnName} not ready, retrying...`
-        );
-        setTimeout(tryCall, 500);
-      } else {
-        console.warn(`[Bridge] Gave up waiting for ${fnName} after 10s.`);
+        return;
       }
+      throw new Error("Function not ready");
     } catch (err) {
-      console.warn(`[Bridge] Failed GM callback ${fnName}:`, err);
+      if (Date.now() - start < maxWait) {
+        console.warn(
+          `[Bridge] ${fnName} not ready or failed (${err.message}), retrying...`
+        );
+        setTimeout(tryCall, retryDelay);
+      } else {
+        console.warn(`[Bridge] Gave up on ${fnName} after ${maxWait / 1000}s.`);
+      }
     }
   }
 
