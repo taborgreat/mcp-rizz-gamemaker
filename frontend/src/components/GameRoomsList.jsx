@@ -4,28 +4,27 @@ export default function GameRoomsList() {
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedRoom, setSelectedRoom] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   const API_URL = import.meta.env.VITE_SERVER_URL;
 
-
-  useEffect(() => {
-    console.log("🌐 API_URL from env:", API_URL);
-  }, []);
   const fetchRooms = async () => {
+    setRefreshing(true);
     try {
       const res = await fetch(`${API_URL}/roomsSummaries`);
       const data = await res.json();
       setRooms(data.rooms || []);
-      setLoading(false);
     } catch (err) {
       console.error("Error fetching rooms:", err);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
     }
   };
 
+  // Only fetch once on mount
   useEffect(() => {
     fetchRooms();
-    const interval = setInterval(fetchRooms, 5000);
-    return () => clearInterval(interval);
   }, []);
 
   const handleRoomClick = (roomId) => {
@@ -51,6 +50,35 @@ export default function GameRoomsList() {
         boxSizing: "border-box",
       }}
     >
+      {/* 🔄 Refresh Button */}
+      <button
+        onClick={fetchRooms}
+        disabled={refreshing}
+        style={{
+          alignSelf: "center",
+          background: "#1a1a1a",
+          color: "#ddd",
+          border: "1px solid #333",
+          borderRadius: "6px",
+          padding: "8px 16px",
+          fontWeight: "bold",
+          cursor: refreshing ? "wait" : "pointer",
+          marginBottom: "10px",
+          width: "100%",
+          transition: "all 0.2s ease",
+          opacity: refreshing ? 0.6 : 1,
+        }}
+        onMouseEnter={(e) => {
+          if (!refreshing) e.currentTarget.style.background = "#262626";
+        }}
+        onMouseLeave={(e) => {
+          if (!refreshing) e.currentTarget.style.background = "#1a1a1a";
+        }}
+      >
+        {refreshing ? "Refreshing..." : "🔄 Refresh Rooms"}
+      </button>
+
+
       <div
         style={{
           flex: 1,
@@ -64,9 +92,7 @@ export default function GameRoomsList() {
         {loading ? (
           <p style={{ color: "#aaa", textAlign: "center" }}>Loading rooms...</p>
         ) : rooms.length === 0 ? (
-          <p style={{ color: "#aaa", textAlign: "center" }}>
-            No rooms available
-          </p>
+          <p style={{ color: "#aaa", textAlign: "center" }}>No rooms available</p>
         ) : (
           rooms.map((room) => {
             const isSelected = selectedRoom === room.roomId;
@@ -87,10 +113,12 @@ export default function GameRoomsList() {
                   transition: "background 0.1s",
                 }}
                 onMouseEnter={(e) => {
-                  if (!isSelected) e.currentTarget.style.background = "#262626";
+                  if (!isSelected)
+                    e.currentTarget.style.background = "#262626";
                 }}
                 onMouseLeave={(e) => {
-                  if (!isSelected) e.currentTarget.style.background = "#1a1a1a";
+                  if (!isSelected)
+                    e.currentTarget.style.background = "#1a1a1a";
                 }}
               >
                 <div style={{ fontWeight: "bold" }}>Room {room.roomId}</div>
