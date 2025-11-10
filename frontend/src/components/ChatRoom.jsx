@@ -1,25 +1,29 @@
 import { useEffect, useState, useRef } from "react";
 
-export default function ChatRoom({ socket }) {
+export default function ChatRoom({ socket, slotColors, players, spectators, playerName }) {
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState("");
+    const [showSpectatorMessages, setShowSpectatorMessages] = useState(true);
+
     const messagesEndRef = useRef(null);
 
+    const isSelfSpectator = spectators?.some((s) => s.name === playerName);
 
 
     useEffect(() => {
         if (!socket) return;
-
         const handler = (event) => {
             try {
                 const data = JSON.parse(event.data);
 
                 switch (data.action) {
                     case "chatMessage":
-                        setMessages((prev) => [
-                            ...prev,
-                            { type: "chat", from: data.from, text: data.text },
-                        ]);
+                        setMessages((prev) => {
+                            const next = [...prev, {
+                                type: "chat", from: data.from, text: data.text, isSpectator: isSpectatorMessage(data.from)
+                            }];
+                            return next.slice(-40);
+                        });
                         break;
 
                     case "chatSystemMessage": {
@@ -47,7 +51,7 @@ export default function ChatRoom({ socket }) {
 
         socket.addEventListener("message", handler);
         return () => socket.removeEventListener("message", handler);
-    }, [socket]);
+    }, [socket, spectators]);
 
     const sendMessage = () => {
         if (!socket || socket.readyState !== WebSocket.OPEN || !input.trim()) return;
@@ -55,7 +59,18 @@ export default function ChatRoom({ socket }) {
         setInput("");
     };
 
+    const isSpectatorMessage = (from) => {
 
+        return spectators?.some((s) => s.name === from);
+    };
+
+    const getPlayerColor = (name) => {
+        const player = players?.find((p) => p.name === name);
+        if (player && slotColors[player.slot]) {
+            return slotColors[player.slot];
+        }
+        return "#fff";
+    };
     return (
         <div
             style={{
@@ -65,6 +80,20 @@ export default function ChatRoom({ socket }) {
                 width: "100%",
             }}
         >
+            {/* Spectator message toggle (only if not a spectator) */}
+            {!isSelfSpectator && (
+                <div style={{ marginBottom: "6px", display: "flex", justifyContent: "flex-end" }}>
+                    <label style={{ color: "white", fontSize: "0.9rem" }}>
+                        <input
+                            type="checkbox"
+                            checked={showSpectatorMessages}
+                            onChange={() => setShowSpectatorMessages(!showSpectatorMessages)}
+                            style={{ marginRight: "0.4rem" }}
+                        />
+                        Show Spectator Messages
+                    </label>
+                </div>
+            )}
             {/* Scrollable message area */}
             <div
                 style={{
@@ -79,13 +108,14 @@ export default function ChatRoom({ socket }) {
                     flexDirection: "column",
                 }}
             >
-                {messages.map((m, i) => {
+                {messages.filter((m) => showSpectatorMessages || !m.isSpectator).map((m, i) => {
                     const color =
                         m.type === "chat" ? "#fff" :
                             m.type === "warning" ? "orange" :
                                 m.type === "kicked" ? "red" :
                                     "#aaa";
 
+                    const isSelf = m.from === playerName;
                     return (
                         <div
                             key={i}
@@ -96,13 +126,18 @@ export default function ChatRoom({ socket }) {
                                 overflowWrap: "break-word",
                                 whiteSpace: "pre-wrap",
                                 marginBottom: "0.75rem",
+                                background: isSelf ? "rgba(255, 255, 255, 0.05)" : "transparent",
+
                                 borderBottom: "1px solid rgba(255,255,255,0.1)",
                                 paddingBottom: "0.25rem",
                             }}
                         >
                             {m.type === "chat" ? (
                                 <>
-                                    <div style={{ fontWeight: "bold", marginBottom: "0.2rem" }}>
+                                    <div style={{
+                                        color: getPlayerColor(m.from),
+                                        fontWeight: "bold", marginBottom: "0.2rem"
+                                    }}>
                                         {m.from}:
                                     </div>
                                     <div style={{ paddingLeft: "0.1rem", paddingBottom: "1rem" }}>

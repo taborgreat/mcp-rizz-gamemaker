@@ -8,6 +8,17 @@ import GameRoomsList from "./GameRoomsList";
 export default function GameRoom() {
     const [socketReady, setSocketReady] = useState(false);
     const [socket, setSocket] = useState(null);
+    const [players, setPlayers] = useState([]);
+    const [spectators, setSpectators] = useState([]);
+    const [playerName, setPlayerName] = useState(null);
+
+
+    const slotColors = {
+        1: "#4da6ff", // blue
+        2: "#ff4d4d", // red
+        3: "#4dff4d", // green
+        4: "#ffff66", // yellow
+    };
 
     useEffect(() => {
         let interval;
@@ -63,8 +74,20 @@ export default function GameRoom() {
             <main className="main-area">
                 {/* Left panel */}
                 <aside className="player-list">
-                    {socketReady && socket && <PlayerList socket={socket} />}
+                    {socketReady && socket && (
+                        <PlayerList
+                            socket={socket}
+                            slotColors={slotColors}
+                            onSelfJoin={(name) => setPlayerName(name)}
+                            onPlayersUpdate={({ players, spectators }) => {
+                                setPlayers(players);
+                                setSpectators(spectators);
+                            }}
+
+                        />
+                    )}
                 </aside>
+
 
 
                 <section className="game-area">
@@ -74,7 +97,9 @@ export default function GameRoom() {
                 {/* Right panel */}
                 <aside className="chat-room">
                     {socketReady && socket ? (
-                        <ChatRoom socket={socket} />
+                        <ChatRoom socket={socket}
+                            playerName={playerName}
+                            spectators={spectators} players={players} slotColors={slotColors} />
                     ) : (
                         <GameRoomsList />
                     )}
