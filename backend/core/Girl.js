@@ -25,7 +25,7 @@ export class Girl {
     }
   }
 
-  moveTowards(destination) {
+  moveTowards(destination, onGameWin) {
     const { broadcast, players } = this;
     let target;
 
@@ -58,10 +58,7 @@ export class Girl {
     });
 
     if (destination !== "center" && destination !== "stay" && dist < 10) {
-      broadcast(players.players, {
-        action: "playerWon",
-        params: { name: destination },
-      });
+      onGameWin(destination);
     }
 
     return { x: this.x, y: this.y };
