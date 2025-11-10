@@ -80,6 +80,7 @@ export class Rooms {
 
     console.log(`👥 ${player.name} joined room ${assignedRoom}`);
 
+    await sleep(500); //small delay to let frontend load
     // notify individual player for game room and santised name
     ws.send(
       JSON.stringify({
@@ -87,8 +88,6 @@ export class Rooms {
         params: { gameRoomId: player.gameRoomId, name: player.name },
       })
     );
-
-    await sleep(500); //small delay to let frontend load
     broadcast(players.players, {
       action: "chatSystemMessage",
       params: {
