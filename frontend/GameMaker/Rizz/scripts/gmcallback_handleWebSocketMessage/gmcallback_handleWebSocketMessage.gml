@@ -114,6 +114,7 @@ function gmcallback_handleWebSocketMessage(rawJson) {
                 html_element_cleanup(global.html_name_wrapper, true);
                 global.html_name_wrapper = undefined;
             }
+			
 
 
 			//set player settings
@@ -122,6 +123,7 @@ function gmcallback_handleWebSocketMessage(rawJson) {
             global.localPlayer = { name: msg.params.name };
 
             room_goto(rm_MainRoom);
+			global.isJoiningGame = false;
             break;
         }
 

@@ -33,6 +33,8 @@
     {"id":{"name":"js_websocket_bridge","path":"extensions/js_websocket_bridge/js_websocket_bridge.yy",},},
     {"id":{"name":"fnt_big","path":"fonts/fnt_big/fnt_big.yy",},},
     {"id":{"name":"obj_chair","path":"objects/obj_chair/obj_chair.yy",},},
+    {"id":{"name":"obj_curtain_left","path":"objects/obj_curtain_left/obj_curtain_left.yy",},},
+    {"id":{"name":"obj_curtain_right","path":"objects/obj_curtain_right/obj_curtain_right.yy",},},
     {"id":{"name":"obj_gameController","path":"objects/obj_gameController/obj_gameController.yy",},},
     {"id":{"name":"obj_girl","path":"objects/obj_girl/obj_girl.yy",},},
     {"id":{"name":"obj_girlSpeaking","path":"objects/obj_girlSpeaking/obj_girlSpeaking.yy",},},

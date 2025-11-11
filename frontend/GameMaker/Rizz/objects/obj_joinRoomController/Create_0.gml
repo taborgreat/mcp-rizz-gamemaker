@@ -7,3 +7,6 @@ if (variable_global_exists("connectionLostMessage") && global.connectionLostMess
 }
 
 
+if (!instance_exists(obj_nameInput)) {
+    instance_create_layer(1, 1, "Instances", obj_nameInput);
+}
