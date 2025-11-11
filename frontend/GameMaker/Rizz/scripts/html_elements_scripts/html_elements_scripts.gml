@@ -397,12 +397,12 @@ function html_element_interaction(element) {
 
 /// @description Returns the current x position of the element
 function html_element_x(element) {
-	return _html_elements_get_x(html_element_id(element));
+	return _html_elements_get_x();
 }
 
 /// @description Returns the current y position of the element
 function html_element_y(element) {
-	return _html_elements_get_y(html_element_id(element));
+	return _html_elements_get_y();
 }
 
 /// @description Returns the current x position of the mouse

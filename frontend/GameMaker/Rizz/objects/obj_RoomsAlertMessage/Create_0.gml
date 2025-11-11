@@ -1,3 +1,4 @@
 
 image_alpha = 1;
-alarm[1] = room_speed * 6;
+alarm[1] = game_get_speed(gamespeed_fps) * 6;
+

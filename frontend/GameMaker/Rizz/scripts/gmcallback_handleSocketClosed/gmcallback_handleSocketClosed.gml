@@ -38,7 +38,8 @@
 		global.isJoiningGame = false;
 
     var o = instance_find(obj_gameController, 0);
-o.alarm[1] = room_speed * 1.8;
+
+o.alarm[1] = game_get_speed(gamespeed_fps) * 1.8;
 
 
 	   
