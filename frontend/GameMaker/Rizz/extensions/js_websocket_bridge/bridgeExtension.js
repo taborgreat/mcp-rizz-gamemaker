@@ -37,28 +37,27 @@
         console.warn("[Bridge] WebSocket closed:", event);
 
         // slight delay to avoid colliding with GameMaker room teardown
-        setTimeout(() => {
-          try {
-            let safeCode = event?.code ?? 1000;
-            if (safeCode === 1006) safeCode = 1000;
 
-            const safeReason = String(event?.reason || "Connection was lost");
+        try {
+          let safeCode = event?.code ?? 1000;
+          if (safeCode === 1006) safeCode = 1000;
 
-            window.gml_Script_gmcallback_handleSocketClosed(
-              "",
-              "",
-              JSON.stringify({
-                reason: safeReason,
-                code: safeCode,
-              })
-            );
-          } catch (e) {
-            console.warn(
-              "[Bridge] Failed to call gmcallback_handleSocketClosed (delayed):",
-              e
-            );
-          }
-        }, 700); // tweak delay
+          const safeReason = String(event?.reason || "Connection was lost");
+
+          window.gml_Script_gmcallback_handleSocketClosed(
+            "",
+            "",
+            JSON.stringify({
+              reason: safeReason,
+              code: safeCode,
+            })
+          );
+        } catch (e) {
+          console.warn(
+            "[Bridge] Failed to call gmcallback_handleSocketClosed (delayed):",
+            e
+          );
+        }
       };
 
       socket.onerror = (err) => {

@@ -1,6 +1,8 @@
 	/// @function gmcallback_handleSocketClosed(rawJson)
 	/// @desc Called from JS bridge when WebSocket connection closes
 	function gmcallback_handleSocketClosed(rawJson) {
+		with (obj_curtain_left) state = "closing";
+		with (obj_curtain_right) state = "closing";
 		
 	    var reason = "Lost connection";
 	    var msg = undefined;
@@ -37,8 +39,7 @@
 
     var o = instance_find(obj_gameController, 0);
 o.alarm[1] = room_speed * 1.4;
-with (obj_curtain_left) state = "closing";
-with (obj_curtain_right) state = "closing";
+
 
 	   
 		  if (variable_global_exists("html_name_wrapper") && global.html_name_wrapper == undefined) {

@@ -1,6 +1,7 @@
 var text = "What's your name, bro?: " + name_input;
 var x_center = 1920 / 2;
-var y_center = 1080 / 2 - 200;
+var y_center = 1080 / 2 - 200
+draw_set_color(c_white);;
 
 
 draw_set_halign(fa_center);

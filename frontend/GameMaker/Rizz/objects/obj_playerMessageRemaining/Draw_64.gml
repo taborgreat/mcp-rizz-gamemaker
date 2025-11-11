@@ -20,7 +20,13 @@ var screen_w = 1920;
 var screen_h = 1080;
 
 draw_set_color(col);
-draw_text(screen_w / 2, screen_h - 100, string(remaining) + " characters left");
+if (instance_exists(obj_curtain_left)) {
+    if (obj_curtain_left.state == "open") {
+        draw_text(screen_w / 2, screen_h - 100, string(remaining) + " characters left");
+    }
+}
+
+
 
 
 
