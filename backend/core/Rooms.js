@@ -77,7 +77,7 @@ export class Rooms {
 
     const player = players.addPlayer(ws, name);
     player.gameRoomId = assignedRoom;
-
+    players.updateRanks(girl, broadcast);
     console.log(`👥 ${player.name} joined room ${assignedRoom}`);
 
     await sleep(500); //small delay to let frontend load

@@ -85,12 +85,18 @@ export class Players {
   getPlayerNames() {
     return Array.from(this.players.values()).map((p) => p.name);
   }
+
   updateRanks(girl, broadcast) {
-    if (!girl) {
-      this.resetAllRanksToTie();
+    // Skip ranking if girl hasn't moved from center
+
+    const girlAtCenter =
+      girl && girl.x === girl.center.x && girl.y === girl.center.y;
+
+    if (girlAtCenter) {
+      return;
     }
+
     const activePlayers = this.getActivePlayers();
-    if (activePlayers.length === 0) return;
 
     const distances = activePlayers.map((p) => {
       const chair = girl.getChairPosition(p.slot);
@@ -114,7 +120,7 @@ export class Players {
     }
 
     if (typeof broadcast === "function") {
-      broadcast({
+      broadcast(this.players, {
         action: "ranksUpdated",
         players: this.getAllPlayers(),
       });
