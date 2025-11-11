@@ -130,6 +130,7 @@ export class Rooms {
 
     players.removePlayer(ws);
     state.onPlayerLeft(player);
+    sleep(500);
     state.broadcastWorld();
   }
   getRoomsSummaries() {
