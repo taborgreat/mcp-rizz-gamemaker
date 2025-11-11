@@ -9,7 +9,7 @@ export default function PlayerList({ socket, onPlayersUpdate, slotColors, onSelf
         if (!socket) return;
 
         const handler = (event) => {
-            console.log("RAW MESSAGE:", event.data);
+            //console.log("RAW MESSAGE:", event.data);
 
             try {
                 const data = JSON.parse(event.data);
