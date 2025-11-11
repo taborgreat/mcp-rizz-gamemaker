@@ -1,9 +1,9 @@
 {
   "$GMScript":"v1",
-  "%Name":"cleanup_input_forms",
+  "%Name":"cleanup_input_form",
   "isCompatibility":false,
   "isDnD":false,
-  "name":"cleanup_input_forms",
+  "name":"cleanup_input_form",
   "parent":{
     "name":"DOM",
     "path":"folders/BrowserIntegration/HTML/DOM.yy",

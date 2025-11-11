@@ -47,7 +47,7 @@
     {"id":{"name":"obj_RoomsAlertMessage","path":"objects/obj_RoomsAlertMessage/obj_RoomsAlertMessage.yy",},},
     {"id":{"name":"rm_JoinRoom","path":"rooms/rm_JoinRoom/rm_JoinRoom.yy",},},
     {"id":{"name":"rm_MainRoom","path":"rooms/rm_MainRoom/rm_MainRoom.yy",},},
-    {"id":{"name":"cleanup_input_forms","path":"scripts/cleanup_input_forms/cleanup_input_forms.yy",},},
+    {"id":{"name":"cleanup_input_form","path":"scripts/cleanup_input_form/cleanup_input_form.yy",},},
     {"id":{"name":"gmcallback_handleSocketClosed","path":"scripts/gmcallback_handleSocketClosed/gmcallback_handleSocketClosed.yy",},},
     {"id":{"name":"gmcallback_handleWebSocketMessage","path":"scripts/gmcallback_handleWebSocketMessage/gmcallback_handleWebSocketMessage.yy",},},
     {"id":{"name":"gmcallback_setRoomSelected","path":"scripts/gmcallback_setRoomSelected/gmcallback_setRoomSelected.yy",},},

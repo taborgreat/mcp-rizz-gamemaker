@@ -40,6 +40,8 @@ global.playerTextDraft = playerText2;
 if (html_element_interaction(form)) {
     html_submit_player_input(form);
     html_element_cleanup(wrapper, true);
+	 global.inputForm = undefined;
+     global.inputWrapper = undefined;
     form = undefined;
 	instance_destroy();
 }

@@ -1,7 +1,7 @@
 /// @function cleanup_input_form()
 /// @desc Submits or misses turn, destroys form and wrapper if they exist
 function cleanup_input_form() {
-    if (variable_global_exists("inputForm")) {
+   if (variable_global_exists("inputForm") && !is_undefined(global.inputForm) && !is_undefined(global.inputWrapper)){
         var form = global.inputForm;
         var wrapper = global.inputWrapper;
         var playerText = "";

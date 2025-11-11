@@ -17,9 +17,10 @@
 	        }
 	    }
 
-		if (global.gameState = "playersInputting"){
+		
 	    cleanup_input_form();
-		}
+		
+		
 
 	  
 

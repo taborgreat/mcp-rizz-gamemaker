@@ -21,6 +21,8 @@ function html_submit_player_input(element) {
     ds_map_destroy(msg);
     html_element_cleanup(element, true);
     element = undefined;
+	 global.inputForm = undefined;
+     global.inputWrapper = undefined;
 	
 	//remove the remaining char box if submitted early
 	if (instance_exists(obj_playerMessageRemaining)) instance_destroy(obj_playerMessageRemaining);
