@@ -8,7 +8,16 @@ export default function ChatRoom({ socket, slotColors, players, spectators, play
     const messagesEndRef = useRef(null);
 
     const isSelfSpectator = spectators?.some((s) => s.name === playerName);
-
+    useEffect(() => {
+        if (!messagesEndRef.current) return;
+        const container = messagesEndRef.current.parentNode;
+        if (container) {
+            container.scrollTo({
+                top: container.scrollHeight,
+                behavior: "smooth",
+            });
+        }
+    }, [messages]);
 
     useEffect(() => {
         if (!socket) return;
@@ -179,6 +188,7 @@ export default function ChatRoom({ socket, slotColors, players, spectators, play
                         padding: "0.5rem 1rem",
                         borderRadius: "4px",
                         border: "none",
+                        font: "16px",
                         background: socket ? "#444" : "#333",
                         color: "white",
                         cursor: socket ? "pointer" : "not-allowed",

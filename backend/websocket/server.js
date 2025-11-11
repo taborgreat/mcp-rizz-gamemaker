@@ -44,19 +44,16 @@ export function startWebSocketServer(httpServer) {
           }
 
           // Validate the parsed shape
-          const playerName =
+          let playerName =
             typeof parsed.name === "string" ? parsed.name.trim() : null;
           const gameRoomId =
             parsed.gameRoomId === null || typeof parsed.gameRoomId === "string"
               ? parsed.gameRoomId
               : null;
+          playerName = sanitizeMessage(playerName || "");
+          if (!playerName.trim()) playerName = "Player";
 
-          if (!playerName) {
-            console.warn("⚠️ Missing or invalid player name in join request");
-            return;
-          }
-
-          roomsInstance.joinRoom(ws, sanitizeMessage(playerName), gameRoomId);
+          roomsInstance.joinRoom(ws, playerName, gameRoomId);
           break;
         }
 
@@ -106,6 +103,7 @@ export function startWebSocketServer(httpServer) {
             text = text.slice(0, cutoff > 0 ? cutoff : MAX_CHAT_LENGTH) + "…";
           }
           let sanitized = sanitizeMessage(text);
+          if (!sanitized.trim()) return;
           const chatData = {
             action: "chatMessage",
             from: player.name,

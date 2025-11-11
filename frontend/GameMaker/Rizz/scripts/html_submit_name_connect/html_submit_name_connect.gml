@@ -11,13 +11,7 @@ function html_submit_name_connect(element) {
     var name = values[? "username"];
     ds_map_destroy(values);
 
-    if (string_length(name) <= 0) {
-        show_message("Please enter your name first!");
-		global.isJoiningGame = false;
-        return;
-    }
-	
-	
+ 
 
 
     var msg = ds_map_create();
