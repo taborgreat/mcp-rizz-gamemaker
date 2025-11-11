@@ -176,6 +176,7 @@ export default function ChatRoom({ socket, slotColors, players, spectators, play
                         marginRight: "0.5rem",
                         padding: "0.5rem",
                         borderRadius: "4px",
+                        fontSize: "16px",
                         border: "none",
                         outline: "none",
                     }}
