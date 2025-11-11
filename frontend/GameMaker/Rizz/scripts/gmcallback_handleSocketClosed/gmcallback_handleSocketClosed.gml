@@ -3,6 +3,8 @@
 	function gmcallback_handleSocketClosed(rawJson) {
 		with (obj_curtain_left) state = "closing";
 		with (obj_curtain_right) state = "closing";
+
+
 		
 	    var reason = "Lost connection";
 	    var msg = undefined;
@@ -15,9 +17,9 @@
 	        }
 	    }
 
-
+		if (global.gameState = "playersInputting"){
 	    cleanup_input_form();
-
+		}
 
 	  
 
@@ -43,7 +45,4 @@ o.alarm[1] = game_get_speed(gamespeed_fps) * 1.8;
 
 
 	   
-		  if (variable_global_exists("html_name_wrapper") && global.html_name_wrapper == undefined) {
-	        html_init("HTML5Elements");
-	    }
 	}

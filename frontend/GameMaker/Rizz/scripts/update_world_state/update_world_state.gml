@@ -69,19 +69,11 @@ function update_world_state(world) {
             break;
 
         case "playerSpeaking":
+		 if (instance_exists(obj_playerMessageRemaining)) instance_destroy(obj_playerMessageRemaining);
             global.statusText = global.currentSpeaker + " is speaking... (" + string(global.timeLeft) + ")";
-            if (instance_exists(obj_playerMessageRemaining)) instance_destroy(obj_playerMessageRemaining);
+           
 
-            if (!instance_exists(obj_playerSpeaking)) {
-                var o = instance_create_layer(200, 200, "Instances", obj_playerSpeaking);
-                o.speaker = global.currentSpeaker;
-                o.text = global.playerLatestMessage;
-            } else {
-                with (obj_playerSpeaking) {
-                    speaker = global.currentSpeaker;
-                    text = global.playerLatestMessage;
-                }
-            }
+            
             break;
 
         case "girlSpeaking":
@@ -104,7 +96,7 @@ function update_world_state(world) {
             instance_create_layer(0, 0, "Instances", obj_playerMessageInput);
         if (!instance_exists(obj_playerMessageRemaining))
             instance_create_layer(0, 0, "Instances", obj_playerMessageRemaining);
-    }
+    } 
 
     if (global.prevGameState == "playersInputting" && global.gameState != "playersInputting") {
         // Exit input phase

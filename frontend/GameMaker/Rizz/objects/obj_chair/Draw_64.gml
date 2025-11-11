@@ -1,4 +1,4 @@
-draw_self();
+
 draw_set_color(make_color_rgb(200, 200, 200));
 
 
