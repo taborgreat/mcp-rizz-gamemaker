@@ -6,12 +6,12 @@ dotenv.config({ path: path.resolve("../.env") });
 
 const pairs = [
   {
-    template: "./GameMaker/rizz/bridgeExtensionTemplate.js",
+    template: "./GameMaker/Rizz/bridgeExtensionTemplate.js",
     output:
-      "./GameMaker/rizz/Extensions/js_websocket_bridge/bridgeExtension.js",
+      "./GameMaker/Rizz/extensions/js_websocket_bridge/bridgeExtension.js",
   },
   {
-    template: "./GameMaker/rizz/bridgeExtensionTemplate.js",
+    template: "./GameMaker/Rizz/bridgeExtensionTemplate.js",
     output: "./GameMaker/build/html5game/uph_bridgeExtension.js",
   },
 ];
