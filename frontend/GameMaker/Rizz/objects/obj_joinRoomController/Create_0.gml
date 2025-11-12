@@ -1,3 +1,7 @@
+var w = room_width*4;
+var h = room_height*4;
+display_set_gui_size(w, h);
+
 
 if (variable_global_exists("connectionLostMessage") && global.connectionLostMessage != undefined) {
     var o = instance_create_layer(room_width / 2, room_height / 2, "Instances", obj_RoomsAlertMessage);
@@ -11,3 +15,10 @@ if (variable_global_exists("connectionLostMessage") && global.connectionLostMess
 if (!instance_exists(obj_nameInput)) {
     instance_create_layer(1, 1, "Instances", obj_nameInput);
 }
+
+
+
+
+if (!variable_global_exists("playerHead")) global.playerHead = irandom(2);
+if (!variable_global_exists("playerEyes")) global.playerEyes = irandom(2);
+if (!variable_global_exists("playerMouth")) global.playerMouth = irandom(2);
