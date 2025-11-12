@@ -42,7 +42,7 @@ npm run start
 
 ### GameMaker - HTML Iframe
 
-- Handles **graphics**, **animation**, and **input**.
+- Handles graphics, animation, and input.
 - Displays the girl and player avatars in a dynamic scene.
 - Connects to a Node.js backend via **WebSocket** for real-time multiplayer updates.
 
@@ -61,7 +61,7 @@ npm run start
 
 ### Webpage Integration — React + GameMaker Bridge
 
-The **GameMaker HTML5 export** runs inside an **iframe**, which is **wrapped and managed by a React frontend**.  
+The GameMaker HTML5 export runs inside an iframe, which is **wrapped and managed by a React frontend**.  
 This setup allows the game to blend traditional **GameMaker rendering** with modern **responsive web design** and **interactive GUI components**.
 For example, the React frontend can display and handle the Chatroom, using the same player data that GameMaker uses.
 
@@ -76,16 +76,16 @@ For example, the React frontend can display and handle the Chatroom, using the s
 
 **GameMaker Layer**
 
-- Handles **game visuals**, **animations**, **sounds**, etc.  
+- Handles game visuals, animations, sounds, etc.  
 - Exposes **JavaScript functions** (like `gmcallback_*`) that React can call directly for **real-time in game updates**.  
 
 
 ---
-#### Communication Bridge
+### Communication Bridge
 
 **WebSocket (shared channel)**  
 
-- Used for **multiplayer synchronization** between **React**, **GameMaker**, and the **Node.js** backend.  
+- Used for **multiplayer synchronization** between React, GameMaker, and the Node.js backend.  
 - Keeps all clients (players) updated on **chat**, **turns**, and **game state**.  
 
 **Direct JS Calls**
