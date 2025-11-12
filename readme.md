@@ -1,4 +1,4 @@
-# Got Rizz?
+# Got Rizz
 
 **Got Rizz** is a browser-based multiplayer social AI game powered by **MCP (Model Context Protocol)**.
 
