@@ -1,6 +1,6 @@
-# Rizz (name needs update)
+# Got Rizz?
 
-**Rizz** is a multiplayer social AI game powered by **MCP (Model Context Protocol)**.
+**Got Rizz** is a browser-based multiplayer social AI game powered by **MCP (Model Context Protocol)**.
 
 ![Game Concept Photo](./concept.png)
 
@@ -8,7 +8,9 @@
 Each player takes turns trying to “rizz” (charm or flirt with) the girl through clever dialogue.
 
 She **remembers** what you say, **responds dynamically**, and **moves toward** the player she feels the strongest connection with.  
-The first player to fully attract her **wins**.
+The first player she reaches **wins**.
+
+Passive spectators can observe.
 
 ---
 
@@ -44,7 +46,7 @@ npm run start
 
 ## Technical Architecture
 
-### HTML IFrame — GameMaker
+### GameMaker - HTML Iframe
 
 - Handles **graphics**, **animation**, and **input**.
 - Displays the girl and player avatars in a dynamic scene.
@@ -63,25 +65,25 @@ npm run start
 
 ---
 
-### Web Integration — React + GameMaker Bridge
+### Webpage Integration — React + GameMaker Bridge
 
 The **GameMaker HTML5 export** runs inside an **iframe**, which is **wrapped and managed by a React frontend**.  
 This setup allows the game to blend traditional **GameMaker rendering** with modern **responsive web design** and **interactive GUI components**.
-
+For example, the React frontend can display and handle the Chatroom, using the same player data that GameMaker uses.
 
 ---
 #### Responsibilities
 
 **React Layer**
 
-- Provides the **webpage structure** and **responsive GUI** (buttons, menus, overlays, etc.).  
+- Provides the **webpage structure** and **responsive GUI** (menus, overlays, chatroom, ads, layout, etc.).  
 - Hosts the **GameMaker canvas** inside an `<iframe>` component.  
-- Listens to and emits messages through **WebSocket** to synchronize state with the backend.  
+- Listens to and emits messages through **WebSocket** to synchronize state with the backend/GameMaker.  
 
 **GameMaker Layer**
 
-- Handles **game visuals**, **animations**, and **in-world interactions**.  
-- Exposes **JavaScript functions** (like `gmcallback_*`) that React can call directly for **real-time updates**.  
+- Handles **game visuals**, **animations**, **sounds**, etc.  
+- Exposes **JavaScript functions** (like `gmcallback_*`) that React can call directly for **real-time in game updates**.  
 
 
 ---
@@ -90,28 +92,28 @@ This setup allows the game to blend traditional **GameMaker rendering** with mod
 **WebSocket (shared channel)**  
 
 - Used for **multiplayer synchronization** between **React**, **GameMaker**, and the **Node.js** backend.  
-- Keeps all clients updated on **chat**, **turns**, and **game state**.  
+- Keeps all clients (players) updated on **chat**, **turns**, and **game state**.  
 
 **Direct JS Calls**
 
 - React can trigger GameMaker events using functions such as  
   `window.gml_Script_gmcallback_handleSocketClosed()` or similar callbacks defined in the HTML5 export.  
-- GameMaker can also call React functions or update DOM elements when necessary through `html_*` or **JS bridge functions**.  
-
 
 
 Together, these layers create a **hybrid architecture** where **React** manages the **outer experience** and **GameMaker** delivers the **core gameplay**, allowing a seamless, visually rich, and adaptive web experience.
 
 ---
 
-### Backend — Node.js WebSocket Server
+### Backend — Node.js Authoritarive WebSocket Server
 
 - Manages **player sessions** and **real-time game state**.
 - Handles:
   - Player connections/disconnections
   - Message history
+  - Rooms/Girl/Players states
+  - Input sanitization
   - Turn sequencing
-    --Passes GameState to GameMaker client regularly to sync clients
+    --Passes websocket messages to GameMaker client/React regularly to sync clients
 - Communicates with the **MCP server** for AI-driven decision-making.
 
 ---
@@ -131,9 +133,12 @@ Returns structured data back to Node.js, for example:
 ```json
 {
   "responseText": "You seem really sweet when you talk like that.",
-  "moveTarget": "player2"
+  "emotion": 1,
+  "player": "tim",
 }
 ```
+
+- This data is then processed into the backend GameState, and sent back out to the frontend.
 
 ---
 
