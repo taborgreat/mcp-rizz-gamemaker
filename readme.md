@@ -70,8 +70,7 @@ This setup allows the game to blend traditional **GameMaker rendering** with mod
 
 
 
-#### Responsibilities
-
+#### <u>Responsibilities</u>
 **React Layer**
 
 - Provides the **webpage structure** and **responsive GUI** (buttons, menus, overlays, etc.).  
@@ -85,7 +84,7 @@ This setup allows the game to blend traditional **GameMaker rendering** with mod
 
 
 
-#### Communication Bridge
+#### <u>Communication Bridge</u>
 
 **WebSocket (shared channel)**  
 
