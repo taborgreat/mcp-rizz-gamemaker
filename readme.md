@@ -4,32 +4,24 @@
 
 ![Game Concept Photo](./concept.png)
 
-2–4 players compete in real time to win over the affection of the **AI girl** in the center of the scene.  
-
-Each player takes turns trying to “rizz” (charm or flirt with) the girl through clever dialogue.
-
-She **remembers** what you say, **responds dynamically**, and **moves toward** the player she feels the strongest connection with.  
-
-The first player she reaches **wins**.
-
-Passive spectators can observe, and everyone can talk in the off-game Chatroom.
-
----
-
 ## Game Overview
 
-**Genre:** Social AI Party Game  
-**Players:** 2–4  
-**Goal:** Use your words to build attraction with the girl in the middle before your opponents do.
+**Got Rizz** is a 2–4 player social AI party game where players compete in real time to win over the affection of the **AI girl** in the center of the scene.
+
+Each player takes turns trying to “rizz” (charm or flirt with) her through clever dialogue.  
+She **remembers** what you say, **responds dynamically**, and **moves toward** the player she feels the strongest connection with.  
+When she reaches a player, that player **wins**.
+
+Passive spectators can observe, and everyone can chat in the off-game Chatroom.
 
 ### Gameplay Loop
 
-1. Players take their turn sending a message to the girl.
-2. The girl replies using her own AI-generated logic, remembering context and past interactions.
-3. Based on her perception (emotion, style, tone, memory), she moves closer to the player she’s most interested in.
-4. When she reaches a player, that player wins the game.
+1. Players take turns sending messages to the girl.  
+2. The girl replies using her own AI-generated logic, remembering context and past interactions.  
+3. Based on her perception (emotion, tone, and memory), she moves closer to the player she’s most interested in.  
+4. When she reaches a player, that player wins.  
 
-This is a mix of **humor**, **charm**, and **emergent AI personality** — no two games are ever the same.
+A mix of **humor**, **charm**, and **emergent AI personality** ensures that **no two games are ever the same**.
 
 ---
 
