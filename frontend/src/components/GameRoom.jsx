@@ -11,14 +11,18 @@ export default function GameRoom() {
     const [players, setPlayers] = useState([]);
     const [spectators, setSpectators] = useState([]);
     const [playerName, setPlayerName] = useState(null);
-
+    const [showRoomList, setShowRoomList] = useState(false);
 
     const slotColors = {
-        1: "#4da6ff", // blue
-        2: "#ff4d4d", // red
-        3: "#4dff4d", // green
-        4: "#ffff66", // yellow
+        1: "#4da6ff",
+        2: "#ff4d4d",
+        3: "#4dff4d",
+        4: "#ffff66",
     };
+
+    useEffect(() => {
+        setShowRoomList(false);
+    }, [socketReady]);
 
     useEffect(() => {
         let interval;
@@ -30,7 +34,6 @@ export default function GameRoom() {
 
             const sock = gmWindow.socket;
             if (sock && sock.readyState === WebSocket.OPEN) {
-
                 if (!sock._hasCloseHandler) {
                     sock._hasCloseHandler = true;
                     sock.addEventListener("close", () => {
@@ -61,54 +64,113 @@ export default function GameRoom() {
 
     return (
         <div className="game-room">
-            <header className="top-bar">
-                <div
-                    className={`rizz-logo ${socketReady ? "clickable" : ""}`}
-                    onClick={socketReady ? handleBack : undefined}
+            {socketReady ? (
+                <header className="top-bar">
+                    <div
+                        className={`rizz-logo clickable`}
+                        onClick={handleBack}
+                    >
+                        RIZZ
+                    </div>
+                    <div>⚙️</div>
+                </header>
+            ) : (
+                <header
+                    style={{
+                        position: "relative",
+                        top: 0,
+                        left: 0,
+
+                        width: "100%",
+                        textAlign: "center",
+                        fontSize: "3rem",
+                        fontWeight: "bold",
+                        color: "#000000ff",
+                        padding: "1rem 0",
+                        zIndex: 1000, // keep above iframe or other elements
+                    }}
                 >
-                    RIZZ
-                </div>
-                <div>⚙️</div>
-            </header>
+                    Got Rizz
+                </header>
+
+            )}
+
 
             <main className="main-area">
-                {/* Left panel */}
-                <aside className="player-list">
-                    {socketReady && socket && (
-                        <PlayerList
-                            socket={socket}
-                            slotColors={slotColors}
-                            onSelfJoin={(name) => setPlayerName(name)}
-                            onPlayersUpdate={({ players, spectators }) => {
-                                setPlayers(players);
-                                setSpectators(spectators);
-                            }}
-
-                        />
-                    )}
+                {/* Left panel (always mounted but hidden when not connected) */}
+                <aside className={`player-list ${!socketReady ? "hidden" : ""}`}>
+                    <PlayerList
+                        socket={socket}
+                        slotColors={slotColors}
+                        onSelfJoin={(name) => setPlayerName(name)}
+                        onPlayersUpdate={({ players, spectators }) => {
+                            setPlayers(players);
+                            setSpectators(spectators);
+                        }}
+                    />
                 </aside>
 
+                {/* Game area */}
+                <section className={`game-area ${socketReady ? "connected" : ""}`}>
+                    <GameMakerWrapper isConnected={socketReady} />
 
+                    {/* ✅ Only show toggle + panel when NOT connected */}
+                    {!socketReady && (
+                        <>
+                            <button
+                                className="room-list-toggle"
+                                onClick={() => setShowRoomList((prev) => !prev)}
+                            >
+                                {showRoomList ? "✖" : "📜"}
+                            </button>
 
-                <section className="game-area">
-                    <GameMakerWrapper />
+                            {showRoomList && (
+                                <div className="room-list-panel open">
+                                    <GameRoomsList />
+                                </div>
+                            )}
+                        </>
+                    )}
                 </section>
 
-                {/* Right panel */}
-                <aside className="chat-room">
-                    {socketReady && socket ? (
-                        <ChatRoom socket={socket}
-                            playerName={playerName}
-                            spectators={spectators} players={players} slotColors={slotColors} />
-                    ) : (
-                        <GameRoomsList />
-                    )}
+                {/* Right panel (always mounted but hidden when not connected) */}
+                <aside className={`chat-room ${!socketReady ? "hidden" : ""}`}>
+                    <ChatRoom
+                        socket={socket}
+                        playerName={playerName}
+                        spectators={spectators}
+                        players={players}
+                        slotColors={slotColors}
+                    />
                 </aside>
-            </main>
 
-            <footer className="ad-banner">
-                AD BANNER
-            </footer>
+
+            </main>
+            {/* 👇 Add this right below main, only when disconnected */}
+            {!socketReady && (
+                <div
+                    style={{
+                        margin: "2rem auto",
+                        maxWidth: "800px",
+                        padding: "1.5rem",
+                        background: "rgba(255,255,255,0.05)",
+                        border: "1px solid rgba(255,255,255,0.1)",
+                        borderRadius: "1rem",
+                        color: "#ccc",
+                        textAlign: "center",
+                        lineHeight: 1.5,
+                    }}
+                >
+                    <h2 style={{ color: "#fff", marginBottom: "0.5rem" }}>About Rizz</h2>
+                    <p>
+                        Filler
+
+                    </p>
+                </div>
+            )}
+
+
+            <footer className="ad-banner">AD BANNER</footer>
         </div>
     );
 }
