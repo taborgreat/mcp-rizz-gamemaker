@@ -98,10 +98,7 @@ function update_world_state(world) {
             instance_create_layer(0, 0, "Instances", obj_playerMessageRemaining);
     } 
 
-    if (global.prevGameState == "playersInputting" && global.gameState != "playersInputting") {
-        // Exit input phase
-        cleanup_input_form();
-    }
+   
 }
 
 function find_player_by_slot(slot) {
