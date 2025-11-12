@@ -69,8 +69,9 @@ The **GameMaker HTML5 export** runs inside an **iframe**, which is **wrapped and
 This setup allows the game to blend traditional **GameMaker rendering** with modern **responsive web design** and **interactive GUI components**.
 
 
+---
+#### Responsibilities
 
-#### <u>Responsibilities</u>
 **React Layer**
 
 - Provides the **webpage structure** and **responsive GUI** (buttons, menus, overlays, etc.).  
@@ -83,8 +84,8 @@ This setup allows the game to blend traditional **GameMaker rendering** with mod
 - Exposes **JavaScript functions** (like `gmcallback_*`) that React can call directly for **real-time updates**.  
 
 
-
-#### <u>Communication Bridge</u>
+---
+#### Communication Bridge
 
 **WebSocket (shared channel)**  
 
