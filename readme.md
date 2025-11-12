@@ -44,7 +44,7 @@ npm run start
 
 ## Technical Architecture
 
-### Frontend — GameMaker
+### HTML IFrame — GameMaker
 
 - Handles **graphics**, **animation**, and **input**.
 - Displays the girl and player avatars in a dynamic scene.
@@ -62,6 +62,45 @@ npm run start
 - Player messages
 
 ---
+### Web Integration — React + GameMaker Bridge
+
+The **GameMaker HTML5 export** runs inside an **iframe**, which is **wrapped and managed by a React frontend**.  
+This setup allows the game to blend traditional **GameMaker rendering** with modern **responsive web design** and **interactive GUI components**.
+
+---
+
+#### Responsibilities
+
+**React Layer**
+
+- Provides the **webpage structure** and **responsive GUI** (buttons, menus, overlays, etc.).  
+- Hosts the **GameMaker canvas** inside an `<iframe>` component.  
+- Listens to and emits messages through **WebSocket** to synchronize state with the backend.  
+
+**GameMaker Layer**
+
+- Handles **game visuals**, **animations**, and **in-world interactions**.  
+- Exposes **JavaScript functions** (like `gmcallback_*`) that React can call directly for **real-time updates**.  
+
+---
+
+#### Communication Bridge
+
+**WebSocket (shared channel)**  
+
+- Used for **multiplayer synchronization** between **React**, **GameMaker**, and the **Node.js** backend.  
+- Keeps all clients updated on **chat**, **turns**, and **game state**.  
+
+**Direct JS Calls**
+
+- React can trigger GameMaker events using functions such as  
+  `window.gml_Script_gmcallback_handleSocketClosed()` or similar callbacks defined in the HTML5 export.  
+- GameMaker can also call React functions or update DOM elements when necessary through `html_*` or **JS bridge functions**.  
+
+---
+
+Together, these layers create a **hybrid architecture** where **React** manages the **outer experience** and **GameMaker** delivers the **core gameplay**, allowing a seamless, visually rich, and adaptive web experience.
+
 
 ### Backend — Node.js WebSocket Server
 
