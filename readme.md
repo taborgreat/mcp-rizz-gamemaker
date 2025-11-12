@@ -5,12 +5,14 @@
 ![Game Concept Photo](./concept.png)
 
 2–4 players compete in real time to win over the affection of the **AI girl** in the center of the scene.  
+
 Each player takes turns trying to “rizz” (charm or flirt with) the girl through clever dialogue.
 
 She **remembers** what you say, **responds dynamically**, and **moves toward** the player she feels the strongest connection with.  
+
 The first player she reaches **wins**.
 
-Passive spectators can observe.
+Passive spectators can observe, and everyone can talk in the off-game Chatroom.
 
 ---
 
