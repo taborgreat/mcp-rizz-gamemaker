@@ -61,13 +61,13 @@ npm run start
 - Player join (name)
 - Player messages
 
----
+
 ### Web Integration — React + GameMaker Bridge
 
 The **GameMaker HTML5 export** runs inside an **iframe**, which is **wrapped and managed by a React frontend**.  
 This setup allows the game to blend traditional **GameMaker rendering** with modern **responsive web design** and **interactive GUI components**.
 
----
+
 
 #### Responsibilities
 
@@ -82,7 +82,7 @@ This setup allows the game to blend traditional **GameMaker rendering** with mod
 - Handles **game visuals**, **animations**, and **in-world interactions**.  
 - Exposes **JavaScript functions** (like `gmcallback_*`) that React can call directly for **real-time updates**.  
 
----
+
 
 #### Communication Bridge
 
@@ -97,7 +97,7 @@ This setup allows the game to blend traditional **GameMaker rendering** with mod
   `window.gml_Script_gmcallback_handleSocketClosed()` or similar callbacks defined in the HTML5 export.  
 - GameMaker can also call React functions or update DOM elements when necessary through `html_*` or **JS bridge functions**.  
 
----
+
 
 Together, these layers create a **hybrid architecture** where **React** manages the **outer experience** and **GameMaker** delivers the **core gameplay**, allowing a seamless, visually rich, and adaptive web experience.
 
