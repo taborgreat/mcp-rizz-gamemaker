@@ -61,6 +61,7 @@ npm run start
 - Player join (name)
 - Player messages
 
+---
 
 ### Web Integration — React + GameMaker Bridge
 
@@ -101,6 +102,7 @@ This setup allows the game to blend traditional **GameMaker rendering** with mod
 
 Together, these layers create a **hybrid architecture** where **React** manages the **outer experience** and **GameMaker** delivers the **core gameplay**, allowing a seamless, visually rich, and adaptive web experience.
 
+---
 
 ### Backend — Node.js WebSocket Server
 
