@@ -101,6 +101,7 @@ Together, these layers create a **hybrid architecture** where **React** manages 
 ### Backend — Node.js Authoritarive WebSocket Server
 
 - Manages **player sessions** and **real-time game state**.
+- Acts as authoritative server for GameMaker/React data
 - Handles:
   - Player connections/disconnections
   - Message history
