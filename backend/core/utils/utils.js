@@ -1,14 +1,23 @@
 export function getUniqueName(base, existing) {
   const upperExisting = existing.map((n) => n.toUpperCase());
-  let name = base;
+
+  let current = base;
+
+  const match = base.match(/^(.*?)(\d+)$/);
+  let prefix = match ? match[1] : base;
+  let number = match ? parseInt(match[2], 10) : 0;
+
+  if (!match) number = 1;
+
   let attempt = 0;
 
-  while (upperExisting.includes(name.toUpperCase()) && attempt < 100) {
+  while (upperExisting.includes(current.toUpperCase()) && attempt < 100) {
+    number++;
+    current = `${prefix}${number}`;
     attempt++;
-    name = `${base}${attempt}`;
   }
 
-  return name;
+  return current;
 }
 
 export function sanitizeMessage(input) {
