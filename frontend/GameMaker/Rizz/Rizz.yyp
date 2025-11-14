@@ -69,6 +69,7 @@
     {"id":{"name":"spr_bg_stage_lit","path":"sprites/spr_bg_stage_lit/spr_bg_stage_lit.yy",},},
     {"id":{"name":"spr_fg_curtain_left","path":"sprites/spr_fg_curtain_left/spr_fg_curtain_left.yy",},},
     {"id":{"name":"spr_fg_curtain_right","path":"sprites/spr_fg_curtain_right/spr_fg_curtain_right.yy",},},
+    {"id":{"name":"spr_fg_curtain_top_narrow","path":"sprites/spr_fg_curtain_top_narrow/spr_fg_curtain_top_narrow.yy",},},
     {"id":{"name":"spr_fg_curtain_top","path":"sprites/spr_fg_curtain_top/spr_fg_curtain_top.yy",},},
     {"id":{"name":"spr_girl","path":"sprites/spr_girl/spr_girl.yy",},},
     {"id":{"name":"spr_player_1","path":"sprites/spr_player_1/spr_player_1.yy",},},

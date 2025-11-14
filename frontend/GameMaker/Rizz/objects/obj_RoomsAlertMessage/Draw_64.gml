@@ -1,2 +1,2 @@
-draw_set_color(c_yellow);
-draw_text(x, y, text);
+draw_set_color(c_white);
+draw_text(x, y-80, text);
