@@ -30,7 +30,37 @@ function gmcallback_handleWebSocketMessage(rawJson) {
                     update_world_state(global.world);
                 }
             }
+			
+			
+           var lp = undefined;
+    var players = global.world.players;
+
+    for (var i = 0; i < array_length(players); i++) {
+        if (players[i].name == global.localPlayer.name) {
+            lp = players[i];
             break;
+        }
+    }
+
+    if (lp != undefined) {
+    global.localPlayer.isSpectator = lp.isSpectator;
+} else {
+    global.localPlayer.isSpectator = false;
+}
+
+
+
+
+
+
+    if (instance_exists(obj_gameController)) {
+        with (obj_gameController) {
+            update_world_state(global.world);
+        }
+    }
+    break;
+			
+			
         }
 
         case "countdownTick": {
