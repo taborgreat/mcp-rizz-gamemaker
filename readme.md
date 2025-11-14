@@ -2,6 +2,8 @@
 
 Browser-based multiplayer social AI game powered by **MCP (Model Context Protocol)**.
 
+IN DEVELOPMENT!!! live deployment: https://rizz.tabors.site
+
 ![Game Concept Photo](./concept.png)
 
 ## Game Overview
