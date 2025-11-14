@@ -56,7 +56,8 @@ export default function GameRoom() {
     const handleBack = () => {
         if (socket && socket.readyState === WebSocket.OPEN) {
             console.log("👋 Closing socket and returning to room list");
-            socket.close(1000, "User left room");
+            socket.close(1000, `${playerName} left the room`);
+            setPlayerName(null)
         }
         setSocketReady(false);
         setSocket(null);
