@@ -4,7 +4,7 @@ export class Girl {
     this.name = "Waiting to be named";
     this.x = this.center.x;
     this.y = this.center.y;
-    this.speed = 100;
+    this.speed = 50;
 
     this.broadcast = broadcast;
     this.players = players;
@@ -63,10 +63,10 @@ export class Girl {
 
     if (destination !== "center" && destination !== "stay" && newDist <= 10) {
       handleGameWin(destination);
-      return true;
+      return { win: true, newPos: { x: this.x, y: this.y } };
     }
 
-    return { x: this.x, y: this.y };
+    return { win: false, newPos: { x: this.x, y: this.y } };
   }
 
   resetPosition() {

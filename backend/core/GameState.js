@@ -139,14 +139,15 @@ export class GameState {
           }, 4000);
         };
 
-        const didWin = this.girl.moveTowards(destination, handleGameWin);
-        if (didWin) {
-          break;
-        }
+        const result = this.girl.moveTowards(destination, handleGameWin);
+
+if (result.win) {
+  break;
+}
 
         console.log(
           `💃 [Room ${this.gameRoomId}] Girl moving toward: ${destination}`,
-          newPos
+          result.newPos
         );
 
         this.players.updateRanks(this.girl);
