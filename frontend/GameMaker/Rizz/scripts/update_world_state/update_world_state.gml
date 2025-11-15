@@ -17,35 +17,37 @@ function update_world_state(world) {
     //--------------------------------------------
     // 1. Players
     //--------------------------------------------
-    for (var i = 0; i < array_length(chairs); i++) {
-        var chair = chairs[i];
-        var playerForSlot = find_player_by_slot(i + 1);
+for (var i = 0; i < array_length(global.chairs); i++) {
+    var chair = global.chairs[i];
+    var playerForSlot = find_player_by_slot(i + 1);
 
-        if (playerForSlot != undefined) {
-            if (!instance_exists(chair.occupant)) {
-                chair.occupant = instance_create_layer(chair.x, chair.y, "Instances", obj_player);
-                chair.occupant.name = playerForSlot.name;
-				   switch (i + 1) {
-            case 1: chair.occupant.sprite_index = spr_player_1; break;
-            case 2: chair.occupant.sprite_index = spr_player_2; break;
-            case 3: chair.occupant.sprite_index = spr_player_3; break;
-            case 4: chair.occupant.sprite_index = spr_player_4; break;
-        }
-            } else {
-                chair.occupant.name = playerForSlot.name;
+    if (playerForSlot != undefined) {
+        if (!instance_exists(chair.occupant)) {
+            chair.occupant = instance_create_layer(chair.x, chair.y, "Players", obj_player);
+            chair.occupant.name = playerForSlot.name;
+
+            switch (i + 1) {
+                case 1: chair.occupant.sprite_index = spr_player_1; break;
+                case 2: chair.occupant.sprite_index = spr_player_2; break;
+                case 3: chair.occupant.sprite_index = spr_player_3; break;
+                case 4: chair.occupant.sprite_index = spr_player_4; break;
             }
-        } else if (instance_exists(chair.occupant)) {
-            instance_destroy(chair.occupant);
-            chair.occupant = noone;
+        } else {
+            chair.occupant.name = playerForSlot.name;
         }
+    } else if (instance_exists(chair.occupant)) {
+        instance_destroy(chair.occupant);
+        chair.occupant = noone;
     }
+}
 
     //--------------------------------------------
     // 2. Girl position
     //--------------------------------------------
     if (instance_exists(obj_girl)) {
-        obj_girl.x = world.girl.x;
-        obj_girl.y = world.girl.y;
+      obj_girl.target_x = world.girl.x;
+obj_girl.target_y = world.girl.y;
+
         obj_girl.girlName = world.girl.name;
         global.girlName = world.girl.name;
     }

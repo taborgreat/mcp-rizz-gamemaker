@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"scr_getSpeakerInstance",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"scr_getSpeakerInstance",
+  "parent":{
+    "name":"MainRoom",
+    "path":"folders/MainRoom.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

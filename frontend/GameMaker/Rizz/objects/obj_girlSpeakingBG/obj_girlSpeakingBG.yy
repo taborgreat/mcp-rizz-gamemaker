@@ -1,13 +1,11 @@
 {
   "$GMObject":"",
-  "%Name":"obj_girlSpeaking",
+  "%Name":"obj_girlSpeakingBG",
   "eventList":[
-    {"$GMEvent":"v1","%Name":"","collisionObjectId":null,"eventNum":64,"eventType":8,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0",},
-    {"$GMEvent":"v1","%Name":"","collisionObjectId":null,"eventNum":0,"eventType":0,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0",},
-    {"$GMEvent":"v1","%Name":"","collisionObjectId":null,"eventNum":0,"eventType":1,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0",},
+    {"$GMEvent":"v1","%Name":"","collisionObjectId":null,"eventNum":0,"eventType":8,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0",},
   ],
   "managed":true,
-  "name":"obj_girlSpeaking",
+  "name":"obj_girlSpeakingBG",
   "overriddenProperties":[],
   "parent":{
     "name":"MainRoom",
@@ -31,7 +29,10 @@
   "resourceType":"GMObject",
   "resourceVersion":"2.0",
   "solid":false,
-  "spriteId":null,
+  "spriteId":{
+    "name":"spr_girlSpeakingBG",
+    "path":"sprites/spr_girlSpeakingBG/spr_girlSpeakingBG.yy",
+  },
   "spriteMaskId":null,
   "visible":true,
 }

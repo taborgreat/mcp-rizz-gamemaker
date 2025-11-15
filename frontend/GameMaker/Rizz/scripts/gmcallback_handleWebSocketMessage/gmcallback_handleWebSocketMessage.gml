@@ -3,7 +3,7 @@
 function gmcallback_handleWebSocketMessage(rawJson) {
     if (is_undefined(rawJson)) exit;
 
-    show_debug_message("Received from JS: " + string(rawJson));
+
     var msg = json_parse(rawJson);
     if (is_undefined(msg) || is_undefined(msg.action)) exit;
 
@@ -79,24 +79,42 @@ function gmcallback_handleWebSocketMessage(rawJson) {
             break;
         }
 
-        case "playerSpeakingTick": {
-            global.currentSpeaker = msg.params.currentSpeaker;
-            global.playerLatestMessage = msg.params.latestMessage;
-            global.timeLeft = msg.params.timeLeft;
-            global.statusText = global.currentSpeaker + " is speaking... (" + string(global.timeLeft) + ")";
+case "playerSpeakingTick": {
+    global.currentSpeaker = msg.params.currentSpeaker;
+    global.playerLatestMessage = msg.params.latestMessage;
+    global.timeLeft = msg.params.timeLeft;
 
-            if (!instance_exists(obj_playerSpeaking)) {
-                var o = instance_create_layer(200, 200, "Instances", obj_playerSpeaking);
-                o.speaker = global.currentSpeaker;
-                o.text = global.playerLatestMessage;
-            } else {
-                with (obj_playerSpeaking) {
-                    speaker = global.currentSpeaker;
-                    text = global.playerLatestMessage;
-                }
+    if (!instance_exists(obj_playerSpeaking)) {
+        var o = instance_create_layer(200, 200, "Instances", obj_playerSpeaking);
+        o.speaker = global.currentSpeaker;
+        o.full_text = global.playerLatestMessage;
+        o.visible_chars = 0;
+        o.char_timer = 0;
+        o.last_timeleft = global.timeLeft;
+    } else {
+        with (obj_playerSpeaking) {
+            speaker = global.currentSpeaker;
+
+            // MESSAGE CHANGED
+            if (full_text != global.playerLatestMessage) {
+                full_text = global.playerLatestMessage;
+                visible_chars = 0;
+                char_timer = 0;
             }
-            break;
+
+            // NEW SPEAKING ROUND (timeLeft jumped up)
+            if (global.timeLeft > last_timeleft) {
+                visible_chars = 0;
+                char_timer = 0;
+            }
+
+            last_timeleft = global.timeLeft;
         }
+    }
+}
+break;
+
+
 
         case "girlSpeaking": {
             global.girlMessage = msg.params.girlMessage;
@@ -124,8 +142,8 @@ function gmcallback_handleWebSocketMessage(rawJson) {
           
 
             if (instance_exists(obj_girl)) {
-                obj_girl.x = newX;
-                obj_girl.y = newY;
+                obj_girl.target_x = newX;
+                obj_girl.target_y = newY;
                 obj_girl.currentDestination = destination;
                 obj_girl.girlName = girlName;
             }
