@@ -60,7 +60,7 @@ export default function ChatRoom({ socket, slotColors, players, spectators, play
 
         socket.addEventListener("message", handler);
         return () => socket.removeEventListener("message", handler);
-    }, [socket, spectators]);
+    }, [socket]);
 
     const sendMessage = () => {
         if (!socket || socket.readyState !== WebSocket.OPEN || !input.trim()) return;
@@ -69,9 +69,28 @@ export default function ChatRoom({ socket, slotColors, players, spectators, play
     };
 
     const isSpectatorMessage = (from) => {
+        const isInSpectators = spectators?.some(s => s.name === from);
+        const isInPlayers = players?.some(p => p.name === from);
 
-        return spectators?.some((s) => s.name === from);
+        return isInSpectators || !isInPlayers;
     };
+
+
+    useEffect(() => {
+        setMessages(prev =>
+            prev.map(m =>
+                m.type === "chat"
+                    ? {
+                        ...m,
+                        isSpectator: isSpectatorMessage(m.from)
+
+                    }
+                    : m
+
+            )
+        );
+    }, [spectators, players]);
+
 
     const getPlayerColor = (name) => {
         const player = players?.find((p) => p.name === name);
@@ -99,7 +118,7 @@ export default function ChatRoom({ socket, slotColors, players, spectators, play
                             onChange={() => setShowSpectatorMessages(!showSpectatorMessages)}
                             style={{ marginRight: "0.4rem" }}
                         />
-                        Show Spectator Messages
+                        Spectators
                     </label>
                 </div>
             )}
@@ -134,11 +153,11 @@ export default function ChatRoom({ socket, slotColors, players, spectators, play
                                 wordWrap: "break-word",
                                 overflowWrap: "break-word",
                                 whiteSpace: "pre-wrap",
-                                marginBottom: "0.75rem",
+                                marginBottom: "0.5rem",
                                 background: isSelf ? "rgba(255, 255, 255, 0.05)" : "transparent",
 
                                 borderBottom: "1px solid rgba(255,255,255,0.1)",
-                                paddingBottom: "0.25rem",
+
                             }}
                         >
                             {m.type === "chat" ? (
