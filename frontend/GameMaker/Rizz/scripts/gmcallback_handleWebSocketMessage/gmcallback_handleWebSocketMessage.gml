@@ -169,7 +169,7 @@ break;
 			
             global.currentRoomId = msg.params.gameRoomId;
             global.localPlayer = { name: msg.params.name };
-			show_debug_message("LOCAL PLAYER NAME: " + string(global.localPlayer.name));
+
 
 
             room_goto(rm_MainRoom);
