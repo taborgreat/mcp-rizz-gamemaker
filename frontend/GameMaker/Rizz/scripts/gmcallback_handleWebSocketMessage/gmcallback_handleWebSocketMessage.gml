@@ -44,6 +44,7 @@ function gmcallback_handleWebSocketMessage(rawJson) {
 
     if (lp != undefined) {
     global.localPlayer.isSpectator = lp.isSpectator;
+	
 } else {
     global.localPlayer.isSpectator = false;
 }
