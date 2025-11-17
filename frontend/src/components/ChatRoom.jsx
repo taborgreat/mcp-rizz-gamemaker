@@ -181,7 +181,7 @@ export default function ChatRoom({ socket, slotColors, players, spectators, play
                     value={input}
                     onChange={e => setInput(e.target.value)}
                     onKeyDown={e => e.key === "Enter" && sendMessage()}
-                    placeholder={socket ? "Type a message..." : "Connecting..."}
+                    placeholder={socket ? "Type..." : "Connecting..."}
                     maxLength={120}
                     style={{
                         flex: 1,

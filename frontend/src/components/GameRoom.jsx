@@ -72,7 +72,7 @@ export default function GameRoom() {
                         className={`rizz-logo clickable`}
                         onClick={handleBack}
                     >
-                        RIZZ
+                        GOT RIZZ
                     </div>
                     <div>⚙️</div>
                 </header>
@@ -83,25 +83,29 @@ export default function GameRoom() {
                             position: "relative",
                             top: 0,
                             left: 0,
-
+                            background: "#d36ab5",
                             width: "100%",
                             textAlign: "center",
                             fontSize: "3rem",
                             fontWeight: "bold",
                             color: "black",
-                            padding: "1rem 0",
+                            padding: "0.2rem 0",
                             zIndex: 1000, // keep above iframe or other elements
                         }}
                     >
-                        Got Rizz
+                        GOT RIZZ
 
                     </header>
-                    <div className="static-curtain"></div>
+
                 </>
             )}
 
 
             <main className="main-area">
+                {!socketReady && (
+                    <div className="static-curtain"></div>
+                )}
+
                 {/* Left panel (always mounted but hidden when not connected) */}
                 <aside className={`player-list ${!socketReady ? "hidden" : ""}`}>
                     <PlayerList
@@ -175,7 +179,7 @@ export default function GameRoom() {
                         <div className="info-card-top"></div>
                         <div className="info-card-body">
                             <h3>About Us</h3>
-                            <p>Rizz is a multiplayer social game.</p>
+                            <p>Holly's</p>
                         </div>
                     </div>
                 </div>
