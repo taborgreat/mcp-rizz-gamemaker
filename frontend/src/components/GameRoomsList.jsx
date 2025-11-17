@@ -87,6 +87,7 @@ export default function GameRoomsList() {
           borderRadius: "8px",
           padding: "8px",
           minHeight: 0,
+
         }}
       >
         {loading ? (

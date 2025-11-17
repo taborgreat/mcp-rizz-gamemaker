@@ -19,6 +19,3 @@ if (!instance_exists(obj_nameInput)) {
 
 
 
-if (!variable_global_exists("playerHead")) global.playerHead = irandom(2);
-if (!variable_global_exists("playerEyes")) global.playerEyes = irandom(2);
-if (!variable_global_exists("playerMouth")) global.playerMouth = irandom(2);

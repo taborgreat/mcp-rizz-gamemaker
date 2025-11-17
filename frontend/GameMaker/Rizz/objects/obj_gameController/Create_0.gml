@@ -1,7 +1,8 @@
 
-chairs = [];
+global.chairs = [];
+
 with (obj_chair) {
-    array_push(other.chairs, id);
+    array_push(global.chairs, id);
 }
 
 

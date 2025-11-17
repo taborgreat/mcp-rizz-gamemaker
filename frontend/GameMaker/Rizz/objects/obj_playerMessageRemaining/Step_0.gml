@@ -1,4 +1,4 @@
-// Step Event (obj_playerMessageRemaining)
+
 if (variable_global_exists("playerTextDraft")) {
     current_text = global.playerTextDraft;
 }

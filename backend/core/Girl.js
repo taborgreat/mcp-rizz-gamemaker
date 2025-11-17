@@ -4,7 +4,7 @@ export class Girl {
     this.name = "Waiting to be named";
     this.x = this.center.x;
     this.y = this.center.y;
-    this.speed = 25;
+    this.speed = 50;
 
     this.broadcast = broadcast;
     this.players = players;
@@ -25,7 +25,7 @@ export class Girl {
     }
   }
 
-  moveTowards(destination, onGameWin) {
+  moveTowards(destination, handleGameWin) {
     const { broadcast, players } = this;
     let target;
 
@@ -52,16 +52,21 @@ export class Girl {
       this.y += (dy / dist) * step;
     }
 
+    const newDx = target.x - this.x;
+    const newDy = target.y - this.y;
+    const newDist = Math.sqrt(newDx * newDx + newDy * newDy);
+
     broadcast(players.players, {
       action: "updateGirl",
       params: { name: this.name, x: this.x, y: this.y, destination },
     });
 
-    if (destination !== "center" && destination !== "stay" && dist < 10) {
-      onGameWin(destination);
+    if (destination !== "center" && destination !== "stay" && newDist <= 10) {
+      handleGameWin(destination);
+      return { win: true, newPos: { x: this.x, y: this.y } };
     }
 
-    return { x: this.x, y: this.y };
+    return { win: false, newPos: { x: this.x, y: this.y } };
   }
 
   resetPosition() {

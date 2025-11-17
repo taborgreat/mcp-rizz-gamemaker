@@ -14,7 +14,13 @@ export class Players {
     if (rawName.length > MAX_NAME_LENGTH) {
       rawName = rawName.slice(0, MAX_NAME_LENGTH);
     }
-    const ensuredUnique = getUniqueName(rawName, this.getPlayerNames());
+
+    //check twice to prevent rare race conditions
+
+    const existing = this.getPlayerNames();
+    let finalName = getUniqueName(rawName, existing);
+
+    finalName = getUniqueName(finalName, this.getPlayerNames());
 
     // find open slot (1–4)
     const occupiedSlots = this.getActivePlayers().map((p) => p.slot);
@@ -31,7 +37,7 @@ export class Players {
     }
 
     const player = {
-      name: ensuredUnique,
+      name: finalName,
       slot,
       latestMessage: "Player missed their turn",
       isSpectator,
@@ -135,55 +141,58 @@ export class Players {
   }
   winReset(winnerName) {
     const allPlayers = this.getAllPlayers();
-    if (allPlayers.length <= this.maxPlayerSlots) return;
 
-    const activePlayers = this.getActivePlayers();
-    const spectators = this.getSpectators();
-
-    // Find the winner
-    const winner = activePlayers.find((p) => p.name === winnerName);
-    if (!winner) {
-      console.warn("⚠️ Winner not found among active players");
+    if (allPlayers.length <= this.maxPlayerSlots) {
       return;
     }
 
-    const winnerSlot = winner.slot;
+    const winner = allPlayers.find((p) => p.name === winnerName);
+    if (!winner) return;
 
-    // Losers go to spectator queue end
-    const losers = activePlayers.filter((p) => p.name !== winnerName);
-    losers.forEach((loser) => {
-      loser.isSpectator = true;
-      loser.slot = this.maxPlayerSlots + 999; // temp push to end
-    });
+    // 1. Identify active and spectator groups cleanly
+    const activePlayers = this.getActivePlayers();
+    const losers = activePlayers.filter((p) => p !== winner);
 
-    // Determine open active slots (excluding winner)
-    const openSlots = [];
-    for (let i = 1; i <= this.maxPlayerSlots; i++) {
-      if (i !== winnerSlot) openSlots.push(i);
-    }
+    // 2. Build a single spectator queue:
+    //    existing spectators first, then losers (added to the end)
+    const spectatorQueue = [
+      ...this.getSpectators(), // original spectators
+      ...losers, // losers always go to the BACK
+    ];
 
-    // Bring in top spectators to fill open slots
-    const newActives = spectators.slice(0, openSlots.length);
-    newActives.forEach((spec, i) => {
-      spec.slot = openSlots[i];
-      spec.isSpectator = false;
-    });
-
-    // Remaining spectators: old spectators (minus those promoted) + losers pushed to end
-    const remainingSpectators = spectators
-      .slice(openSlots.length)
-      .concat(losers);
-
-    // Assign clean slots sequentially after actives
-    let nextSlot = this.maxPlayerSlots + 1;
-    for (const spec of remainingSpectators) {
-      spec.isSpectator = true;
-      spec.slot = nextSlot++;
-    }
-
-    // Ensure winner stays in correct slot (in case something shifted)
-    winner.slot = winnerSlot;
+    // 3. Assign winner back to his slot
     winner.isSpectator = false;
+
+    // 4. Fill every other player slot with spectators from the queue
+    const newActives = [winner];
+    const openSlots = [];
+
+    for (let i = 1; i <= this.maxPlayerSlots; i++) {
+      if (i !== winner.slot) {
+        openSlots.push(i);
+      }
+    }
+
+    for (let i = 0; i < openSlots.length; i++) {
+      const spec = spectatorQueue.shift(); // take next spectator
+      if (!spec) break;
+
+      spec.isSpectator = false;
+      spec.slot = openSlots[i];
+      newActives.push(spec);
+    }
+
+    // 5. Everyone not in newActives is now spectator
+    const activeSet = new Set(newActives);
+
+    const remainingSpectators = allPlayers.filter((p) => !activeSet.has(p));
+
+    // 6. Assign spectator slots sequentially
+    let nextSlot = this.maxPlayerSlots + 1;
+    for (const p of remainingSpectators) {
+      p.isSpectator = true;
+      p.slot = nextSlot++;
+    }
 
     console.log(
       "🎯 Win reset complete:",
