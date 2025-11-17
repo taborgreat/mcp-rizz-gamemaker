@@ -65,6 +65,7 @@ export default function GameRoom() {
 
     return (
         <div className="game-room">
+
             {socketReady ? (
                 <header className="top-bar">
                     <div
@@ -76,24 +77,27 @@ export default function GameRoom() {
                     <div>⚙️</div>
                 </header>
             ) : (
-                <header
-                    style={{
-                        position: "relative",
-                        top: 0,
-                        left: 0,
+                <>
+                    <header
+                        style={{
+                            position: "relative",
+                            top: 0,
+                            left: 0,
 
-                        width: "100%",
-                        textAlign: "center",
-                        fontSize: "3rem",
-                        fontWeight: "bold",
-                        color: "#000000ff",
-                        padding: "1rem 0",
-                        zIndex: 1000, // keep above iframe or other elements
-                    }}
-                >
-                    Got Rizz
-                </header>
+                            width: "100%",
+                            textAlign: "center",
+                            fontSize: "3rem",
+                            fontWeight: "bold",
+                            color: "black",
+                            padding: "1rem 0",
+                            zIndex: 1000, // keep above iframe or other elements
+                        }}
+                    >
+                        Got Rizz
 
+                    </header>
+                    <div className="static-curtain"></div>
+                </>
             )}
 
 
@@ -113,6 +117,7 @@ export default function GameRoom() {
 
                 {/* Game area */}
                 <section className={`game-area ${socketReady ? "connected" : ""}`}>
+
                     <GameMakerWrapper isConnected={socketReady} />
 
                     {/* ✅ Only show toggle + panel when NOT connected */}
@@ -149,29 +154,36 @@ export default function GameRoom() {
             </main>
             {/* 👇 Add this right below main, only when disconnected */}
             {!socketReady && (
-                <div
-                    style={{
-                        margin: "2rem auto",
-                        maxWidth: "800px",
-                        padding: "1.5rem",
-                        background: "rgba(255,255,255,0.05)",
-                        border: "1px solid rgba(255,255,255,0.1)",
-                        borderRadius: "1rem",
-                        color: "#ccc",
-                        textAlign: "center",
-                        lineHeight: 1.5,
-                    }}
-                >
-                    <h2 style={{ color: "#fff", marginBottom: "0.5rem" }}>About Rizz</h2>
-                    <p>
-                        Filler
+                <div className="info-container">
+                    <div className="info-card">
+                        <div className="info-card-top"></div>
+                        <div className="info-card-body">
+                            <h3>How to Play</h3>
+                            <p>Join a room, drop your best rizz lines, and win.</p>
+                        </div>
+                    </div>
 
-                    </p>
+                    <div className="info-card">
+                        <div className="info-card-top"></div>
+                        <div className="info-card-body">
+                            <h3>News</h3>
+                            <p>New skins</p>
+                        </div>
+                    </div>
+
+                    <div className="info-card">
+                        <div className="info-card-top"></div>
+                        <div className="info-card-body">
+                            <h3>About Us</h3>
+                            <p>Rizz is a multiplayer social game.</p>
+                        </div>
+                    </div>
                 </div>
             )}
 
 
+
             <footer className="ad-banner">AD BANNER</footer>
-        </div>
+        </div >
     );
 }

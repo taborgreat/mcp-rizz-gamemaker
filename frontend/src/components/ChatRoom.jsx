@@ -120,7 +120,7 @@ export default function ChatRoom({ socket, slotColors, players, spectators, play
                     overflowY: "auto",
                     background: "#222",
                     borderRadius: "8px",
-                    padding: "8px",
+                    padding: "0px",
                     marginBottom: "8px",
                     minHeight: 0,
                     display: "flex",
