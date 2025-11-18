@@ -11,13 +11,20 @@ body {
   background: #000;
   color: #fff;
   overflow-x: hidden;
+  min-width: 300px;
 }
 
 .game-room {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #000;
+   background: linear-gradient(
+    to bottom,
+    #d36ab5 0%,
+    #d36ab5 20%,
+    #000 20%,
+    #000 100%
+  );
   z-index: 1;
 }
 

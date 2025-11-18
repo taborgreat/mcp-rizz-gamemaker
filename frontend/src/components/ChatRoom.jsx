@@ -39,45 +39,55 @@ export default function ChatRoom({ socket, slotColors, players, spectators, play
     }, [messages, showSpectatorMessages]);
 
     useEffect(() => {
-        if (!socket) return;
+    if (!socket) return;
 
-        const handler = (event) => {
-            try {
-                const data = JSON.parse(event.data);
+    const handler = (event) => {
+        try {
+            const data = JSON.parse(event.data);
 
-                switch (data.action) {
-                    case "chatMessage":
-                        setMessages(prev => {
-                            const next = [...prev, {
-                                type: "chat",
-                                from: data.from,
-                                text: data.text,
-                                isSpectator: isSpectatorMessage(data.from),
-                            }];
-                            return next.slice(-MAX_MESSAGES);
-                        });
-                        break;
+            switch (data.action) {
+                case "chatMessage":
+                    setMessages(prev => {
+                        const next = [...prev, {
+                            type: "chat",
+                            from: data.from,
+                            text: data.text,
+                            isSpectator: isSpectatorMessage(data.from),
+                        }];
+                        return next.slice(-MAX_MESSAGES);
+                    });
+                    break;
 
-                    case "chatSystemMessage": {
-                        const { type, text, name } = data.params;
-                        const messageText =
-                            text ||
-                            (type === "playerJoined" ? `${name} joined the game.` :
-                                type === "playerLeft" ? `${name} left the game.` : "");
+                case "chatSystemMessage": {
+                    const { type, text, name } = data.params;
+                    const messageText =
+                        text ||
+                        (type === "playerJoined" ? `${name} joined the game.` :
+                         type === "playerLeft" ? `${name} left the game.` : "");
 
-                        setMessages(prev => [...prev, { type, text: messageText }]);
-                        break;
-                    }
-
-                    default:
-                        break;
+                    setMessages(prev => [...prev, { type, text: messageText }]);
+                    break;
                 }
-            } catch { }
-        };
 
-        socket.addEventListener("message", handler);
-        return () => socket.removeEventListener("message", handler);
-    }, [socket]);
+                default:
+                    break;
+            }
+        } catch {}
+    };
+
+    const onClose = () => {
+        setMessages([]); // Clear messages when socket closes
+    };
+
+    socket.addEventListener("message", handler);
+    socket.addEventListener("close", onClose);
+
+    return () => {
+        socket.removeEventListener("message", handler);
+        socket.removeEventListener("close", onClose);
+    };
+}, [socket]);
+
 
     useEffect(() => { spectatorsRef.current = spectators; }, [spectators]);
     useEffect(() => { playersRef.current = players; }, [players]);
