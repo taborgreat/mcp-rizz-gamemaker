@@ -189,7 +189,8 @@ export default function GameRoom() {
                             <p>Holly's</p>
                         </div>
                     </div>
-                </div><div className="social-icons">
+                </div>
+                <div className="social-icons">
 
                         <div className="icon-wrapper">
 
