@@ -147,6 +147,10 @@ body {
 }
 
 /* ==================== CONNECTED STATE (GAME ACTIVE) ==================== */
+
+.game-room:has(.game-area.connected) {
+  background: #000 !important;
+}
 .main-area:has(.game-area.connected) {
   display: grid;
   grid-template-columns: 150px 1fr 300px;
@@ -167,6 +171,7 @@ body {
   justify-content: center;
   align-items: flex-start;
   position: relative;
+
 }
 
 /* Wrapper div around iframe */

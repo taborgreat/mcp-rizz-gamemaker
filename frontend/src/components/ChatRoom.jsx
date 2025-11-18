@@ -39,6 +39,9 @@ export default function ChatRoom({ socket, slotColors, players, spectators, play
     }, [messages, showSpectatorMessages]);
 
     useEffect(() => {
+          if (!socket || socket.readyState !== WebSocket.OPEN) {
+        setMessages([]);
+    }
     if (!socket) return;
 
     const handler = (event) => {
@@ -75,18 +78,18 @@ export default function ChatRoom({ socket, slotColors, players, spectators, play
         } catch {}
     };
 
-    const onClose = () => {
-        setMessages([]); // Clear messages when socket closes
-    };
+  
 
     socket.addEventListener("message", handler);
-    socket.addEventListener("close", onClose);
+
 
     return () => {
         socket.removeEventListener("message", handler);
-        socket.removeEventListener("close", onClose);
+  
     };
 }, [socket]);
+
+
 
 
     useEffect(() => { spectatorsRef.current = spectators; }, [spectators]);

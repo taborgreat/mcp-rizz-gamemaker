@@ -22,7 +22,14 @@ export default function GameRoom() {
 
     useEffect(() => {
         setShowRoomList(false);
+         
+        requestAnimationFrame(() => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        })
+    
     }, [socketReady]);
+
+ 
 
     useEffect(() => {
         let interval;
