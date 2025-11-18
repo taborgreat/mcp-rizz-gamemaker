@@ -8,7 +8,7 @@
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
     Ubuntu, sans-serif;
-  background: #000;
+  background: #d36ab5;
   color: #fff;
   overflow-x: hidden;
   min-width: 300px;
@@ -18,7 +18,7 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-   background: linear-gradient(
+  background: linear-gradient(
     to bottom,
     #d36ab5 0%,
     #d36ab5 20%,
@@ -31,19 +31,21 @@ body {
 /* ==================== HEADER / TOP BAR ==================== */
 .top-bar {
   background: #d36ab5;
-  padding: 1rem 2rem;
+
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-end; /* ⬅️ align children to bottom */
   height: 65px;
-  position: sticky;
+  position: relative;
   top: 0;
+
   z-index: 1000;
 }
 
 .rizz-logo {
   font-size: 2rem;
-  font-weight: bold;
+  font-weight: 700;
+
   color: #551a8b;
   letter-spacing: 2px;
 }
@@ -171,7 +173,6 @@ body {
   justify-content: center;
   align-items: flex-start;
   position: relative;
-
 }
 
 /* Wrapper div around iframe */
@@ -184,7 +185,7 @@ body {
 
   display: block !important;
   background: #1a1a1a;
-  border-radius: 8px;
+  border-radius: 4px;
   overflow: hidden;
 }
 
@@ -202,16 +203,19 @@ body {
 .chat-room {
   background: rgba(30, 30, 30, 0.9);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+
   padding: 0.4rem;
   overflow-y: auto;
 }
 
 .player-list {
+  border-radius: 4px 0px 0px 4px;
   grid-column: 1;
 }
 
 .chat-room {
+  border-radius: 0 4px 4px 0;
+
   grid-column: 3;
 }
 .chat-room input,
@@ -256,14 +260,17 @@ body {
   /* Header adjustments */
   .top-bar {
     padding: 0.75rem 1rem;
-    height: 40px;
+    height: 70px;
   }
   .info-container {
     max-width: 90%;
   }
 
   .rizz-logo {
-    font-size: 1.5rem;
+    font-size: 29px;
+    font-weight: 700;
+    line-height: 0.7;
+    font-style: initial;
   }
 
   /* Intro page mobile */
@@ -300,8 +307,8 @@ body {
   .main-area:has(.game-area.connected) {
     grid-template-columns: 0.85fr 1.15fr;
     grid-template-rows: auto 1fr auto;
-    gap: 0.2rem;
-    margin-top: 0px;
+    gap: 0.3rem;
+    margin-top: 1px;
     padding: 0.2rem;
   }
 
@@ -336,6 +343,12 @@ body {
 
 /* ==================== TABLET LAYOUT (576px - 1024px) ==================== */
 @media (min-width: 576px) and (max-width: 1024px) {
+  .rizz-logo {
+    font-size: 55px;
+    font-weight: 700;
+    line-height: 0.7;
+    font-style: initial;
+  }
   .room-list-toggle {
     position: absolute;
 
@@ -345,11 +358,7 @@ body {
   /* Header adjustments */
   .top-bar {
     padding: 0.75rem 1rem;
-    height: 46px;
-  }
-
-  .rizz-logo {
-    font-size: 1.5rem;
+    height: 75px;
   }
 
   /* Intro page mobile */
@@ -555,12 +564,16 @@ body {
   margin: 2rem auto;
   padding: 0 1rem;
   padding-bottom: 1px;
-  margin-bottom: 100px;
+  margin-bottom: 50px;
 }
 
 /* Main card box */
 .info-card {
-  background: rgba(255, 255, 255, 0.06);
+  background: linear-gradient(
+    to bottom,
+    #2a2a2a 0%,
+    /* Darker grey at the top */ #121212 100% /* Fading to near black */
+  );
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 0.4rem;
   overflow: hidden;
@@ -572,7 +585,7 @@ body {
 /* Inside content */
 .info-card-body {
   padding: 1.25rem;
-  text-align: left;
+  text-align: center;
 }
 
 .info-card-body h3 {
@@ -608,4 +621,37 @@ body {
   .ad-banner {
     padding: 1.5rem 1rem; /* remove the giant padding you had */
   }
+}
+
+.social-icons {
+  display: flex;
+  gap: 2rem; /* Space between the icons */
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 150px;
+}
+
+.icon-link {
+  text-decoration: none;
+  color: white;
+  transition: color 0.2s;
+}
+
+.icon-wrapper {
+  padding: 20px;
+  background: linear-gradient(
+    to bottom,
+    #1c1c1c 0%,
+    /* Darker grey at the top */ #121212 100% /* Fading to near black */
+  );
+  border-radius: 10px;
+}
+.icon-link svg {
+  display: block;
+
+  fill: currentColor; /* Inherits the color property */
+}
+
+.icon-link:hover {
+  color: #d36ab5;
 }
