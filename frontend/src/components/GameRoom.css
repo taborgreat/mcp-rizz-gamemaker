@@ -28,24 +28,26 @@ body {
   z-index: 1;
 }
 
+.game-room:has(.game-area.connected) {
+  background: #000 !important;
+}
+
 /* ==================== HEADER / TOP BAR ==================== */
 .top-bar {
   background: #d36ab5;
-
+  padding-left: 1.5%;
+  padding-right: 1.5%;
   display: flex;
   justify-content: space-between;
-  align-items: flex-end; /* ⬅️ align children to bottom */
+  align-items: flex-end;
   height: 65px;
   position: relative;
-  top: 0;
-
   z-index: 1000;
 }
 
 .rizz-logo {
   font-size: 2rem;
   font-weight: 700;
-
   color: #551a8b;
   letter-spacing: 2px;
 }
@@ -58,15 +60,19 @@ body {
 .rizz-logo.clickable:hover {
   transform: scale(1.05);
 }
+.rizz-logo:hover {
+  color: #4b0f3a;
+}
 .rizz-logo:active {
   color: red;
 }
+
 .top-bar > div:last-child {
   font-size: 1.5rem;
   cursor: pointer;
 }
 
-/* ==================== INTRO PAGE (NOT CONNECTED) ==================== */
+/* ==================== MAIN AREA ==================== */
 .main-area {
   flex: 1;
   display: flex;
@@ -75,28 +81,25 @@ body {
   padding-bottom: 10rem;
 }
 
-/* When NOT connected - intro page layout */
+/* ==================== INTRO PAGE (NOT CONNECTED) ==================== */
 .main-area:has(.game-area:not(.connected)) {
   flex-direction: column;
   align-items: center;
-  padding: 1rem 1rem;
+  padding: 1rem;
 }
 
-/* Shrinks the entire intro game visually without transform */
 .game-area:not(.connected) {
-  width: 60vw; /* takes 60% of the screen width */
-  max-width: 600px; /* caps the size */
-  min-width: 300px; /* prevents too small */
+  width: 60vw;
+  max-width: 30%;
+  min-width: 300px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   position: relative;
-  max-width: 30%;
   padding-bottom: 2rem;
 }
 
-/* Game iframe container - 1:1 aspect ratio for intro */
 .game-area:not(.connected) #gameFrame {
   width: 100%;
   max-width: 1080px;
@@ -105,10 +108,82 @@ body {
   background: #d36ab5;
 }
 
-/* Room list toggle button */
+/* ==================== CONNECTED STATE (GAME ACTIVE) ==================== */
+.main-area:has(.game-area.connected) {
+  display: grid;
+  grid-template-columns: 150px 1fr 300px;
+  grid-template-rows: 1fr;
+  align-items: stretch;
+  gap: 0.4rem;
+  padding: 1rem;
+  max-width: 1920px;
+  margin: 10px auto;
+  width: 100%;
+  max-height: calc(50vh - 65px);
+}
+
+.game-area.connected {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  position: relative;
+}
+
+.game-area.connected > div {
+  width: 100% !important;
+  height: auto !important;
+  aspect-ratio: 16 / 9;
+  max-width: min(1920px, 100%);
+  min-height: 200px;
+  display: block !important;
+  background: #1a1a1a;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.game-area.connected #gameFrame {
+  width: 100% !important;
+  height: 100% !important;
+  aspect-ratio: 16 / 9;
+  border: none !important;
+  background: #1a1a1a;
+  display: block !important;
+}
+
+/* ==================== SIDE PANELS ==================== */
+.player-list,
+.chat-room {
+  background: rgba(30, 30, 30, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.4rem;
+  overflow-y: auto;
+}
+
+.player-list {
+  border-radius: 4px 0 0 4px;
+  grid-column: 1;
+}
+
+.chat-room {
+  border-radius: 0 4px 4px 0;
+  grid-column: 3;
+  overflow-x: hidden;
+}
+
+.chat-room input,
+.chat-room button {
+  min-width: 0;
+}
+
+.player-list.hidden,
+.chat-room.hidden {
+  display: none;
+}
+
+/* ==================== ROOM LIST ==================== */
 .room-list-toggle {
   position: absolute;
-
   right: -4rem;
   background: rgba(90, 81, 9, 0.9);
   border: none;
@@ -126,7 +201,6 @@ body {
   transform: scale(1.1);
 }
 
-/* Room list panel */
 .room-list-panel {
   position: absolute;
   top: 4rem;
@@ -142,359 +216,88 @@ body {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 }
 
-/* Hide side panels when not connected */
-.player-list.hidden,
-.chat-room.hidden {
-  display: none;
-}
-
-/* ==================== CONNECTED STATE (GAME ACTIVE) ==================== */
-
-.game-room:has(.game-area.connected) {
-  background: #000 !important;
-}
-.main-area:has(.game-area.connected) {
+/* ==================== INFO CARDS ==================== */
+.info-container {
   display: grid;
-  grid-template-columns: 150px 1fr 300px;
-  grid-template-rows: 1fr; /* allow side panels to scale with viewport */
-  align-items: stretch;
-  gap: 0.4rem;
-  padding: 1rem;
-  max-width: 1920px;
-  margin: 10px auto;
-  width: 100%;
-  max-height: calc(50vh - 65px);
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  max-width: 70%;
+  margin: 2rem auto 50px;
+  padding: 0 1rem 1px;
 }
 
-/* Game area when connected - 16:9 aspect ratio */
-.game-area.connected {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  position: relative;
-}
-
-/* Wrapper div around iframe */
-.game-area.connected > div {
-  width: 100% !important;
-  height: auto !important;
-  aspect-ratio: 16 / 9;
-  max-width: min(1920px, 100%);
-  min-height: 200px;
-
-  display: block !important;
-  background: #1a1a1a;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.game-area.connected #gameFrame {
-  width: 100% !important;
-  height: 100% !important;
-  aspect-ratio: 16 / 9;
-  border: none !important;
-  background: #1a1a1a;
-  display: block !important;
-}
-
-/* Side panels when connected */
-.player-list,
-.chat-room {
-  background: rgba(30, 30, 30, 0.9);
+.info-card {
+  background: linear-gradient(to bottom, #2a2a2a 0%, #121212 100%);
   border: 1px solid rgba(255, 255, 255, 0.1);
-
-  padding: 0.4rem;
-  overflow-y: auto;
+  border-radius: 0.4rem;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 400px;
+}
+.info-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease,
+    border-color 0.25s ease;
+  transform-origin: center;
 }
 
-.player-list {
-  border-radius: 4px 0px 0px 4px;
-  grid-column: 1;
+.info-card:hover {
+  transform: scale(1.05); /* grows evenly in all directions */
+  box-shadow: 0 0 25px rgba(211, 106, 181, 0.25);
 }
 
-.chat-room {
-  border-radius: 0 4px 4px 0;
-
-  grid-column: 3;
-}
-.chat-room input,
-.chat-room button {
-  min-width: 0; /* allows flexbox shrink */
-}
-
-.chat-room {
-  overflow-x: hidden; /* prevents horizontal scrolling */
-}
-
-/* ==================== FOOTER / AD BANNER ==================== */
-.ad-banner {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-
-  /* your existing styles */
-  background: #fff;
-  color: #000;
+.info-card-body {
+  padding: 1.25rem;
   text-align: center;
-  padding: 1.5rem;
-  font-size: 2rem;
-  font-weight: bold;
-  letter-spacing: 4px;
-  border-top: 3px solid #c967d6;
-
-  z-index: 2000; /* above everything */
 }
 
-/* ==================== MOBILE LAYOUT (< 575px) ==================== */
-
-@media (max-width: 575px) {
-  .room-list-toggle {
-    position: absolute;
-
-    top: -1rem;
-    left: -0.5rem;
-  }
-
-  /* Header adjustments */
-  .top-bar {
-    padding: 0.75rem 1rem;
-    height: 70px;
-  }
-  .info-container {
-    max-width: 90%;
-  }
-
-  .rizz-logo {
-    font-size: 29px;
-    font-weight: 700;
-    line-height: 0.7;
-    font-style: initial;
-  }
-
-  /* Intro page mobile */
-  .main-area:has(.game-area:not(.connected)) {
-    padding: 1rem 0.5rem;
-
-    transform-origin: top center;
-    padding-bottom: 3.4rem;
-  }
-
-  .game-area:not(.connected) {
-    max-width: 100%;
-    padding: 0 0.5rem;
-  }
-
-  .game-area:not(.connected) #gameFrame {
-    max-width: 100%;
-    border-radius: 4px;
-  }
-
-  .room-list-toggle {
-    width: 45px;
-    height: 45px;
-    font-size: 1.25rem;
-  }
-
-  .room-list-panel {
-    right: 0.5rem;
-    left: 0.5rem;
-    max-width: calc(100% - 1rem);
-  }
-
-  /* Connected state mobile - stack vertically */
-  .main-area:has(.game-area.connected) {
-    grid-template-columns: 0.85fr 1.15fr;
-    grid-template-rows: auto 1fr auto;
-    gap: 0.3rem;
-    margin-top: 1px;
-    padding: 0.2rem;
-  }
-
-  .game-area.connected {
-    grid-column: 1 / 3; /* spans both columns */
-    grid-row: 1;
-  }
-
-  .game-area.connected #gameFrame {
-    border-radius: 1px;
-  }
-
-  .player-list {
-    grid-column: 1;
-    grid-row: 2;
-  }
-
-  .chat-room {
-    grid-column: 2;
-    grid-row: 2;
-    min-height: 300px;
-    height: 60vh;
-  }
-
-  /* Footer mobile */
-  .ad-banner {
-    padding-top: 500px;
-    padding: 1.5rem 1rem;
-    font-size: 1.5rem;
-  }
+.info-card-body h3 {
+  margin: 0 0 0.5rem;
+  color: white;
+  font-size: 1.4rem;
+  font-weight: 700;
 }
 
-/* ==================== TABLET LAYOUT (576px - 1024px) ==================== */
-@media (min-width: 576px) and (max-width: 1024px) {
-  .rizz-logo {
-    font-size: 55px;
-    font-weight: 700;
-    line-height: 0.7;
-    font-style: initial;
-  }
-  .room-list-toggle {
-    position: absolute;
-
-    top: -1rem;
-    left: -0.5rem;
-  }
-  /* Header adjustments */
-  .top-bar {
-    padding: 0.75rem 1rem;
-    height: 75px;
-  }
-
-  /* Intro page mobile */
-  .main-area:has(.game-area:not(.connected)) {
-    padding: 1rem 0.5rem;
-    transform: scale(1);
-    transform-origin: top center;
-  }
-
-  .game-area:not(.connected) {
-    max-width: 100%;
-    padding: 0 0.5rem;
-  }
-
-  .game-area:not(.connected) #gameFrame {
-    max-width: 100%;
-    border-radius: 4px;
-  }
-
-  .room-list-toggle {
-    width: 45px;
-    height: 45px;
-    font-size: 1.25rem;
-  }
-
-  .room-list-panel {
-    right: 0.5rem;
-    left: 0.5rem;
-    max-width: calc(100% - 1rem);
-  }
-
-  /* Connected state mobile - stack vertically */
-  .main-area:has(.game-area.connected) {
-    grid-template-columns: 0.8fr 1.2fr;
-    grid-template-rows: auto 1fr auto;
-    margin-top: 0px;
-    gap: 0.5rem;
-    padding: 0.5rem;
-  }
-
-  .game-area.connected {
-    grid-column: 1 / 3; /* spans both columns */
-    grid-row: 1;
-  }
-
-  .game-area.connected #gameFrame {
-    border-radius: 4px;
-  }
-
-  .player-list {
-    grid-column: 1;
-    grid-row: 2;
-  }
-
-  .chat-room {
-    grid-column: 2;
-    grid-row: 2;
-    height: 50vh;
-    min-height: 300px;
-  }
-  .chat-room {
-    padding-bottom: 90px;
-  }
-
-  .main-area {
-    padding-bottom: 90px;
-  }
-
-  /* Footer mobile */
-  .ad-banner {
-    padding: 1.5rem 1rem;
-    font-size: 1.5rem;
-  }
+.info-card-body p {
+  color: #ccc;
+  font-size: 0.95rem;
+  line-height: 1.4;
 }
 
-/* ==================== NARROW LAYOUT (575px - 900px) ==================== */
-@media (min-width: 576px) and (max-width: 900px) {
-  /* Intro page adjustments */
-  .game-area:not(.connected) {
-    max-width: 90%;
-    transform: scale(1);
-  }
+/* ==================== SOCIAL ICONS ==================== */
+.social-icons {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 150px;
 }
 
-/* ==================== LARGE DESKTOP (> 1600px) ==================== */
-@media (min-width: 1600px) {
-  .main-area:has(.game-area.connected) {
-    grid-template-columns: 280px 1fr 350px;
-    gap: 1.5rem;
-  }
-
-  .player-list,
-  .chat-room {
-    padding: 1.5rem;
-    height: 55vh;
-  }
+.icon-link {
+  text-decoration: none;
+  color: white;
+  transition: color 0.2s;
 }
 
-/* ==================== SCROLLBAR STYLING ==================== */
-.player-list::-webkit-scrollbar,
-.chat-room::-webkit-scrollbar,
-.room-list-panel::-webkit-scrollbar {
-  width: 8px;
+.icon-wrapper {
+  padding: 20px;
+  background: linear-gradient(to bottom, #1c1c1c 0%, #121212 100%);
+  border-radius: 10px;
 }
 
-.player-list::-webkit-scrollbar-track,
-.chat-room::-webkit-scrollbar-track,
-.room-list-panel::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 4px;
+.icon-link svg {
+  display: block;
+  fill: currentColor;
 }
 
-.player-list::-webkit-scrollbar-thumb,
-.chat-room::-webkit-scrollbar-thumb,
-.room-list-panel::-webkit-scrollbar-thumb {
-  background: rgba(201, 103, 214, 0.5);
-  border-radius: 4px;
+.icon-wrapper:hover .icon-link {
+  color: #d36ab5;
+}
+.icon-wrapper:hover {
+  transform: translateY(-4px) scale(1.02);
 }
 
-.player-list::-webkit-scrollbar-thumb:hover,
-.chat-room::-webkit-scrollbar-thumb:hover,
-.room-list-panel::-webkit-scrollbar-thumb:hover {
-  background: rgba(201, 103, 214, 0.7);
-}
-
-/* ==================== UTILITY CLASSES ==================== */
-.clickable {
-  cursor: pointer;
-  user-select: none;
-}
-
-.hidden {
-  display: none !important;
-}
-
-/* ==================== STATIC CURTAIN BEHIND IFRAME ==================== */
+/* ==================== STATIC CURTAIN ==================== */
 .static-curtain {
   position: absolute;
   max-height: 100%;
@@ -502,9 +305,6 @@ body {
   background: #d36ab5;
   z-index: 0;
   pointer-events: none;
-}
-
-.static-curtain {
   clip-path: polygon(
     0% 0%,
     100% 0%,
@@ -552,106 +352,258 @@ body {
   );
 }
 
-/* ============================================================
-   THREE INFO CARDS (How to Play / News / About Us)
-   ============================================================ */
-
-.info-container {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
-  max-width: 70%;
-  margin: 2rem auto;
-  padding: 0 1rem;
-  padding-bottom: 1px;
-  margin-bottom: 50px;
-}
-
-/* Main card box */
-.info-card {
-  background: linear-gradient(
-    to bottom,
-    #2a2a2a 0%,
-    /* Darker grey at the top */ #121212 100% /* Fading to near black */
-  );
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 0.4rem;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  height: 400px;
-}
-
-/* Inside content */
-.info-card-body {
-  padding: 1.25rem;
+/* ==================== AD BANNER ==================== */
+.ad-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #fff;
+  color: #000;
   text-align: center;
+  padding: 1.5rem;
+  font-size: 2rem;
+  font-weight: bold;
+  letter-spacing: 4px;
+  border-top: 3px solid #c967d6;
+  z-index: 2000;
 }
 
-.info-card-body h3 {
-  margin: 0 0 0.5rem 0;
-  color: white;
-  font-size: 1.4rem;
-  font-weight: 700;
+/* ==================== SCROLLBAR STYLING ==================== */
+.player-list::-webkit-scrollbar,
+.chat-room::-webkit-scrollbar,
+.room-list-panel::-webkit-scrollbar {
+  width: 8px;
 }
 
-.info-card-body p {
-  color: #ccc;
-  font-size: 0.95rem;
-  line-height: 1.4;
+.player-list::-webkit-scrollbar-track,
+.chat-room::-webkit-scrollbar-track,
+.room-list-panel::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
 }
 
-/* MOBILE: stack vertically */
-@media (max-width: 768px) {
+.player-list::-webkit-scrollbar-thumb,
+.chat-room::-webkit-scrollbar-thumb,
+.room-list-panel::-webkit-scrollbar-thumb {
+  background: rgba(201, 103, 214, 0.5);
+  border-radius: 4px;
+}
+
+.player-list::-webkit-scrollbar-thumb:hover,
+.chat-room::-webkit-scrollbar-thumb:hover,
+.room-list-panel::-webkit-scrollbar-thumb:hover {
+  background: rgba(201, 103, 214, 0.7);
+}
+
+/* ==================== UTILITY CLASSES ==================== */
+.clickable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ==================== MOBILE LAYOUT (< 575px) ==================== */
+@media (max-width: 575px) {
+  .rizz-title {
+    font-size: 1rem;
+  }
+  .top-bar {
+    padding: 0.75rem 3% 0.75rem 3%;
+    height: 70px;
+  }
+
+  .rizz-logo {
+    font-size: 29px;
+    font-weight: 700;
+    line-height: 0.7;
+    font-style: initial;
+  }
+
+  .top-bar > div:last-child {
+    font-size: 1.5rem;
+    padding-right: 1.9%;
+    line-height: 0.9;
+  }
+
+  .info-container {
+    max-width: 90%;
+  }
+
+  .main-area:has(.game-area:not(.connected)) {
+    padding: 1rem 0.5rem 3.4rem;
+    transform-origin: top center;
+  }
+
+  .game-area:not(.connected) {
+    max-width: 100%;
+    padding: 0 0.5rem;
+  }
+
+  .game-area:not(.connected) #gameFrame {
+    max-width: 100%;
+    border-radius: 4px;
+  }
+
+  .room-list-toggle {
+    position: absolute;
+    top: -1rem;
+    left: -0.5rem;
+    width: 45px;
+    height: 45px;
+    font-size: 1.25rem;
+  }
+
+  .room-list-panel {
+    right: 0.5rem;
+    left: 0.5rem;
+    max-width: calc(100% - 1rem);
+  }
+
+  .main-area:has(.game-area.connected) {
+    grid-template-columns: 0.83fr 1.17fr;
+    grid-template-rows: auto 1fr auto;
+    gap: 0.3rem;
+    margin-top: 1px;
+    padding: 0.2rem 0.2rem 90px;
+  }
+
+  .game-area.connected {
+    grid-column: 1 / 3;
+    grid-row: 1;
+  }
+
+  .game-area.connected #gameFrame {
+    border-radius: 1px;
+  }
+
+  .player-list {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .chat-room {
+    grid-column: 2;
+    grid-row: 2;
+    min-height: 300px;
+    height: 60vh;
+    padding-bottom: 90px;
+  }
+
+  .ad-banner {
+    padding: 1.5rem 1rem;
+    font-size: 1.5rem;
+  }
+
   .info-container {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ==================== TABLET LAYOUT (576px - 1024px) ==================== */
+@media (min-width: 576px) and (max-width: 1024px) {
+  .top-bar {
+    padding: 0.75rem 1rem;
+    height: 75px;
+  }
+
+  .rizz-logo {
+    font-size: 55px;
+    font-weight: 700;
+    line-height: 0.7;
+    font-style: initial;
+  }
+
+  .main-area:has(.game-area:not(.connected)) {
+    padding: 1rem 0.5rem;
+    transform-origin: top center;
+  }
+
+  .game-area:not(.connected) {
+    max-width: 100%;
+    padding: 0 0.5rem;
+  }
+
+  .game-area:not(.connected) #gameFrame {
+    max-width: 100%;
+    border-radius: 4px;
+  }
+
+  .room-list-toggle {
+    position: absolute;
+    top: -1rem;
+    left: -0.5rem;
+    width: 45px;
+    height: 45px;
+    font-size: 1.25rem;
+  }
+
+  .room-list-panel {
+    right: 0.5rem;
+    left: 0.5rem;
+    max-width: calc(100% - 1rem);
+  }
+
+  .main-area:has(.game-area.connected) {
+    grid-template-columns: 0.8fr 1.2fr;
+    grid-template-rows: auto 1fr auto;
+    margin-top: 0;
+    gap: 0.5rem;
+    padding: 0.5rem 0.5rem 90px;
+  }
+
+  .game-area.connected {
+    grid-column: 1 / 3;
+    grid-row: 1;
+  }
+
+  .game-area.connected #gameFrame {
+    border-radius: 4px;
+  }
+
+  .player-list {
+    grid-column: 1;
+    grid-row: 2;
+  }
+
+  .chat-room {
+    grid-column: 2;
+    grid-row: 2;
+    height: 50vh;
+    min-height: 300px;
+    padding-bottom: 90px;
+  }
+
+  .ad-banner {
+    padding: 1.5rem 1rem;
+    font-size: 1.5rem;
+  }
+
+  .info-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==================== NARROW LAYOUT (576px - 900px) ==================== */
+@media (min-width: 576px) and (max-width: 900px) {
+  .game-area:not(.connected) {
     max-width: 90%;
   }
 }
 
-@media (max-width: 575px) {
+/* ==================== LARGE DESKTOP (> 1600px) ==================== */
+@media (min-width: 1600px) {
+  .main-area:has(.game-area.connected) {
+    grid-template-columns: 280px 1fr 350px;
+    gap: 1.5rem;
+  }
+
+  .player-list,
   .chat-room {
-    padding-bottom: 90px; /* space for ad */
+    padding: 1.5rem;
+    height: 55vh;
   }
-
-  .main-area {
-    padding-bottom: 90px; /* ensures scroll clears ad */
-  }
-
-  .ad-banner {
-    padding: 1.5rem 1rem; /* remove the giant padding you had */
-  }
-}
-
-.social-icons {
-  display: flex;
-  gap: 2rem; /* Space between the icons */
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 150px;
-}
-
-.icon-link {
-  text-decoration: none;
-  color: white;
-  transition: color 0.2s;
-}
-
-.icon-wrapper {
-  padding: 20px;
-  background: linear-gradient(
-    to bottom,
-    #1c1c1c 0%,
-    /* Darker grey at the top */ #121212 100% /* Fading to near black */
-  );
-  border-radius: 10px;
-}
-.icon-link svg {
-  display: block;
-
-  fill: currentColor; /* Inherits the color property */
-}
-
-.icon-link:hover {
-  color: #d36ab5;
 }

@@ -86,6 +86,7 @@ export default function GameRoom() {
             ) : (
                 <>
                     <header
+                        className="rizz-title"
                         style={{
                             position: "relative",
                             top: 0,
@@ -190,7 +191,7 @@ export default function GameRoom() {
                         </div>
                     </div>
                 </div>
-                <div className="social-icons">
+                    <div className="social-icons">
 
                         <div className="icon-wrapper">
 
