@@ -11,15 +11,16 @@ function html_submit_name_connect(element) {
     var name = values[? "username"];
     ds_map_destroy(values);
 
- 
-
-
     var msg = ds_map_create();
     msg[? "name"] = name;
+    msg[? "gameRoomId"] = global.roomSelectedAttempt;
 
+    var ps = array_create(3);
+    ps[0] = global.playerHead;
+    ps[1] = global.playerFace;
+    ps[2] = global.playerMouth;
+    msg[? "playerStyle"] = ps;
 
-    
-            msg[? "gameRoomId"] = global.roomSelectedAttempt;
 
     var msg_json = json_encode(msg);
     show_debug_message("➡️ Sending join message: " + msg_json);
@@ -27,5 +28,4 @@ function html_submit_name_connect(element) {
 
     ds_map_destroy(msg);
     global.html_name_form = element;
-	
 }

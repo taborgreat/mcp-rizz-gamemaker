@@ -88,15 +88,19 @@ function gmcallback_handleWebSocketMessage(rawJson) {
             global.currentSpeaker = msg.params.currentSpeaker;
             global.playerLatestMessage = msg.params.latestMessage;
             global.timeLeft = msg.params.timeLeft;
+			global.currentSpeakerStyle = msg.params.style;
+			global.currentSpeakerSlot = msg.params.slot;
 
             // Create once if needed, otherwise update fields.
             if (!instance_exists(obj_playerSpeaking)) {
-                var o = instance_create_layer(200, 200, "Instances", obj_playerSpeaking);
+                var o = instance_create_layer(50, 150, "Instances", obj_playerSpeaking);
                 o.speaker = global.currentSpeaker;
                 o.full_text = global.playerLatestMessage;
                 o.visible_chars = 0;
                 o.char_timer = 0;
                 o.last_timeleft = global.timeLeft;
+				o.speaker_style = global.currentSpeakerStyle;
+				o.speaker_slot = global.currentSpeakerSlot;
             } else {
                 with (obj_playerSpeaking) {
                     // MESSAGE CHANGED
@@ -114,6 +118,9 @@ function gmcallback_handleWebSocketMessage(rawJson) {
 
                     last_timeleft = global.timeLeft;
                     speaker = global.currentSpeaker;
+					speaker_style = global.currentSpeakerStyle;
+					speaker_slot = global.currentSpeakerSlot;
+
                 }
             }
             break;
