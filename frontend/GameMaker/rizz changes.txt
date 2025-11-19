@@ -1,0 +1,9 @@
+-Changed out old art for new art
+-Added "scr_sinewave" in art folder, which enables the use of custom sine wave functions (sine_wave, sine_between)
+-Added breathing effect in "obj_player"
+-For small player & girl sprites, I moved their origin to near bottom-middle. That way it's at their feet (standard for this style of top_down)
+-Fixed shadow sprite, but it should still be moved to o_player draw event
+-Added portrait sprites for player
+-Implemented portrait sprites into character customizer -> shirt and background frame are drawn in obj_player_face(temp)
+
+REMEMBER... portrait mouths will eventually have 2 frames each. mouth closed & mouth open (for animation purposes) 

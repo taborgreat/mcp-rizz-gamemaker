@@ -1,4 +1,3 @@
-// In Create event
 full_text = "";
 visible_chars = 0;
 char_timer = 0;

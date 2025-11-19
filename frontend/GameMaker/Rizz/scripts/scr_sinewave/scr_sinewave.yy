@@ -1,0 +1,13 @@
+{
+  "$GMScript":"v1",
+  "%Name":"scr_sinewave",
+  "isCompatibility":false,
+  "isDnD":false,
+  "name":"scr_sinewave",
+  "parent":{
+    "name":"Art",
+    "path":"folders/Art.yy",
+  },
+  "resourceType":"GMScript",
+  "resourceVersion":"2.0",
+}

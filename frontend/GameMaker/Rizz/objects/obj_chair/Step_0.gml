@@ -31,13 +31,13 @@ if (
 ) {
 
     if (!instance_exists(obj_local_player_pointer)) {
-        var p = instance_create_layer(x, y - 32, "Instances", obj_local_player_pointer);
+        var p = instance_create_layer(x, y - 45, "Instances", obj_local_player_pointer);
         p.parent_chair = id;
     } else {
         with (obj_local_player_pointer) {
             if (parent_chair == other.id) {
                 x = other.x;
-                y = other.y - 32;
+                y = other.y - 45;
             }
         }
     }
