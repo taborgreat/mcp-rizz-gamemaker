@@ -6,7 +6,7 @@ export class Players {
     this.maxPlayerSlots = 4;
   }
 
-  addPlayer(ws, name) {
+  addPlayer(ws, name, style) {
     const MAX_NAME_LENGTH = 13;
     let rawName = (name ?? "").trim();
     if (!rawName) rawName = "Player";
@@ -41,6 +41,7 @@ export class Players {
       slot,
       latestMessage: "Player missed their turn",
       isSpectator,
+      style,
     };
 
     this.players.set(ws, player);

@@ -1,3 +1,5 @@
+import { normalizeStyle } from "../core/utils/utils.js";
+
 import { WebSocketServer } from "ws";
 import { roomsInstance } from "../RoomsInstance.js";
 import { broadcast } from "../core/Broadcaster.js";
@@ -43,17 +45,28 @@ export function startWebSocketServer(httpServer) {
             return;
           }
 
-          // Validate the parsed shape
           let playerName =
             typeof parsed.name === "string" ? parsed.name.trim() : null;
           const gameRoomId =
             parsed.gameRoomId === null || typeof parsed.gameRoomId === "string"
               ? parsed.gameRoomId
               : null;
+
           playerName = sanitizeMessage(playerName || "");
           if (!playerName.trim()) playerName = "Player";
 
-          roomsInstance.joinRoom(ws, playerName, gameRoomId);
+          let style = parsed.playerStyle;
+
+          if (typeof style === "string") {
+            try {
+              style = JSON.parse(style);
+            } catch {
+              style = null;
+            }
+          }
+
+          const playerStyle = normalizeStyle(style);
+          roomsInstance.joinRoom(ws, playerName, gameRoomId, playerStyle);
           break;
         }
 
