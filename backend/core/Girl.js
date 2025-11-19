@@ -1,6 +1,6 @@
 export class Girl {
   constructor(broadcast, players) {
-    this.center = { x: 240, y: 120 };
+    this.center = { x: 240, y: 128 };
     this.name = "Waiting to be named";
     this.x = this.center.x;
     this.y = this.center.y;
@@ -13,13 +13,13 @@ export class Girl {
   getChairPosition(slot) {
     switch (slot) {
       case 1: // left
-        return { x: 170, y: 120 };
+        return { x: 176, y: 128 };
       case 2: // right
-        return { x: 310, y: 110 };
+        return { x: 304, y: 128 };
       case 3: // up
-        return { x: 240, y: 50 };
+        return { x: 240, y: 64 };
       case 4: // down
-        return { x: 240, y: 190 };
+        return { x: 240, y: 192 };
       default:
         return this.center;
     }

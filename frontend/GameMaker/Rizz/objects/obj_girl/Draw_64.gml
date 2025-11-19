@@ -35,7 +35,7 @@ draw_text(x * 4, (y + 20) * 4, girlName);
 
 
 draw_set_color(c_white);
-draw_text(x * 4, (y*4) - sprite_get_height(sprite_index) / 2 - 88, thought);
+draw_text(x * 4, (y*4) - sprite_get_height(sprite_index) / 2 - 120, thought);
 
     }
 }

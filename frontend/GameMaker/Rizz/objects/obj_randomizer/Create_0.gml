@@ -1,9 +1,9 @@
-global.playerHeadMax  = 3; 
-global.playerEyesMax  = 3; 
-global.playerMouthMax = 3; 
+global.playerHeadMax  = 4; 
+global.playerFaceMax  = 4; 
+global.playerMouthMax = 4; 
 
 global.playerHead  = irandom(global.playerHeadMax  - 1);
-global.playerEyes  = irandom(global.playerEyesMax  - 1);
+global.playerFace  = irandom(global.playerFaceMax  - 1);
 global.playerMouth = irandom(global.playerMouthMax - 1);
 
 image_speed = 0.8;

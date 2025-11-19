@@ -9,6 +9,6 @@ if (instance_exists(obj_curtain_left)) {
         var wrap_width = 800;
         var line_sep = 50;
 
-        draw_text_ext(x * 3, y * 3.7, speaker + ": " + partial, line_sep, wrap_width);
+        draw_text_ext(x * 11.4, y * 5.1, speaker + ": " + partial, line_sep, wrap_width);
     }
 }

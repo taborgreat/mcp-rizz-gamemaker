@@ -1,7 +1,7 @@
 
 switch (section) {
-    case "head":  global.playerHead = (global.playerHead + direction + global.playerHeadMax) mod 3; break;
-    case "eyes":  global.playerEyes = (global.playerEyes + direction + global.playerHeadMax) mod 3; break;
-    case "mouth": global.playerMouth = (global.playerMouth + direction + global.playerMouthMax) mod 3; break;
+    case "head":  global.playerHead = (global.playerHead + direction + global.playerHeadMax) mod 4; break;
+    case "face":  global.playerFace = (global.playerFace + direction + global.playerFaceMax) mod 4; break;
+    case "mouth": global.playerMouth = (global.playerMouth + direction + global.playerMouthMax) mod 4; break;
 }
 

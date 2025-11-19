@@ -237,6 +237,8 @@ if (result.win) {
           action: "playerSpeakingTick",
           params: {
             currentSpeaker: player.name,
+            slot: player.slot,
+            style: player.style,
             latestMessage: message,
             timeLeft: remainingSeconds,
           },

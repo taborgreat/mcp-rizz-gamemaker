@@ -1,2 +1,2 @@
-section = "eyes";
+section = "face";
 direction = 1;

@@ -44,7 +44,7 @@ export class Rooms {
     return null;
   }
 
-  async joinRoom(ws, name, requestedRoomId) {
+  async joinRoom(ws, name, requestedRoomId, playerStyle) {
     const roomId = requestedRoomId != null ? Number(requestedRoomId) : null;
 
     // determine which room to assign
@@ -75,10 +75,12 @@ export class Rooms {
 
     const { players, girl, state } = roomData;
 
-    const player = players.addPlayer(ws, name);
+    const player = players.addPlayer(ws, name, playerStyle);
     player.gameRoomId = assignedRoom;
     players.updateRanks(girl, broadcast);
-    console.log(`👥 ${player.name} joined room ${assignedRoom}`);
+    console.log(
+      `👥 ${player.name} joined room ${assignedRoom} with style ${playerStyle}`
+    );
 
     await sleep(500); //small delay to let frontend load
     // notify individual player for game room and santised name
