@@ -46,6 +46,7 @@ export class GameState {
       case "countdown": {
         const randomIndex = Math.floor(Math.random() * girlNames.length);
         this.girl.name = girlNames[randomIndex];
+        this.girl.style = this.girl.generateRandomStyle();
 
         console.log(
           `💁 [Room ${this.gameRoomId}] Girl's name: ${this.girl.name}`
@@ -95,11 +96,15 @@ export class GameState {
 
       case "girlSpeaking": {
         const girlMessage = generateGirlMessage(this.players);
+           this.girl.emotion = this.girl.generateRandomEmotion();
         console.log(`💬 [Room ${this.gameRoomId}] Girl says: ${girlMessage}`);
 
         this.broadcastRoom({
           action: "girlSpeaking",
-          params: { girlMessage },
+            params: {
+    girlMessage: girlMessage,
+    emotion: this.girl.emotion
+  },
         });
 
         this.timer = setTimeout(() => this.setState("girlMoving", 20), 5000);
@@ -194,11 +199,15 @@ if (result.win) {
 
     let currentIndex = 0;
 
+
+
     const speakNext = () => {
       if (currentIndex >= playerList.length) {
         this.setState("girlSpeaking");
         return;
       }
+      //for now just generate a random emotion each speaking turn
+    this.girl.emotion = this.girl.generateRandomEmotion();
 
       const player = playerList[currentIndex];
       const message = player.latestMessage || "";
@@ -241,6 +250,7 @@ if (result.win) {
             style: player.style,
             latestMessage: message,
             timeLeft: remainingSeconds,
+            girlEmotion: this.girl.emotion
           },
         });
 
