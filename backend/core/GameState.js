@@ -96,6 +96,7 @@ export class GameState {
 
       case "girlSpeaking": {
         const girlMessage = generateGirlMessage(this.players);
+        //for now just generate a random emotion
            this.girl.emotion = this.girl.generateRandomEmotion();
         console.log(`💬 [Room ${this.gameRoomId}] Girl says: ${girlMessage}`);
 
