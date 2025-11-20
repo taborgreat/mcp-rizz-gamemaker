@@ -11,10 +11,7 @@ if (global.gameState == "girlSpeaking") {
     exit;
 }
 
-if (global.gameState == "girlMoving") {
-    visible = false;
-    exit;
-}
+
 
 if (global.gameState == "playerSpeaking") {
     visible = (occupant.name != global.currentSpeaker);

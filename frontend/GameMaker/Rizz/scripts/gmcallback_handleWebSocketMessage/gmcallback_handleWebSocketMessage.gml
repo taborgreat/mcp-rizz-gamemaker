@@ -90,6 +90,7 @@ function gmcallback_handleWebSocketMessage(rawJson) {
             global.timeLeft = msg.params.timeLeft;
 			global.currentSpeakerStyle = msg.params.style;
 			global.currentSpeakerSlot = msg.params.slot;
+			global.girlEmotion = msg.params.girlEmotion;
 
             // Create once if needed, otherwise update fields.
             if (!instance_exists(obj_playerSpeaking)) {
@@ -128,6 +129,7 @@ function gmcallback_handleWebSocketMessage(rawJson) {
 
         case "girlSpeaking": {
             global.girlMessage = msg.params.girlMessage;
+			global.girlEmotion = msg.params.girlEmotion;
             global.statusText = "The girl is speaking...";
 
             if (!instance_exists(obj_girlSpeaking)) {

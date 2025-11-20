@@ -77,7 +77,10 @@ function update_world_state(world) {
         obj_girl.target_y = world.girl.y;
         obj_girl.girlName = world.girl.name;
         global.girlName = world.girl.name;
+		global.girlStyle = world.girl.style;
+        global.girlEmotion = world.girl.emotion;
     }
+    
 
     //--------------------------------------------
     // 3. Visual indicators / HUD messages
