@@ -1,24 +1,7 @@
 var occ_exists = (occupant != noone && instance_exists(occupant));
 var lp_exists = is_struct(global.localPlayer);
 
-if (!occ_exists || !lp_exists) {
-    visible = false;
-    exit;
-}
 
-if (global.gameState == "girlSpeaking") {
-    visible = true;
-    exit;
-}
-
-
-
-if (global.gameState == "playerSpeaking") {
-    visible = (occupant.name != global.currentSpeaker);
-    exit;
-}
-
-visible = true;
 
 if (
     occ_exists &&

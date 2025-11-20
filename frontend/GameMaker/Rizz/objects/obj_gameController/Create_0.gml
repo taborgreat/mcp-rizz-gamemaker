@@ -1,7 +1,7 @@
 
 global.chairs = [];
 
-with (obj_chair) {
+with (obj_slot) {
     array_push(global.chairs, id);
 }
 
