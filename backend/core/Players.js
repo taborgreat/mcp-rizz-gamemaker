@@ -42,7 +42,7 @@ export class Players {
       latestMessage: "Player missed their turn",
       isSpectator,
       style,
-      latestGirlMessage: "I have nothing to say",
+      latestGirlMessage: "...", //replce with defaults ike in generalGirlThoughts
       latestGirlListeningEmotion: "neutral",
       latestGirlResponseEmotion: "neutral",
     };
