@@ -42,6 +42,9 @@ export class Players {
       latestMessage: "Player missed their turn",
       isSpectator,
       style,
+      latestGirlMessage: "I have nothing to say",
+      latestGirlListeningEmotion: "neutral",
+      latestGirlResponseEmotion: "neutral",
     };
 
     this.players.set(ws, player);
@@ -91,6 +94,9 @@ export class Players {
 
   getPlayerNames() {
     return Array.from(this.players.values()).map((p) => p.name);
+  }
+  getPlayerByName(name) {
+    return this.getAllPlayers().find((p) => p.name === name) || null;
   }
 
   updateRanks(girl, broadcast) {

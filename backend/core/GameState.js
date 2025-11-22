@@ -1,4 +1,4 @@
-import { generateGirlMessage } from "./utils/generateGirlMessage.js";
+import { generateGirlThoughts } from "./utils/generateGirlThoughts.js";
 import girlData from "./utils/girlNames.json" with { type: "json" };
 const girlNames = girlData.girlData;
 
@@ -30,7 +30,7 @@ export class GameState {
     });
   }
 
-  setState(newState, duration = 0) {
+  async setState(newState, duration = 0) {
     clearTimeout(this.timer);
     this.state = newState;
 
@@ -85,6 +85,7 @@ export class GameState {
 
           player.currentText = player.latestMessage;
         }
+        await generateGirlThoughts(this.girl, this.players, this.gameRoomId);
         this.broadcastRoom({ action: "loadingNextPhase" });
         this.timer = setTimeout(() => this.setState("playerSpeaking"), 500); //RAISE THIS TO ALLOW MORE TIME FOR NETWORK REQUESTS TO ARRIVE
         break;
@@ -95,16 +96,14 @@ export class GameState {
         break;
 
       case "girlSpeaking": {
-        const girlMessage = generateGirlMessage(this.players);
-        //for now just generate a random emotion
-           this.girl.emotion = this.girl.generateRandomEmotion();
-        console.log(`💬 [Room ${this.gameRoomId}] Girl says: ${girlMessage}`);
+      
+        console.log(`💬 [Room ${this.gameRoomId}] Girl says: ${this.girl.movementDecision.reason}`);
 
         this.broadcastRoom({
           action: "girlSpeaking",
             params: {
-    girlMessage: girlMessage,
-    emotion: this.girl.emotion
+    girlMessage: this.girl.movementDecision.reason,
+    emotion: this.girl.movementDecision.emotion,
   },
         });
 
@@ -113,12 +112,12 @@ export class GameState {
       }
 
       case "girlMoving": {
-        const activePlayers = this.players.getActivePlayers();
-        let destination = "center";
+         const decision = this.girl.movementDecision;
 
-        if (activePlayers.length > 0) {
-          const randomIndex = Math.floor(Math.random() * activePlayers.length);
-          destination = activePlayers[randomIndex].name;
+        let destination = "stay"; //default in case error
+
+        if (decision && decision.destination) {
+           destination = decision.destination;
         }
 
         const handleGameWin = (winnerName) => {

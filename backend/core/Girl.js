@@ -1,7 +1,7 @@
 const MAX_HEAD_STYLE = 3;
 const MAX_HAIR_STYLE = 3;
 const MAX_BODY_STYLE = 3;
-const EMOTIONS = ["sad", "happy", "angry", "neutral"];
+const EMOTION_OPTIONS = ["sad", "happy", "angry", "neutral"];
 
 export class Girl {
   constructor(broadcast, players) {
@@ -9,12 +9,14 @@ export class Girl {
     this.name = "Waiting to be named";
     this.style = this.generateRandomStyle();
     this.emotion = "neutral";
+    this.emotions = EMOTION_OPTIONS;
     this.x = this.center.x;
     this.y = this.center.y;
     this.speed = 50;
-
+    this.personality = "Happy";
     this.broadcast = broadcast;
     this.players = players;
+    this.movementDecision = { destination: "center", reason: "", emotion: "" };
   }
 
   generateRandomStyle() {
@@ -25,8 +27,8 @@ export class Girl {
     return [head, hair, body];
   }
   generateRandomEmotion() {
-    const i = Math.floor(Math.random() * EMOTIONS.length);
-    return EMOTIONS[i];
+    const i = Math.floor(Math.random() * EMOTION_OPTIONS.length);
+    return EMOTION_OPTIONS[i];
   }
 
   getChairPosition(slot) {
