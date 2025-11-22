@@ -9,29 +9,39 @@ export async function generateGirlThoughts(girl, players, roomID) {
 
   const missedPlayers = allPlayers.filter((p) => !activePlayers.includes(p));
 
-  // missed tu reset settings
   for (const p of missedPlayers) {
     p.latestGirlMessage = "...";
     p.latestGirlListeningEmotion = "neutral";
     p.latestGirlResponseEmotion = "neutral";
   }
 
-  //all players missed, no ai fallback
   if (activePlayers.length === 0) {
-    console.log("⚠️ All players missed — using fallback response.");
-
     const decision = {
       roomId: roomID,
       destination: "stay",
-      reason: "...", //someday set this to like 20 random sayings
+      reason: "...",
       emotion: "neutral",
     };
-
     girl.movementDecision = decision;
     return decision;
   }
 
-  //prompt build
+  const historyLines = activePlayers
+    .flatMap((p) => {
+      const lines = [];
+
+      if (p.currentText && p.currentText !== "Player missed their turn") {
+        lines.push(`HISTORY: ${p.name}: ${p.currentText}`);
+      }
+
+      if (p.latestGirlMessage && p.latestGirlMessage !== "...") {
+        lines.push(`HISTORY: Girl→${p.name}: ${p.latestGirlMessage}`);
+      }
+
+      return lines;
+    })
+    .join("\n");
+
   const conversation = activePlayers
     .map((p) => `${p.name}: ${p.latestMessage}`)
     .join("\n");
@@ -45,10 +55,13 @@ You are ${girl.name}, the girl on stage. Personality:
 Available emotions:
 ${girl.emotions}
 
+${historyLines ? historyLines + "\n\n" : ""}
+
 Players speaking:
 ${conversation}
   `.trim();
 
+  console.log(prompt);
   const result = await runRizzGameAI(prompt);
 
   if (!result.toolCall) {
