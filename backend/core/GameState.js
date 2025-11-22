@@ -41,6 +41,8 @@ export class GameState {
       case "awaitingPlayers":
         this.girl.resetPosition(this.broadcastRoom.bind(this), this.players);
         this.players.resetAllRanksToTie();
+        this.players.resetAllMessagesToDefault();
+
         break;
 
       case "countdown": {
@@ -285,20 +287,29 @@ if (result.win) {
         },
       });
 
-      if (remainingSeconds-- > 0) {
-        this.timer = setTimeout(tick, 1000);
-      } else {
-        if (!showingGirlResponse) {
-          // PHASE 1 → PHASE 2
-          showingGirlResponse = true;
-          speakNext();
-        } else {
-          // done with both phases ,next player
-          showingGirlResponse = false;
-          currentIndex++;
-          speakNext();
-        }
-      }
+        if (remainingSeconds-- > 0) {
+  this.timer = setTimeout(tick, 1000);
+} else {
+
+  if (player.latestMessage === "Player missed their turn") {
+    showingGirlResponse = false;
+    currentIndex++;
+    speakNext();
+    return;
+  }
+
+  if (!showingGirlResponse) {
+
+    showingGirlResponse = true;
+    speakNext();
+  } else {
+    // done with both phases ,next player
+    showingGirlResponse = false;
+    currentIndex++;
+    speakNext();
+  }
+}
+
     };
 
     tick();

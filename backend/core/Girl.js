@@ -94,6 +94,13 @@ export class Girl {
     const { broadcast, players } = this;
     this.x = this.center.x;
     this.y = this.center.y;
+    this.emotion = "neutral";
+
+    this.movementDecision = {
+      destination: "center",
+      reason: "",
+      emotion: "neutral",
+    };
 
     broadcast(players.players, {
       action: "updateGirl",
@@ -105,7 +112,6 @@ export class Girl {
       },
     });
   }
-
   getState() {
     return {
       x: this.x,
