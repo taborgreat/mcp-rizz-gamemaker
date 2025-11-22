@@ -256,6 +256,20 @@ if (result.win) {
     let remainingSeconds = speakingDuration;
 
     const tick = () => {
+  let emotionToSend = "neutral";
+
+  if (!showingGirlResponse) {
+
+    const halfPoint = Math.floor(speakingDuration / 2);
+
+    if (remainingSeconds <= speakingDuration - halfPoint) {
+      emotionToSend = player.latestGirlListeningEmotion;   //send during second half as a reaction
+    }
+
+  } else {
+   
+    emotionToSend = player.latestGirlResponseEmotion;     
+  }
       this.broadcastRoom({
         action: "playerSpeakingTick",
         params: {
@@ -267,7 +281,7 @@ if (result.win) {
           isGirlResponse: showingGirlResponse,
 
           timeLeft: remainingSeconds,
-          girlEmotion: player.latestGirlResponseEmotion,  
+          girlEmotion: emotionToSend, 
         },
       });
 
