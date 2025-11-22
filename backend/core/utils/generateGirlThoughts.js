@@ -7,32 +7,31 @@ export async function generateGirlThoughts(girl, players, roomID) {
     (p) => p.latestMessage && p.latestMessage !== "Player missed their turn"
   );
 
-  const allMissed = activePlayers.length === 0;
+  const missedPlayers = allPlayers.filter((p) => !activePlayers.includes(p));
 
-  if (allMissed) {
-    console.log(
-      "⚠️ All players missed their turn — using default fallback AI response."
-    );
+  // missed tu reset settings
+  for (const p of missedPlayers) {
+    p.latestGirlMessage = "...";
+    p.latestGirlListeningEmotion = "neutral";
+    p.latestGirlResponseEmotion = "neutral";
+  }
 
-    // reset players last messages to "..." from the girl
-    for (const p of allPlayers) {
-      p.latestGirlMessage = "...";
-      p.latestGirlListeningEmotion = "neutral";
-      p.latestGirlResponseEmotion = "neutral";
-    }
+  //all players missed, no ai fallback
+  if (activePlayers.length === 0) {
+    console.log("⚠️ All players missed — using fallback response.");
 
-    const movementDecision = {
+    const decision = {
       roomId: roomID,
       destination: "stay",
-      reason: "...",
+      reason: "...", //someday set this to like 20 random sayings
       emotion: "neutral",
     };
 
-    girl.movementDecision = movementDecision;
-
-    return movementDecision;
+    girl.movementDecision = decision;
+    return decision;
   }
 
+  //prompt build
   const conversation = activePlayers
     .map((p) => `${p.name}: ${p.latestMessage}`)
     .join("\n");
@@ -40,46 +39,22 @@ export async function generateGirlThoughts(girl, players, roomID) {
   const prompt = `
 Room ID: ${roomID}
 
-You are ${girl.name}, a girl with the following personality:
+You are ${girl.name}, the girl on stage. Personality:
 "${girl.personality}"
 
-Your available emotions:
+Available emotions:
 ${girl.emotions}
 
-Players speaking to you:
+Players speaking:
 ${conversation}
-`.trim();
+  `.trim();
 
-  const aiResponse = await runRizzGameAI(prompt);
+  const result = await runRizzGameAI(prompt);
 
-  const { toolCalls = [] } = aiResponse;
-
-  let movementDecision = null;
-
-  for (const toolCall of toolCalls) {
-    const name = toolCall.function.name;
-    const args = JSON.parse(toolCall.function.arguments);
-
-    if (name === "player_response") {
-      const player = players.getPlayerByName(args.user);
-
-      if (player) {
-        player.latestGirlMessage = args.response;
-        player.latestGirlListeningEmotion = args.listeningEmotion;
-        player.latestGirlResponseEmotion = args.responseEmotion;
-      }
-    }
-
-    if (name === "turn_decision_response") {
-      movementDecision = args;
-    }
+  if (!result.toolCall) {
+    console.error("❗ AI did not return a tool call:", result);
+    return null;
   }
 
-  if (movementDecision) {
-    girl.movementDecision = movementDecision;
-  } else {
-    console.warn("❗ No movement decision produced");
-  }
-
-  return movementDecision;
+  return JSON.parse(result.result).decision;
 }

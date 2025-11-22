@@ -6,25 +6,23 @@ dotenv.config({ path: "../.env" });
 const client = new Groq({ apiKey: process.env.GROQ_API_KEY });
 const MODEL = "openai/gpt-oss-120b";
 
-//tools
+//tool
 
-function player_response({
-  roomId,
-  user,
-  response,
-  listeningEmotion,
-  responseEmotion,
-}) {
+function full_turn({ roomId, playerResponses, decision }) {
   try {
     const room = roomsInstance.getRoom(roomId);
     if (!room) return JSON.stringify({ error: "Room not found" });
 
-    const player = room.players.getPlayerByName(user);
-    if (!player) return JSON.stringify({ error: "Player not found" });
+    for (const p of playerResponses) {
+      const player = room.players.getPlayerByName(p.user);
+      if (!player) continue;
 
-    player.latestGirlMessage = response;
-    player.latestGirlListeningEmotion = listeningEmotion;
-    player.latestGirlResponseEmotion = responseEmotion;
+      player.latestGirlMessage = p.response;
+      player.latestGirlListeningEmotion = p.listeningEmotion;
+      player.latestGirlResponseEmotion = p.responseEmotion;
+    }
+
+    room.girl.movementDecision = decision;
 
     return JSON.stringify({ result: "success" });
   } catch (e) {
@@ -32,166 +30,115 @@ function player_response({
   }
 }
 
-function turn_decision_response({ roomId, destination, reason, emotion }) {
-  try {
-    const room = roomsInstance.getRoom(roomId);
-    if (!room) return JSON.stringify({ error: "Room not found" });
-
-    room.girl.movementDecision = { destination, reason, emotion };
-
-    return JSON.stringify({ result: "success" });
-  } catch (e) {
-    return JSON.stringify({ error: e.message });
-  }
-}
-
-// Map names to functions
-const availableFunctions = {
-  player_response,
-  turn_decision_response,
-};
+const availableFunctions = { full_turn };
 
 const tools = [
   {
     type: "function",
     function: {
-      name: "player_response",
-      description: "Update player-specific girl response data",
+      name: "full_turn",
+      description:
+        "Handles ALL player responses AND the girl's movement decision in ONE CALL.",
       parameters: {
         type: "object",
         properties: {
           roomId: { type: "number" },
-          user: { type: "string" },
-          response: { type: "string" },
-          listeningEmotion: { type: "string" },
-          responseEmotion: { type: "string" },
+          playerResponses: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                user: { type: "string" },
+                response: { type: "string" },
+                listeningEmotion: { type: "string" },
+                responseEmotion: { type: "string" },
+              },
+              required: [
+                "user",
+                "response",
+                "listeningEmotion",
+                "responseEmotion",
+              ],
+            },
+          },
+          decision: {
+            type: "object",
+            properties: {
+              destination: { type: "string" },
+              reason: { type: "string" },
+              emotion: { type: "string" },
+            },
+            required: ["destination", "reason", "emotion"],
+          },
         },
-        required: [
-          "roomId",
-          "user",
-          "response",
-          "listeningEmotion",
-          "responseEmotion",
-        ],
-      },
-    },
-  },
-  {
-    type: "function",
-    function: {
-      name: "turn_decision_response",
-      description: "Choose where the girl walks next in the room",
-      parameters: {
-        type: "object",
-        properties: {
-          roomId: { type: "number" },
-          destination: { type: "string" },
-          reason: { type: "string" },
-          emotion: { type: "string" },
-        },
-        required: ["roomId", "destination", "reason", "emotion"],
+        required: ["roomId", "playerResponses", "decision"],
       },
     },
   },
 ];
 
 export async function runRizzGameAI(userPrompt) {
-  const MAX_PASSES = 6;
-
   const messages = [
     {
       role: "system",
       content: `
-You are the girl at the center of the stage in a dating game.
+You are the girl on the stage surrounded by people trying to gain your attention.
 
-YOUR ONLY OUTPUT METHOD IS TOOLS. You CANNOT respond with plain text.
+You MUST output ONLY ONE TOOL CALL:
+  full_turn({ roomId, playerResponses, decision })
 
-MANDATORY TOOL CALL SEQUENCE:
-1. Call player_response() EXACTLY ONCE for EVERY player listed
-   - user: exact player name
-   - response: ≤100 chars, in-character
-   - listeningEmotion: emotion while hearing them
-   - responseEmotion: emotion while responding
-   
-2. After ALL player_response() calls are complete, call turn_decision_response() EXACTLY ONCE
-   - destination: "stay" | "center" | exact player name
-   - reason: in-character explanation for your choice
-   - emotion: how you feel about this decision
-
-CRITICAL CONSTRAINTS:
-- You MUST call player_response() for every single player before calling turn_decision_response()
-- Missing ANY player_response() = INVALID
-- Missing turn_decision_response() = INVALID
-- Plain text responses = INVALID
-- You can make multiple tool calls in one response
-- If unsure, default to calling tools anyway
-
-VALIDATION CHECKLIST (before finishing):
-☐ player_response() called for EVERY person who spoke?
-☐ turn_decision_response() called?
+Where:
+- playerResponses = array of 1–4 player responses (one for each player speaking to you)
+  Each entry contains:
+    - user → the player's name.
+    - response → what you (the girl) say back to that player.
+    - listeningEmotion → the emotion you feel **while listening** to that player's message.
+    - responseEmotion → the emotion you feel **while responding** to that player.
 
 
-If all checkboxes aren't mentally checked, DO NOT FINISH. Keep calling tools. Absoulutely Do not just call one player_response() and stop!
-  `.trim(),
+- decision = final movement choice for this turn
+    - destination → (a user, "stay", or "center"). Usually towards a user unless something bad happens. Center is when you want to retreat.
+    - reason → why you are choosing the direction (spoken as the girl in character to the players)
+    - emotion → the emotion you feel about the movement.
+
+
+ABSOLUTELY NO TEXT OUTPUT. ONLY THE TOOL CALL.
+      `.trim(),
     },
     { role: "user", content: userPrompt },
   ];
 
-  let pass = 0;
+  const response = await client.chat.completions.create({
+    model: MODEL,
+    messages,
+    tools,
+    tool_choice: { type: "function", function: { name: "full_turn" } },
+  });
 
-  while (pass < MAX_PASSES) {
-    pass++;
+  const message = response.choices[0].message;
 
-    const response = await client.chat.completions.create({
-      model: MODEL,
-      messages,
-      tools,
-      tool_choice: "auto",
-    });
-
-    const message = response.choices[0].message;
-    messages.push(message);
-
-    const toolCalls = message.tool_calls || [];
-
-    if (toolCalls.length === 0) {
-      return {
-        finalText: message.content ?? "",
-        toolCalls: message.tool_calls || [],
-        passes: pass,
-      };
-    }
-    console.log(`\n========== PASS ${pass}: TOOL CALLS ==========`);
-    console.dir(toolCalls, { depth: 10 });
-    console.log("============================================\n");
-
-    for (const call of toolCalls) {
-      const fn = availableFunctions[call.function.name];
-
-      let args;
-      try {
-        args = JSON.parse(call.function.arguments || "{}");
-      } catch {
-        args = {};
-      }
-
-      const toolResult = await fn(args);
-
-      // feed result back to the LLM
-      messages.push({
-        role: "tool",
-        tool_call_id: call.id,
-        name: call.function.name,
-        content: toolResult,
-      });
-    }
+  if (!message.tool_calls || message.tool_calls.length === 0) {
+    return {
+      error: "AI did not call full_turn tool",
+      raw: message,
+    };
   }
 
+  const call = message.tool_calls[0];
+  const fn = availableFunctions[call.function.name];
+
+  let args = {};
+  try {
+    args = JSON.parse(call.function.arguments);
+    console.log("📤 Parsed tool args:", args);
+  } catch (e) {
+    return { error: "Invalid JSON from model", raw: call.function.arguments };
+  }
+
+  const toolResult = await fn(args);
+
   return {
-    finalText:
-      "Max tool call depth reached. Partial response: " +
-      (messages[messages.length - 1].content ?? ""),
-    passes: MAX_PASSES,
-    toolCalls: message.tool_calls || [],
+    result: toolResult,
+    toolCall: call,
   };
 }
