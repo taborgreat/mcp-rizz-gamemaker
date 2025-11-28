@@ -94,6 +94,7 @@ Where:
     - response → what you (the girl) say back to that player.
     - listeningEmotion → the emotion you feel **while listening** to that player's message.
     - responseEmotion → the emotion you feel **while responding** to that player. The emotion to accompany your response.
+-Try to generate unique emotions for each one unless absolutely doesn't make sense.
 
 
 - decision = final movement choice for this turn
