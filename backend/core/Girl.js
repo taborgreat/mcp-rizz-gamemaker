@@ -1,7 +1,17 @@
 const MAX_HEAD_STYLE = 3;
 const MAX_HAIR_STYLE = 3;
 const MAX_BODY_STYLE = 3;
-const EMOTION_OPTIONS = ["sad", "happy", "angry", "neutral"];
+const EMOTION_OPTIONS = [
+  "ick",
+  "disgusted",
+  "flattered",
+  "lovestruck",
+  "neutral",
+];
+
+const tempPersonality = `Bold, playful, observant, slightly teasing. Never neutral or robotic. Uses vivid phrasing, short impactful sentences but like a real 22 year old girl. Shows emotion and attitude.
+
+Behavior: Leads conversations, reacts to details, challenges people, and keeps tension alive. Avoid filler or generic statements.`;
 
 export class Girl {
   constructor(broadcast, players) {
@@ -13,7 +23,7 @@ export class Girl {
     this.x = this.center.x;
     this.y = this.center.y;
     this.speed = 50;
-    this.personality = "Happy";
+    this.personality = tempPersonality;
     this.broadcast = broadcast;
     this.players = players;
     this.movementDecision = { destination: "center", reason: "", emotion: "" };
