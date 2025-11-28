@@ -1,3 +1,4 @@
+import { sleep } from "groq-sdk/core.mjs";
 import { generateGirlThoughts } from "./utils/generateGirlThoughts.js";
 import girlData from "./utils/girlNames.json" with { type: "json" };
 const girlNames = girlData.girlData;
@@ -74,6 +75,7 @@ export class GameState {
         break;
 
       case "preparingPlayerSpeaking": {
+        sleep(300);
         console.log(
           `⏳ [Room ${this.gameRoomId}] Preparing player speaking phase...`
         );
