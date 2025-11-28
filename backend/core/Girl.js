@@ -22,7 +22,7 @@ export class Girl {
     this.emotions = EMOTION_OPTIONS;
     this.x = this.center.x;
     this.y = this.center.y;
-    this.speed = 50;
+    this.speed = 25;
     this.personality = tempPersonality;
     this.broadcast = broadcast;
     this.players = players;
