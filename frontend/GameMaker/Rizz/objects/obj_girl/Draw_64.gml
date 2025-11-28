@@ -1,5 +1,5 @@
 
-
+/*
 
 var thought = "";
 
@@ -7,7 +7,7 @@ if (!variable_instance_exists(id, "currentDestination")) {
     currentDestination = "stay";
 }
 
-/*switch (string(currentDestination)) {
+switch (string(currentDestination)) {
     case "stay":
         thought = "Thinking about... staying put";
         break;

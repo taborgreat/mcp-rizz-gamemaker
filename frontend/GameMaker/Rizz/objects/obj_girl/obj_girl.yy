@@ -33,10 +33,7 @@
   "resourceType":"GMObject",
   "resourceVersion":"2.0",
   "solid":false,
-  "spriteId":{
-    "name":"spr_girl",
-    "path":"sprites/spr_girl/spr_girl.yy",
-  },
+  "spriteId":null,
   "spriteMaskId":null,
   "visible":true,
 }
