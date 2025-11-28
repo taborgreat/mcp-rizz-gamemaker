@@ -76,7 +76,7 @@ function gmcallback_handleWebSocketMessage(rawJson) {
 
         case "playersInputtingTick": {
             global.timeLeft = msg.params.timeLeft;
-            global.statusText = "Players are typing... (" + string(global.timeLeft) + ")";
+            global.statusText = "Leave a message (" + string(global.timeLeft) + ")";
 
             if (global.timeLeft <= 0) {
                 cleanup_input_form();
@@ -137,7 +137,7 @@ function gmcallback_handleWebSocketMessage(rawJson) {
         case "girlSpeaking": {
             global.girlMessage = msg.params.girlMessage;
 			global.girlEmotion = msg.params.girlEmotion;
-            global.statusText = "The girl is speaking...";
+            global.statusText = undefined;
 
             if (!instance_exists(obj_girlSpeaking)) {
                 var g = instance_create_layer(400, 200, "Instances", obj_girlSpeaking);

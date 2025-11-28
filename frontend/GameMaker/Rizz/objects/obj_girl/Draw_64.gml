@@ -7,7 +7,7 @@ if (!variable_instance_exists(id, "currentDestination")) {
     currentDestination = "stay";
 }
 
-switch (string(currentDestination)) {
+/*switch (string(currentDestination)) {
     case "stay":
         thought = "Thinking about... staying put";
         break;
@@ -40,7 +40,7 @@ draw_text(x * 4, (y*4) - sprite_get_height(sprite_index) / 2 - 120, thought);
     }
 }
 
-
+*/
 
     
 
