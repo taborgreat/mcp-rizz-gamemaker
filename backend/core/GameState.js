@@ -75,7 +75,7 @@ export class GameState {
         break;
 
       case "preparingPlayerSpeaking": {
-        sleep(300); // allow slower requests to come in before querying
+        await sleep(1500)
         console.log(
           `⏳ [Room ${this.gameRoomId}] Preparing player speaking phase...`
         );
