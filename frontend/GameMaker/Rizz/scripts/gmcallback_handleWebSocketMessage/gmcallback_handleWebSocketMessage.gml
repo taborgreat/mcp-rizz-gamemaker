@@ -76,7 +76,8 @@ function gmcallback_handleWebSocketMessage(rawJson) {
 
         case "playersInputtingTick": {
             global.timeLeft = msg.params.timeLeft;
-            global.statusText = "Leave a message (" + string(global.timeLeft) + ")";
+			global.statusText = string(global.timeLeft);
+            //global.statusText = "Leave a message(" + string(global.timeLeft) + ")";
 
             if (global.timeLeft <= 0) {
                 cleanup_input_form();
@@ -99,8 +100,8 @@ function gmcallback_handleWebSocketMessage(rawJson) {
     }
 
             // Create once if needed, otherwise update fields.
-            if (!instance_exists(obj_playerSpeaking)) {
-                var o = instance_create_layer(50, 150, "Instances", obj_playerSpeaking);
+            if (!instance_exists(obj_speaking)) {
+                var o = instance_create_layer(80, 144, "GUI", obj_speaking);
                 o.speaker = global.displaySpeakerName;
                 o.full_text = global.playerLatestMessage;
                 o.visible_chars = 0;
@@ -110,7 +111,7 @@ function gmcallback_handleWebSocketMessage(rawJson) {
 				o.speaker_slot = global.currentSpeakerSlot;
 				
             } else {
-                with (obj_playerSpeaking) {
+                with (obj_speaking) {
                     // MESSAGE CHANGED
                     if (full_text != global.playerLatestMessage) {
                         full_text = global.playerLatestMessage;
@@ -139,17 +140,39 @@ function gmcallback_handleWebSocketMessage(rawJson) {
 			global.girlEmotion = msg.params.girlEmotion;
             global.statusText = undefined;
 
-            if (!instance_exists(obj_girlSpeaking)) {
-                var g = instance_create_layer(400, 200, "Instances", obj_girlSpeaking);
-                g.speaker = global.girlName;
-                g.text = global.girlMessage;
+            // Create once if needed, otherwise update fields.
+            if (!instance_exists(obj_speaking)) {
+                var o = instance_create_layer(80, 144, "GUI", obj_speaking);
+                o.speaker = global.girlName;
+                o.full_text = global.girlMessage;
+                o.visible_chars = 0;
+                o.char_timer = 0;
+                o.last_timeleft = global.timeLeft;
+				o.speaker_style = global.girlStyle;
+			
+				
             } else {
-                with (obj_girlSpeaking) {
+                with (obj_speaking) {
+                    // MESSAGE CHANGED
+                    if (full_text != global.girlMessage) {
+                        full_text = global.girlMessage;
+                        visible_chars = 0;
+                        char_timer = 0;
+                    }
+
+                    // NEW SPEAKING ROUND (timeLeft jumped up)
+                    if (global.timeLeft > last_timeleft) {
+                        visible_chars = 0;
+                        char_timer = 0;
+                    }
+
+                    last_timeleft = global.timeLeft;
                     speaker = global.girlName;
-                    text = global.girlMessage;
+					speaker_style = global.girlStyle;
+					
                 }
             }
-            break;
+			break;
         }
 
         case "updateGirl": {
