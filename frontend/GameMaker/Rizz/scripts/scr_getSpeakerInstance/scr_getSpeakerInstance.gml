@@ -1,4 +1,4 @@
-function get_speaker_instance() {
+/*function get_speaker_instance() {
     var arr = global.chairs;  
 
     for (var i = 0; i < array_length(arr); i++) {
@@ -14,4 +14,8 @@ function get_speaker_instance() {
     }
 
     return noone;
-}
+}*/
+
+
+
+//can probably delete
