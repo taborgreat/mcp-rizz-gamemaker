@@ -75,7 +75,7 @@ export class GameState {
         break;
 
       case "preparingPlayerSpeaking": {
-        await sleep(900)
+        await sleep(1500)
         console.log(
           `⏳ [Room ${this.gameRoomId}] Preparing player speaking phase...`
         );
