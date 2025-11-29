@@ -101,7 +101,7 @@ function update_world_state(world) {
             break;
 
         case "playersInputting":
-            global.statusText = "Players are typing... (" + string(global.timeLeft) + ")";
+         
             // Create input objects only when we actually enter this state
             if (global.prevGameState != "playersInputting") {
                 if (!instance_exists(obj_playerMessageInput))
@@ -112,7 +112,7 @@ function update_world_state(world) {
             break;
 
         case "playerSpeaking":
-            global.statusText = global.currentSpeaker + " is speaking... (" + string(global.timeLeft) + ")";
+            global.statusText = undefined;
             // Don't destroy playerMessageRemaining repeatedly — only when leaving the state
             if (global.prevGameState != state) {
                 if (instance_exists(obj_playerMessageRemaining)) instance_destroy(obj_playerMessageRemaining);
@@ -120,14 +120,14 @@ function update_world_state(world) {
             break;
 
         case "girlSpeaking":
-            global.statusText = "The girl is speaking...";
+            global.statusText = undefined;
             if (global.prevGameState != state) {
                 if (instance_exists(obj_playerSpeaking)) instance_destroy(obj_playerSpeaking);
             }
             break;
 
         case "girlMoving":
-            global.statusText = "The girl is moving...";
+            global.statusText = undefined;
             if (global.prevGameState != state) {
                 if (instance_exists(obj_girlSpeaking)) instance_destroy(obj_girlSpeaking);
             }

@@ -76,7 +76,7 @@ function gmcallback_handleWebSocketMessage(rawJson) {
 
         case "playersInputtingTick": {
             global.timeLeft = msg.params.timeLeft;
-            global.statusText = "Players are typing... (" + string(global.timeLeft) + ")";
+            global.statusText = "Leave a message (" + string(global.timeLeft) + ")";
 
             if (global.timeLeft <= 0) {
                 cleanup_input_form();
@@ -91,17 +91,24 @@ function gmcallback_handleWebSocketMessage(rawJson) {
 			global.currentSpeakerStyle = msg.params.style;
 			global.currentSpeakerSlot = msg.params.slot;
 			global.girlEmotion = msg.params.girlEmotion;
+			
+			 if (msg.params.isGirlResponse) {
+        global.displaySpeakerName = global.girlName;
+    } else {
+        global.displaySpeakerName = global.currentSpeaker;
+    }
 
             // Create once if needed, otherwise update fields.
             if (!instance_exists(obj_playerSpeaking)) {
                 var o = instance_create_layer(50, 150, "Instances", obj_playerSpeaking);
-                o.speaker = global.currentSpeaker;
+                o.speaker = global.displaySpeakerName;
                 o.full_text = global.playerLatestMessage;
                 o.visible_chars = 0;
                 o.char_timer = 0;
                 o.last_timeleft = global.timeLeft;
 				o.speaker_style = global.currentSpeakerStyle;
 				o.speaker_slot = global.currentSpeakerSlot;
+				
             } else {
                 with (obj_playerSpeaking) {
                     // MESSAGE CHANGED
@@ -118,7 +125,7 @@ function gmcallback_handleWebSocketMessage(rawJson) {
                     }
 
                     last_timeleft = global.timeLeft;
-                    speaker = global.currentSpeaker;
+                    speaker = global.displaySpeakerName;
 					speaker_style = global.currentSpeakerStyle;
 					speaker_slot = global.currentSpeakerSlot;
 
@@ -130,7 +137,7 @@ function gmcallback_handleWebSocketMessage(rawJson) {
         case "girlSpeaking": {
             global.girlMessage = msg.params.girlMessage;
 			global.girlEmotion = msg.params.girlEmotion;
-            global.statusText = "The girl is speaking...";
+            global.statusText = undefined;
 
             if (!instance_exists(obj_girlSpeaking)) {
                 var g = instance_create_layer(400, 200, "Instances", obj_girlSpeaking);

@@ -13,7 +13,7 @@ export function startWebSocketServer(httpServer) {
     perMessageDeflate: false,
   });
 
-  console.log("💬 WebSocket server initialized");
+  console.log("WebSocket server initialized");
 
   wss.on("connection", (ws) => {
     console.log("👤 New WebSocket connection");

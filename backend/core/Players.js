@@ -42,6 +42,9 @@ export class Players {
       latestMessage: "Player missed their turn",
       isSpectator,
       style,
+      latestGirlMessage: "...", //replce with defaults ike in generalGirlThoughts
+      latestGirlListeningEmotion: "neutral",
+      latestGirlResponseEmotion: "neutral",
     };
 
     this.players.set(ws, player);
@@ -91,6 +94,9 @@ export class Players {
 
   getPlayerNames() {
     return Array.from(this.players.values()).map((p) => p.name);
+  }
+  getPlayerByName(name) {
+    return this.getAllPlayers().find((p) => p.name === name) || null;
   }
 
   updateRanks(girl, broadcast) {
@@ -150,21 +156,16 @@ export class Players {
     const winner = allPlayers.find((p) => p.name === winnerName);
     if (!winner) return;
 
-    // 1. Identify active and spectator groups cleanly
     const activePlayers = this.getActivePlayers();
     const losers = activePlayers.filter((p) => p !== winner);
 
-    // 2. Build a single spectator queue:
-    //    existing spectators first, then losers (added to the end)
     const spectatorQueue = [
-      ...this.getSpectators(), // original spectators
-      ...losers, // losers always go to the BACK
+      ...this.getSpectators(),
+      ...losers, // losers always go to the back
     ];
 
-    // 3. Assign winner back to his slot
     winner.isSpectator = false;
 
-    // 4. Fill every other player slot with spectators from the queue
     const newActives = [winner];
     const openSlots = [];
 
@@ -183,17 +184,16 @@ export class Players {
       newActives.push(spec);
     }
 
-    // 5. Everyone not in newActives is now spectator
     const activeSet = new Set(newActives);
 
     const remainingSpectators = allPlayers.filter((p) => !activeSet.has(p));
 
-    // 6. Assign spectator slots sequentially
     let nextSlot = this.maxPlayerSlots + 1;
     for (const p of remainingSpectators) {
       p.isSpectator = true;
       p.slot = nextSlot++;
     }
+    this.resetAllMessagesToDefault();
 
     console.log(
       "🎯 Win reset complete:",
@@ -203,5 +203,22 @@ export class Players {
         spectator: p.isSpectator,
       }))
     );
+  }
+  resetAllMessagesToDefault() {
+    const DEFAULTS = {
+      latestMessage: "Player missed their turn",
+      latestGirlMessage: "...",
+      latestGirlListeningEmotion: "neutral",
+      latestGirlResponseEmotion: "neutral",
+      currentText: "",
+    };
+
+    for (const player of this.getAllPlayers()) {
+      player.latestMessage = DEFAULTS.latestMessage;
+      player.latestGirlMessage = DEFAULTS.latestGirlMessage;
+      player.latestGirlListeningEmotion = DEFAULTS.latestGirlListeningEmotion;
+      player.latestGirlResponseEmotion = DEFAULTS.latestGirlResponseEmotion;
+      player.currentText = DEFAULTS.currentText;
+    }
   }
 }

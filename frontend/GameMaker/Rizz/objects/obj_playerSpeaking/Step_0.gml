@@ -11,3 +11,15 @@ var typed = floor(char_timer * (chars_per_second / room_speed));
 
 // FINAL LIMIT — client types freely but never goes past ideal_limit
 visible_chars = typed;
+
+if(speaker = global.girlName){
+	with(obj_speakingBG){
+		girlSpeaking = true;
+	}
+
+} else {
+		with(obj_speakingBG){
+		girlSpeaking = false;
+	}
+
+}

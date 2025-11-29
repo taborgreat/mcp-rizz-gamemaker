@@ -1,4 +1,5 @@
-import { generateGirlMessage } from "./utils/generateGirlMessage.js";
+import { sleep } from "groq-sdk/core.mjs";
+import { generateGirlThoughts } from "./utils/generateGirlThoughts.js";
 import girlData from "./utils/girlNames.json" with { type: "json" };
 const girlNames = girlData.girlData;
 
@@ -30,7 +31,7 @@ export class GameState {
     });
   }
 
-  setState(newState, duration = 0) {
+  async setState(newState, duration = 0) {
     clearTimeout(this.timer);
     this.state = newState;
 
@@ -41,6 +42,8 @@ export class GameState {
       case "awaitingPlayers":
         this.girl.resetPosition(this.broadcastRoom.bind(this), this.players);
         this.players.resetAllRanksToTie();
+        this.players.resetAllMessagesToDefault();
+
         break;
 
       case "countdown": {
@@ -72,6 +75,7 @@ export class GameState {
         break;
 
       case "preparingPlayerSpeaking": {
+        await sleep(1500)
         console.log(
           `⏳ [Room ${this.gameRoomId}] Preparing player speaking phase...`
         );
@@ -85,8 +89,9 @@ export class GameState {
 
           player.currentText = player.latestMessage;
         }
+        await generateGirlThoughts(this.girl, this.players, this.gameRoomId);
         this.broadcastRoom({ action: "loadingNextPhase" });
-        this.timer = setTimeout(() => this.setState("playerSpeaking"), 500); //RAISE THIS TO ALLOW MORE TIME FOR NETWORK REQUESTS TO ARRIVE
+        this.timer = setTimeout(() => this.setState("playerSpeaking"), 700); //RAISE THIS TO ALLOW MORE TIME FOR NETWORK REQUESTS TO ARRIVE
         break;
       }
 
@@ -95,16 +100,14 @@ export class GameState {
         break;
 
       case "girlSpeaking": {
-        const girlMessage = generateGirlMessage(this.players);
-        //for now just generate a random emotion
-           this.girl.emotion = this.girl.generateRandomEmotion();
-        console.log(`💬 [Room ${this.gameRoomId}] Girl says: ${girlMessage}`);
+      
+        console.log(`💬 [Room ${this.gameRoomId}] Girl says: ${this.girl.movementDecision.reason}`);
 
         this.broadcastRoom({
           action: "girlSpeaking",
             params: {
-    girlMessage: girlMessage,
-    emotion: this.girl.emotion
+    girlMessage: this.girl.movementDecision.reason,
+    emotion: this.girl.movementDecision.emotion,
   },
         });
 
@@ -113,12 +116,12 @@ export class GameState {
       }
 
       case "girlMoving": {
-        const activePlayers = this.players.getActivePlayers();
-        let destination = "center";
+         const decision = this.girl.movementDecision;
 
-        if (activePlayers.length > 0) {
-          const randomIndex = Math.floor(Math.random() * activePlayers.length);
-          destination = activePlayers[randomIndex].name;
+        let destination = "stay"; //default in case error
+
+        if (decision && decision.destination) {
+           destination = decision.destination;
         }
 
         const handleGameWin = (winnerName) => {
@@ -191,38 +194,42 @@ if (result.win) {
     tick();
   }
 
-  startSequentialPlayerSpeaking() {
-    const playerList = this.players.getActivePlayers();
-    if (playerList.length === 0) {
-      this.setState("awaitingPlayers");
+ startSequentialPlayerSpeaking() {
+  const playerList = this.players.getActivePlayers();
+  if (playerList.length === 0) {
+    this.setState("awaitingPlayers");
+    return;
+  }
+
+  let currentIndex = 0;
+  let showingGirlResponse = false;
+
+  const speakNext = () => {
+    if (currentIndex >= playerList.length) {
+      this.setState("girlSpeaking");
       return;
     }
 
-    let currentIndex = 0;
 
 
+    const player = playerList[currentIndex];
+    let message;
+    let speakingDuration;
 
-    const speakNext = () => {
-      if (currentIndex >= playerList.length) {
-        this.setState("girlSpeaking");
-        return;
-      }
-      //for now just generate a random emotion each speaking turn
-    this.girl.emotion = this.girl.generateRandomEmotion();
+    if (!showingGirlResponse) {
 
-      const player = playerList[currentIndex];
-      const message = player.latestMessage || "";
+      // PPLAYER’S MESSAGE
 
-      // 🕒 Calculate how long this player's speech should last
-      let speakingDuration;
+      message = player.latestMessage || "";
+
       if (message === "Player missed their turn") {
         speakingDuration = 3;
       } else {
         const messageLength = message.length;
         const minDuration = 4;
         const maxDuration = 11;
-        const baseTime = 2; // base seconds before scaling
-        const charsPerSecond = 20; // reading pace
+        const baseTime = 2;
+        const charsPerSecond = 20;
 
         const estimatedTime = baseTime + messageLength / charsPerSecond;
         const clampedTime = Math.max(
@@ -230,9 +237,7 @@ if (result.win) {
           Math.min(estimatedTime, maxDuration)
         );
 
-        //10% variation
         const variedTime = clampedTime * (0.9 + Math.random() * 0.2);
-
         speakingDuration = Math.round(variedTime);
       }
 
@@ -240,34 +245,81 @@ if (result.win) {
         `🎤 [Room ${this.gameRoomId}] ${player.name}: "${message}" (${speakingDuration}s)`
       );
 
-      let remainingSeconds = speakingDuration;
+    } else {
+     
+      // GIRLS MESSAGE
+   
+      message = player.latestGirlMessage || "…";
+      speakingDuration = 5;
 
-      const tick = () => {
-        this.broadcastRoom({
-          action: "playerSpeakingTick",
-          params: {
-            currentSpeaker: player.name,
-            slot: player.slot,
-            style: player.style,
-            latestMessage: message,
-            timeLeft: remainingSeconds,
-            girlEmotion: this.girl.emotion
-          },
-        });
+      console.log(
+        `💬 [Room ${this.gameRoomId}] Girl responding to ${player.name}: "${message}" (5s)`
+      );
+    }
+
+    let remainingSeconds = speakingDuration;
+
+    const tick = () => {
+  let emotionToSend = "neutral";
+
+  if (!showingGirlResponse) {
+
+    const halfPoint = Math.floor(speakingDuration / 2);
+
+    if (remainingSeconds <= speakingDuration - halfPoint) {
+      emotionToSend = player.latestGirlListeningEmotion;   //send during second half as a reaction
+    }
+
+  } else {
+   
+    emotionToSend = player.latestGirlResponseEmotion;     
+  }
+      this.broadcastRoom({
+        action: "playerSpeakingTick",
+        params: {
+          currentSpeaker: player.name,
+          slot: player.slot,
+          style: player.style,
+
+          latestMessage: message,          // changes based on phase
+          isGirlResponse: showingGirlResponse,
+
+          timeLeft: remainingSeconds,
+          girlEmotion: emotionToSend, 
+        },
+      });
 
         if (remainingSeconds-- > 0) {
-          this.timer = setTimeout(tick, 1000);
-        } else {
-          currentIndex++;
-          speakNext();
-        }
-      };
+  this.timer = setTimeout(tick, 1000);
+} else {
 
-      tick();
-    };
+  if (player.latestMessage === "Player missed their turn") {
+    showingGirlResponse = false;
+    currentIndex++;
+    speakNext();
+    return;
+  }
 
+  if (!showingGirlResponse) {
+
+    showingGirlResponse = true;
+    speakNext();
+  } else {
+    // done with both phases ,next player
+    showingGirlResponse = false;
+    currentIndex++;
     speakNext();
   }
+}
+
+    };
+
+    tick();
+  };
+
+  speakNext();
+}
+
 
   onPlayerJoined(player) {
     if (this.players.countPlayers() >= 2 && this.state === "awaitingPlayers") {

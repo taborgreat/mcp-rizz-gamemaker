@@ -28,7 +28,7 @@ app.get("/roomsSummaries", (req, res) => {
 
 server.listen(PORT, "0.0.0.0", () => {
   console.log(
-    `✅ HTTP server running on http://${SERVER_URL}. Port should be ${PORT}`
+    `HTTP server running on http://${SERVER_URL}. Port should be ${PORT}`
   );
 });
 

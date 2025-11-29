@@ -12,8 +12,16 @@ var hair_sprite   = asset_get_index("spr_girl_hair_"   + string(global.girlStyle
 var outfit_sprite = asset_get_index("spr_girl_body_" + string(global.girlStyle[2]));
 var emotion_sprite = asset_get_index("spr_girl_emotion_" + global.girlEmotion);
 
-draw_sprite(spr_portrait_background, 0,x,y);
-draw_sprite(body_sprite, 0, x, y);
-draw_sprite(outfit_sprite, 0, x, y);
-draw_sprite(hair_sprite, 0, x, y);
-draw_sprite(emotion_sprite, 0, x, y);
+
+if (global.gameState != "girlMoving" &&
+    global.gameState != "playersInputting" &&
+    global.gameState != "awaitingPlayers" &&
+	global.gameState != "preparingPlayerSpeaking" &&
+    global.gameState != "countdown")
+{
+    draw_sprite(spr_portrait_background, 0, x, y);
+    draw_sprite(body_sprite, 0, x, y);
+    draw_sprite(outfit_sprite, 0, x, y);
+    draw_sprite(hair_sprite, 0, x, y);
+    draw_sprite(emotion_sprite, 0, x, y);
+}
