@@ -6,10 +6,8 @@ draw_set_color(c_olive);
 
 var xpos = display_get_gui_width() / 2;
 
-if (instance_exists(obj_curtain_left)) {
-    if (obj_curtain_left.state == "open") {
-		if(global.statusText!= undefined){
-        draw_text(xpos, 1020, global.statusText);
-		}
+if (instance_exists(obj_curtain_left) && obj_curtain_left.state == "open") {
+	if(global.statusText!= undefined) {
+        draw_text_transformed(xpos, 50, global.statusText, 2, 2, 0);
     }
 }

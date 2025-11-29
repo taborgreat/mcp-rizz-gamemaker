@@ -1,1 +1,0 @@
-bg = instance_create_layer(64, 128, "Instances_1", obj_girlSpeakingBG);
