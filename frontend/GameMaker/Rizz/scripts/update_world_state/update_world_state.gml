@@ -91,7 +91,7 @@ function update_world_state(world) {
             global.statusText = "Waiting for more players...";
             // Only destroy if we actually left the previous "playerSpeaking" or "girlSpeaking" state
             if (global.prevGameState != state) {
-                if (instance_exists(obj_playerSpeaking)) instance_destroy(obj_playerSpeaking);
+                if (instance_exists(obj_speaking)) instance_destroy(obj_speaking);
                 if (instance_exists(obj_girlSpeaking)) instance_destroy(obj_girlSpeaking);
             }
             break;
@@ -122,14 +122,15 @@ function update_world_state(world) {
         case "girlSpeaking":
             global.statusText = undefined;
             if (global.prevGameState != state) {
-                if (instance_exists(obj_playerSpeaking)) instance_destroy(obj_playerSpeaking);
+                if (instance_exists(obj_speaking)) instance_destroy(obj_speaking);
             }
+		
             break;
 
         case "girlMoving":
             global.statusText = undefined;
             if (global.prevGameState != state) {
-                if (instance_exists(obj_girlSpeaking)) instance_destroy(obj_girlSpeaking);
+                if (instance_exists(obj_speaking)) instance_destroy(obj_speaking);
             }
             break;
     }

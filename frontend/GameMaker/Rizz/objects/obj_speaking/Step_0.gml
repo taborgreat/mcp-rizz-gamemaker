@@ -12,7 +12,7 @@ var typed = floor(char_timer * (chars_per_second / room_speed));
 // FINAL LIMIT — client types freely but never goes past ideal_limit
 visible_chars = typed;
 
-if(speaker = global.girlName){
+if(speaker == global.girlName){
 	with(obj_speakingBG){
 		girlSpeaking = true;
 	}
@@ -23,3 +23,13 @@ if(speaker = global.girlName){
 	}
 
 }
+
+
+//conttrol mouth
+mouth_timer += delta_time; 
+
+if (mouth_timer >= 100000) { 
+    mouth_opened = !mouth_opened; 
+    mouth_timer = 0; 
+}
+
