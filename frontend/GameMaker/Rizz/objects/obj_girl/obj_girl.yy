@@ -12,8 +12,8 @@
   "name":"obj_girl",
   "overriddenProperties":[],
   "parent":{
-    "name":"MainRoom",
-    "path":"folders/MainRoom.yy",
+    "name":"Girl",
+    "path":"folders/MainRoom/Girl.yy",
   },
   "parentObjectId":null,
   "persistent":false,

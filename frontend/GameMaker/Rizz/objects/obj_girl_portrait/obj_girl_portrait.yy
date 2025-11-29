@@ -8,8 +8,8 @@
   "name":"obj_girl_portrait",
   "overriddenProperties":[],
   "parent":{
-    "name":"MainRoom",
-    "path":"folders/MainRoom.yy",
+    "name":"Portrait",
+    "path":"folders/MainRoom/Portrait.yy",
   },
   "parentObjectId":null,
   "persistent":false,

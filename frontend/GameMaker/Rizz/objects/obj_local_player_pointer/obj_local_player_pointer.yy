@@ -8,8 +8,8 @@
   "name":"obj_local_player_pointer",
   "overriddenProperties":[],
   "parent":{
-    "name":"MainRoom",
-    "path":"folders/MainRoom.yy",
+    "name":"Scene",
+    "path":"folders/MainRoom/Scene.yy",
   },
   "parentObjectId":null,
   "persistent":false,

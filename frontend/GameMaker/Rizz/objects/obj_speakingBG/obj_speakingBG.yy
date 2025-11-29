@@ -3,13 +3,14 @@
   "%Name":"obj_speakingBG",
   "eventList":[
     {"$GMEvent":"v1","%Name":"","collisionObjectId":null,"eventNum":0,"eventType":3,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0",},
+    {"$GMEvent":"v1","%Name":"","collisionObjectId":null,"eventNum":0,"eventType":0,"isDnD":false,"name":"","resourceType":"GMEvent","resourceVersion":"2.0",},
   ],
   "managed":true,
   "name":"obj_speakingBG",
   "overriddenProperties":[],
   "parent":{
-    "name":"MainRoom",
-    "path":"folders/MainRoom.yy",
+    "name":"Portrait",
+    "path":"folders/MainRoom/Portrait.yy",
   },
   "parentObjectId":null,
   "persistent":false,
@@ -30,8 +31,8 @@
   "resourceVersion":"2.0",
   "solid":false,
   "spriteId":{
-    "name":"spr_playerSpeakingBG",
-    "path":"sprites/spr_playerSpeakingBG/spr_playerSpeakingBG.yy",
+    "name":"spr_textbox_dialogue",
+    "path":"sprites/spr_textbox_dialogue/spr_textbox_dialogue.yy",
   },
   "spriteMaskId":null,
   "visible":true,

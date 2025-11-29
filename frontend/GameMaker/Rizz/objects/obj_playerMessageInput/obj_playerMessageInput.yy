@@ -10,8 +10,8 @@
   "name":"obj_playerMessageInput",
   "overriddenProperties":[],
   "parent":{
-    "name":"MainRoom",
-    "path":"folders/MainRoom.yy",
+    "name":"Players",
+    "path":"folders/MainRoom/Players.yy",
   },
   "parentObjectId":null,
   "persistent":false,
