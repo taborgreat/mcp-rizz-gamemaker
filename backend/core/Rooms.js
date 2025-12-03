@@ -112,7 +112,7 @@ export class Rooms {
 
     state.onPlayerJoined(player);
     roomPlayers.labels(assignedRoom).inc();
-    total_connected_ever.labels(assignedRoom).inc();
+    totalConnectedEver.labels(assignedRoom).inc();
 
 
     return player;
