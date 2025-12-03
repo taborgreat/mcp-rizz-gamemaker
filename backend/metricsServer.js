@@ -21,7 +21,7 @@ export const totalWebsockets = new client.Gauge({
 export const totalLLMCalls = new client.Counter({
   name: "llm_calls_total",
   help: "Total number of LLM calls made for girl thoughts per room",
-  
+  labelNames: ["roomId"]
 });
 
 export const totalConnectedEver = new client.Counter({
