@@ -11,10 +11,7 @@ export const totalWebsockets = new client.Gauge({
   help: "Total active websocket connections"
 });
 
-export const totalConnectedEver = new client.Counter({
-  name: "total_connected_ever",
-  help: "Total active websocket connections"
-});
+
 
 
 
@@ -24,6 +21,12 @@ export const totalConnectedEver = new client.Counter({
 export const totalLLMCalls = new client.Counter({
   name: "llm_calls_total",
   help: "Total number of LLM calls made for girl thoughts per room",
+  
+});
+
+export const totalConnectedEver = new client.Counter({
+  name: "total_connected_ever",
+  help: "Total players ever connected to room",
   labelNames: ["roomId"]
 });
 

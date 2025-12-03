@@ -1,4 +1,4 @@
-import {roomPlayers} from "../metricsServer.js"
+import {roomPlayers, totalConnectedEver} from "../metricsServer.js"
 
 import { GameState } from "./GameState.js";
 import { Girl } from "./Girl.js";
@@ -112,6 +112,7 @@ export class Rooms {
 
     state.onPlayerJoined(player);
     roomPlayers.labels(assignedRoom).inc();
+    total_connected_ever.labels(assignedRoom).inc();
 
 
     return player;
