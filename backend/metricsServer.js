@@ -11,6 +11,11 @@ export const totalWebsockets = new client.Gauge({
   help: "Total active websocket connections"
 });
 
+export const totalConnectedEver = new client.Counter({
+  name: "total_connected_ever",
+  help: "Total active websocket connections"
+});
+
 
 
 // ------ PER ROOM METRICS ------

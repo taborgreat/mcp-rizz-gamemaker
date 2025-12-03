@@ -1,5 +1,5 @@
 import { normalizeStyle } from "../core/utils/utils.js";
-import { totalWebsockets, roomChats } from "../metricsServer.js";
+import { totalWebsockets, totalConnectedEver, roomChats } from "../metricsServer.js";
 
 
 import { WebSocketServer } from "ws";
@@ -20,6 +20,7 @@ export function startWebSocketServer(httpServer) {
   wss.on("connection", (ws) => {
     console.log("👤 New WebSocket connection");
     totalWebsockets.inc();
+    totalConnectedEver.inc();
     ws.on("message", (msg) => {
       let data;
       try {
