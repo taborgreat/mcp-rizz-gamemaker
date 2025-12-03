@@ -1,4 +1,6 @@
 import { normalizeStyle } from "../core/utils/utils.js";
+import { totalWebsockets, roomChats } from "../metricsServer.js";
+
 
 import { WebSocketServer } from "ws";
 import { roomsInstance } from "../RoomsInstance.js";
@@ -17,7 +19,7 @@ export function startWebSocketServer(httpServer) {
 
   wss.on("connection", (ws) => {
     console.log("👤 New WebSocket connection");
-
+    totalWebsockets.inc();
     ws.on("message", (msg) => {
       let data;
       try {
@@ -93,6 +95,7 @@ export function startWebSocketServer(httpServer) {
           } else {
             player._spam.count = 1;
           }
+roomChats.labels(player.gameRoomId).inc();
 
           player._spam.lastTime = now;
 
@@ -184,6 +187,7 @@ export function startWebSocketServer(httpServer) {
 
     ws.on("close", () => {
       roomsInstance.handlePlayerDisconnect(ws);
+       totalWebsockets.dec();
     });
   });
 }

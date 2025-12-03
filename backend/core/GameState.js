@@ -1,3 +1,5 @@
+import { roomGameWins, roomResets, roomRoundsPlayed, roomTurnsTotal, roomTurnsMissed, roomTurnsSuccess } from "../metricsServer.js";
+
 import { sleep } from "groq-sdk/core.mjs";
 import { generateGirlThoughts } from "./utils/generateGirlThoughts.js";
 import girlData from "./utils/girlNames.json" with { type: "json" };
@@ -81,11 +83,17 @@ export class GameState {
         );
         const allPlayers = this.players.getAllPlayers();
         for (const player of allPlayers) {
+          roomTurnsTotal.inc({ roomId: this.gameRoomId });
+
           if (player.currentText === player.latestMessage) {
             console.log("missed turn, setting manually", player);
             player.latestMessage = "Player missed their turn";
+            roomTurnsMissed.inc({ roomId: this.gameRoomId });
+          } else {
+             roomTurnsSuccess.inc({ roomId: this.gameRoomId });
           }
           //im goin to add if its player missed their turn twice in a row then you get kicked from websocet
+         
 
           player.currentText = player.latestMessage;
         }
@@ -134,6 +142,8 @@ export class GameState {
             action: "playerWon",
             params: { name: winnerName },
           });
+          roomGameWins.inc({ roomId: this.gameRoomId });
+
          
           setTimeout(() => {
             this.players.winReset(winnerName);
@@ -163,6 +173,8 @@ if (result.win) {
         this.broadcastWorld();
 
         this.timer = setTimeout(() => {
+        roomRoundsPlayed.inc({ roomId: this.gameRoomId });
+
           this.setState("playersInputting", 20);
         }, 5000);
 
@@ -333,6 +345,7 @@ if (result.win) {
     if (this.players.countPlayers() < 2) {
       clearTimeout(this.timer);
       this.setState("awaitingPlayers");
+      roomResets.inc({ roomId: this.gameRoomId });
     } else {
       this.players.updateRanks(this.girl);
 

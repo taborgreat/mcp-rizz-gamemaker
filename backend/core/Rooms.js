@@ -1,3 +1,5 @@
+import {roomPlayers} from "../metricsServer.js"
+
 import { GameState } from "./GameState.js";
 import { Girl } from "./Girl.js";
 import { Players } from "./Players.js";
@@ -109,6 +111,8 @@ export class Rooms {
     );
 
     state.onPlayerJoined(player);
+    roomPlayers.labels(assignedRoom).inc();
+
 
     return player;
   }
@@ -132,6 +136,7 @@ export class Rooms {
 
     players.removePlayer(ws);
     state.onPlayerLeft(player);
+    roomPlayers.labels(player.gameRoomId).dec();
     sleep(500);
     state.broadcastWorld();
   }

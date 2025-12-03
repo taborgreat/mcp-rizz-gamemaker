@@ -1,3 +1,5 @@
+import { totalLLMCalls, llmTokensUsed } from "../metricsServer.js";
+
 import Groq from "groq-sdk";
 import { roomsInstance } from "../RoomsInstance.js";
 import dotenv from "dotenv";
@@ -117,6 +119,7 @@ ABSOLUTELY NO TEXT OUTPUT. ONLY THE TOOL CALL.
   });
 
   const message = response.choices[0].message;
+  
 
   if (!message.tool_calls || message.tool_calls.length === 0) {
     return {
@@ -134,6 +137,20 @@ ABSOLUTELY NO TEXT OUTPUT. ONLY THE TOOL CALL.
     console.log("📤 Parsed tool args:", args);
   } catch (e) {
     return { error: "Invalid JSON from model", raw: call.function.arguments };
+  }
+
+  try {
+    const roomId = String(args.roomId); // must be label-safe
+
+    // 1️⃣ Count one LLM call for this room
+    totalLLMCalls.inc({ roomId });
+
+    // 2️⃣ Track tokens used (histogram)
+    if (response.usage?.total_tokens) {
+      llmTokensUsed.observe({ roomId }, response.usage.total_tokens);
+    }
+  } catch (err) {
+    console.error("Metrics error:", err);
   }
 
   const toolResult = await fn(args);
