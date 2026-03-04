@@ -1,16 +1,36 @@
 import { totalLLMCalls, llmTokensUsed } from "../metricsServer.js";
 
-import Groq from "groq-sdk";
+import OpenAI from "openai";
 import { roomsInstance } from "../RoomsInstance.js";
+import girlNamesData from "./utils/girlNames.json" with { type: "json" };
 import dotenv from "dotenv";
 dotenv.config({ path: "../.env" });
 
-const client = new Groq({ apiKey: process.env.GROQ_API_KEY });
-const MODEL = "openai/gpt-oss-120b";
+const girlNames = girlNamesData.girlData;
 
-//tool
+const client = new OpenAI({
+  baseURL: "http://10.0.0.23:11434/v1",
+  apiKey: "ollama",
+});
+const MODEL = "goekdenizguelmez/JOSIEFIED-Qwen3:8b-q4_k_m";
 
-function full_turn({ roomId, playerResponses, decision }) {
+function extractJSON(text) {
+  const match = text.match(/\{[\s\S]*\}/);
+  if (match) {
+    try {
+      return JSON.parse(match[0]);
+    } catch {}
+  }
+  return null;
+}
+
+const VALID_EMOTIONS = new Set(["ick", "disgusted", "flattered", "lovestruck", "neutral"]);
+
+export function safeEmotion(emotion) {
+  return VALID_EMOTIONS.has(emotion) ? emotion : "neutral";
+}
+
+export function full_turn({ roomId, playerResponses, decision }) {
   try {
     const room = roomsInstance.getRoom(roomId);
     if (!room) return JSON.stringify({ error: "Room not found" });
@@ -20,10 +40,11 @@ function full_turn({ roomId, playerResponses, decision }) {
       if (!player) continue;
 
       player.latestGirlMessage = p.response;
-      player.latestGirlListeningEmotion = p.listeningEmotion;
-      player.latestGirlResponseEmotion = p.responseEmotion;
+      player.latestGirlListeningEmotion = safeEmotion(p.listeningEmotion);
+      player.latestGirlResponseEmotion = safeEmotion(p.responseEmotion);
     }
 
+    decision.emotion = safeEmotion(decision.emotion);
     room.girl.movementDecision = decision;
 
     return JSON.stringify({ result: "success" });
@@ -32,131 +53,193 @@ function full_turn({ roomId, playerResponses, decision }) {
   }
 }
 
-const availableFunctions = { full_turn };
-
-const tools = [
-  {
-    type: "function",
-    function: {
-      name: "full_turn",
-      description:
-        "Handles ALL player responses AND the girl's movement decision in ONE CALL.",
-      parameters: {
-        type: "object",
-        properties: {
-          roomId: { type: "number" },
-          playerResponses: {
-            type: "array",
-            items: {
-              type: "object",
-              properties: {
-                user: { type: "string" },
-                response: { type: "string" },
-                listeningEmotion: { type: "string" },
-                responseEmotion: { type: "string" },
-              },
-              required: [
-                "user",
-                "response",
-                "listeningEmotion",
-                "responseEmotion",
-              ],
-            },
-          },
-          decision: {
-            type: "object",
-            properties: {
-              destination: { type: "string" },
-              reason: { type: "string" },
-              emotion: { type: "string" },
-            },
-            required: ["destination", "reason", "emotion"],
-          },
-        },
-        required: ["roomId", "playerResponses", "decision"],
-      },
-    },
-  },
-];
-
-export async function runRizzGameAI(userPrompt) {
+export async function runPlayerConversation(
+  systemPrompt,
+  chatHistory,
+  playerMessage,
+  roomId
+) {
   const messages = [
-    {
-      role: "system",
-      content: `
-You are the girl on the stage surrounded by people trying to gain your attention.
-
-You MUST output ONLY ONE TOOL CALL:
-  full_turn({ roomId, playerResponses, decision })
-
-Where:
-- playerResponses = array of 1–4 player responses (one for each player speaking to you)
-  Each entry contains:
-    - user → the player's name.
-    - response → what you (the girl) say back to that player.
-    - listeningEmotion → the emotion you feel **while listening** to that player's message.
-    - responseEmotion → the emotion you feel **while responding** to that player. The emotion to accompany your response.
--Try to generate different emotions for each one out of the available emotions.
-
-
-- decision = final movement choice for this turn
-    - destination → (a user, "stay", or "center"). Usually towards a user unless something bad happens. Center is when you want to retreat.
-    - reason → why you are choosing the direction (spoken as the girl in character to the players)
-    - emotion → the emotion you feel about the movement.
-
-
-ABSOLUTELY NO TEXT OUTPUT. ONLY THE TOOL CALL.
-      `.trim(),
-    },
-    { role: "user", content: userPrompt },
+    { role: "system", content: systemPrompt },
+    ...chatHistory,
+    { role: "user", content: playerMessage },
   ];
 
   const response = await client.chat.completions.create({
     model: MODEL,
     messages,
-    tools,
-    tool_choice: { type: "function", function: { name: "full_turn" } },
+    response_format: { type: "json_object" },
   });
 
-  const message = response.choices[0].message;
-  
-
-  if (!message.tool_calls || message.tool_calls.length === 0) {
-    return {
-      error: "AI did not call full_turn tool",
-      raw: message,
-    };
-  }
-
-  const call = message.tool_calls[0];
-  const fn = availableFunctions[call.function.name];
-
-  let args = {};
   try {
-    args = JSON.parse(call.function.arguments);
-    console.log("📤 Parsed tool args:", args);
-  } catch (e) {
-    return { error: "Invalid JSON from model", raw: call.function.arguments };
-  }
-
-  try {
-    const roomId = String(args.roomId); // must be label-safe
-
-    // 1️⃣ Count one LLM call for this room
-    totalLLMCalls.inc({ roomId });
-
-    // 2️⃣ Track tokens used (histogram)
+    const roomIdStr = String(roomId);
+    totalLLMCalls.inc({ roomId: roomIdStr });
     if (response.usage?.total_tokens) {
-      llmTokensUsed.observe({ roomId }, response.usage.total_tokens);
+      llmTokensUsed.observe({ roomId: roomIdStr }, response.usage.total_tokens);
     }
   } catch (err) {
     console.error("Metrics error:", err);
   }
 
-  const toolResult = await fn(args);
+  const raw = response.choices[0].message.content;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    const extracted = extractJSON(raw);
+    if (extracted) return extracted;
+    console.error("Failed to parse player conversation response:", raw);
+    return {
+      response: "...",
+      listeningEmotion: "neutral",
+      responseEmotion: "neutral",
+    };
+  }
+}
 
-  return {
-    result: toolResult,
-    toolCall: call,
-  };
+export async function generateGirlIdentity() {
+  const name = girlNames[Math.floor(Math.random() * girlNames.length)];
+
+  // ask the model for a trait-based profile (adjectives, not nouns — avoids 8B fixation)
+  const messages = [
+    {
+      role: "system",
+      content: `Create a personality for a girl named ${name}.
+Return JSON only:
+{
+  "personality": "one casual sentence describing her vibe",
+  "traits": ["adjective1","adjective2","adjective3","adjective4","adjective5"],
+  "conversationStyle": "one sentence about how she talks and flirts",
+  "politicalLean": "left|right|neutral",
+  "recentEvents": ["...", "..."],
+  "familyFacts": ["...", "..."]
+}
+Rules:
+- traits must be ADJECTIVES describing personality (e.g. sarcastic, flirty, blunt, loyal, curious). No nouns or hobbies.
+- conversationStyle describes HOW she communicates (e.g. "teases hard but warms up if you're genuine")
+- recentEvents and familyFacts can be empty arrays
+`,
+    },
+    { role: "user", content: `Who is ${name}?` },
+  ];
+
+  const response = await client.chat.completions.create({
+    model: MODEL,
+    messages,
+    response_format: { type: "json_object" },
+  });
+
+  const raw = response.choices[0].message.content;
+  try {
+    const parsed = JSON.parse(raw);
+    return {
+      name,
+      personality: parsed.personality,
+      traits: parsed.traits || [],
+      conversationStyle: parsed.conversationStyle || "",
+      politicalLean: parsed.politicalLean || "neutral",
+      recentEvents: parsed.recentEvents || [],
+      familyFacts: parsed.familyFacts || [],
+    };
+  } catch {
+    const extracted = extractJSON(raw);
+    if (extracted)
+      return {
+        name,
+        personality: extracted.personality,
+        traits: extracted.traits || [],
+        conversationStyle: extracted.conversationStyle || "",
+        politicalLean: extracted.politicalLean || "neutral",
+        recentEvents: extracted.recentEvents || [],
+        familyFacts: extracted.familyFacts || [],
+      };
+    console.error("Failed to parse girl personality response:", raw);
+    return {
+      name,
+      personality: "Chill but confident, says whatever's on her mind.",
+      traits: ["confident", "blunt", "playful", "impatient", "real"],
+      conversationStyle: "Says what she thinks, no filter.",
+      politicalLean: "neutral",
+      recentEvents: [],
+      familyFacts: [],
+    };
+  }
+}
+
+export async function runMovementDecision(
+  systemPrompt,
+  roundSummary,
+  roomId
+) {
+  const messages = [
+    { role: "system", content: systemPrompt },
+    { role: "user", content: roundSummary },
+  ];
+
+  const response = await client.chat.completions.create({
+    model: MODEL,
+    messages,
+    response_format: { type: "json_object" },
+  });
+
+  try {
+    const roomIdStr = String(roomId);
+    totalLLMCalls.inc({ roomId: roomIdStr });
+    if (response.usage?.total_tokens) {
+      llmTokensUsed.observe({ roomId: roomIdStr }, response.usage.total_tokens);
+    }
+  } catch (err) {
+    console.error("Metrics error:", err);
+  }
+
+  const raw = response.choices[0].message.content;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    const extracted = extractJSON(raw);
+    if (extracted) return extracted;
+    console.error("Failed to parse movement decision response:", raw);
+    return { destination: "stay", reason: "...", emotion: "neutral" };
+  }
+}
+
+// analyze the recent round summary and pull out any important player facts
+export async function extractRoundFacts(roundSummary, roomId, existingFacts = []) {
+  let systemPrompt = `You are an analyzer that reads a group chat exchange between an AI girl and several players.\nFor each player message in the summary, if there is an *important* detail (a preference, hobby, personal tidbit etc.), output it as a fact in the format \"PlayerName: fact\".  Only include facts about the users (ignore anything the girl says).`;
+  if (existingFacts && existingFacts.length) {
+    systemPrompt += ` Do NOT repeat any fact already known: ${existingFacts.join(", ")}.
+`;
+  }
+  systemPrompt += ` Respond with JSON only: {"facts":["Player1: ...","Player2: ..."]}.  If there are no important new facts, return {"facts":[]}.
+`;
+
+  const messages = [
+    { role: "system", content: systemPrompt },
+    { role: "user", content: roundSummary },
+  ];
+
+  const response = await client.chat.completions.create({
+    model: MODEL,
+    messages,
+    response_format: { type: "json_object" },
+  });
+
+  try {
+    const roomIdStr = String(roomId);
+    totalLLMCalls.inc({ roomId: roomIdStr });
+    if (response.usage?.total_tokens) {
+      llmTokensUsed.observe({ roomId: roomIdStr }, response.usage.total_tokens);
+    }
+  } catch (err) {
+    console.error("Metrics error:", err);
+  }
+
+  const raw = response.choices[0].message.content;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    const extracted = extractJSON(raw);
+    if (extracted) return extracted;
+    console.error("Failed to parse round facts response:", raw);
+    return { facts: [] };
+  }
 }

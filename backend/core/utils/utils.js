@@ -72,6 +72,27 @@ export function sanitizeHtmlOnly(input) {
     .replace(/([!@#$%^&*()+\-="'":,./?;_%~{}\[\]])\1+/g, "$1");
 }
 
+export function cleanGirlResponse(input) {
+  if (!input || typeof input !== "string") return "...";
+
+  let text = input
+    // strip emojis and misc symbols
+    .replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}\u200d\ufe0f]/gu, "")
+    // em dash / en dash → ", "
+    .replace(/\s*[—–]\s*/g, ", ")
+    // collapse multiple spaces
+    .replace(/  +/g, " ")
+    // collapse repeated commas/punctuation from removals
+    .replace(/,\s*,/g, ",")
+    .replace(/\s+([.,!?])/g, "$1")
+    .trim();
+
+  // strip leading/trailing commas or spaces left over
+  text = text.replace(/^[,\s]+|[,\s]+$/g, "").trim();
+
+  return text || "...";
+}
+
 export function randomIndex(max) {
   return Math.floor(Math.random() * max);
 }

@@ -1,9 +1,9 @@
 import { roomGameWins, roomResets, roomRoundsPlayed, roomTurnsTotal, roomTurnsMissed, roomTurnsSuccess } from "../metricsServer.js";
 
-import { sleep } from "groq-sdk/core.mjs";
-import { generateGirlThoughts } from "./utils/generateGirlThoughts.js";
-import girlData from "./utils/girlNames.json" with { type: "json" };
-const girlNames = girlData.girlData;
+import { collectAndApplyPlayerResponses, runAndApplyMovementDecision, processPlayerMessage } from "./utils/generateGirlThoughts.js";
+import { generateGirlIdentity } from "./LLM.js";
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 export class GameState {
   constructor(broadcast, girl, players, gameRoomId) {
@@ -13,6 +13,7 @@ export class GameState {
     this.players = players;
     this.timer = null;
     this.gameRoomId = gameRoomId;
+    this.pendingResponses = new Map();
   }
 
   broadcastRoom(message) {
@@ -49,35 +50,54 @@ export class GameState {
         break;
 
       case "countdown": {
-        const randomIndex = Math.floor(Math.random() * girlNames.length);
-        this.girl.name = girlNames[randomIndex];
         this.girl.style = this.girl.generateRandomStyle();
 
-        console.log(
-          `💁 [Room ${this.gameRoomId}] Girl's name: ${this.girl.name}`
-        );
-        this.broadcastWorld();
+        generateGirlIdentity()
+          .then((identity) => {
+            this.girl.name = identity.name;
+            this.girl.personality = identity.personality;
+[[]]            // additional profile fields
+            this.girl.traits = identity.traits || [];
+            this.girl.conversationStyle = identity.conversationStyle || "";
+            this.girl.politicalLean = identity.politicalLean || "neutral";
+            this.girl.recentEvents = identity.recentEvents || [];
+            this.girl.familyFacts = identity.familyFacts || [];
+            this.girl.memoryBank = []; // clear memory for new girl
 
-        this.broadcastRoom({
-          action: "updateGirl",
-          params: {
-            name: this.girl.name,
-            x: this.girl.x,
-            y: this.girl.y,
-            destination: "stay",
-          },
-        });
+            console.log(
+              `💁 [Room ${this.gameRoomId}] Girl: ${identity.name} — ${identity.personality}`
+            );
+            console.log(
+              `    traits:${this.girl.traits.join(", ")} style:${this.girl.conversationStyle} polit:${this.girl.politicalLean}`
+            );
+            this.broadcastWorld();
+            this.broadcastRoom({
+              action: "updateGirl",
+              params: {
+                name: this.girl.name,
+                x: this.girl.x,
+                y: this.girl.y,
+                destination: "stay",
+              },
+            });
+          })
+          .catch((err) => {
+            console.error("Failed to generate girl identity:", err);
+            this.girl.name = "Mia";
+            this.broadcastWorld();
+          });
 
         this.startCountdown(duration || 10);
         break;
       }
 
       case "playersInputting":
+        this.pendingResponses = new Map();
         this.startPlayersInputting(duration || 20);
         break;
 
       case "preparingPlayerSpeaking": {
-        await sleep(1500)
+        await sleep(1500);
         console.log(
           `⏳ [Room ${this.gameRoomId}] Preparing player speaking phase...`
         );
@@ -90,16 +110,39 @@ export class GameState {
             player.latestMessage = "Player missed their turn";
             roomTurnsMissed.inc({ roomId: this.gameRoomId });
           } else {
-             roomTurnsSuccess.inc({ roomId: this.gameRoomId });
+            roomTurnsSuccess.inc({ roomId: this.gameRoomId });
           }
-          //im goin to add if its player missed their turn twice in a row then you get kicked from websocet
-         
 
           player.currentText = player.latestMessage;
         }
-        await generateGirlThoughts(this.girl, this.players, this.gameRoomId);
+
+        // Collect precomputed responses from eager LLM calls
+        let precomputed = null;
+        if (this.pendingResponses.size > 0) {
+          await Promise.all(
+            [...this.pendingResponses.values()].map((e) => e.promise)
+          );
+          precomputed = [...this.pendingResponses.values()]
+            .filter((e) => e.result !== null)
+            .map((e) => e.result);
+        }
+
+        // Phase 1: Apply player responses so playerSpeaking can start immediately
+        const playerResponses = await collectAndApplyPlayerResponses(
+          this.girl, this.players, this.gameRoomId, precomputed
+        );
+
+        // Phase 2: Fire movement decision in the background (runs during playerSpeaking)
+        this.movementDecisionPromise = runAndApplyMovementDecision(
+          this.girl, this.players, this.gameRoomId, playerResponses
+        ).catch((err) => {
+          console.error(`Movement decision error [Room ${this.gameRoomId}]:`, err);
+          this.girl.movementDecision = { destination: "stay", reason: "...", emotion: "neutral" };
+        });
+
+        // Start showing player conversations immediately — no waiting for movement decision
         this.broadcastRoom({ action: "loadingNextPhase" });
-        this.timer = setTimeout(() => this.setState("playerSpeaking"), 700); //RAISE THIS TO ALLOW MORE TIME FOR NETWORK REQUESTS TO ARRIVE
+        this.timer = setTimeout(() => this.setState("playerSpeaking"), 700);
         break;
       }
 
@@ -108,18 +151,70 @@ export class GameState {
         break;
 
       case "girlSpeaking": {
-      
-        console.log(`💬 [Room ${this.gameRoomId}] Girl says: ${this.girl.movementDecision.reason}`);
+        // Wait for movement decision if it's still running
+        if (this.movementDecisionPromise) {
+          await this.movementDecisionPromise;
+          this.movementDecisionPromise = null;
+        }
 
-        this.broadcastRoom({
-          action: "girlSpeaking",
+        // Cap reason length
+        const MAX_REASON_LENGTH = 600;
+        let girlReason = this.girl.movementDecision.reason || "...";
+        if (girlReason.length > MAX_REASON_LENGTH) {
+          const cutoff = girlReason.lastIndexOf(" ", MAX_REASON_LENGTH);
+          girlReason = girlReason.slice(0, cutoff > 0 ? cutoff : MAX_REASON_LENGTH) + "…";
+        }
+
+        console.log(`💬 [Room ${this.gameRoomId}] Girl says: ${girlReason}`);
+
+        // Dynamic duration based on message length
+        const reasonLength = girlReason.length;
+        const minDuration = 4;
+        const maxDuration = 18;
+        const baseTime = 2;
+        const charsPerSecond = 20;
+        const estimatedTime = baseTime + reasonLength / charsPerSecond;
+        const girlSpeakingDuration = Math.round(
+          Math.max(minDuration, Math.min(estimatedTime, maxDuration)) * (0.9 + Math.random() * 0.2)
+        ) + 3;
+
+        let remainingSeconds = girlSpeakingDuration;
+        let destPlayerLeft = false;
+
+        const tick = () => {
+          // Check if chosen player left during girl speaking
+          const dest = this.girl.movementDecision.destination;
+          if (!destPlayerLeft && dest !== "stay" && dest !== "center") {
+            const stillHere = this.players.getActivePlayers().some(
+              (p) => p.name.toLowerCase() === dest.toLowerCase()
+            );
+            if (!stillHere) {
+              destPlayerLeft = true;
+              girlReason = `wait, where'd ${dest} go? guess they couldn't handle me`;
+              this.girl.movementDecision.destination = "stay";
+              this.girl.movementDecision.reason = girlReason;
+              remainingSeconds = 2;
+              console.log(`🚪 [Room ${this.gameRoomId}] ${dest} left during girlSpeaking`);
+            }
+          }
+
+          this.broadcastRoom({
+            action: "girlSpeaking",
             params: {
-    girlMessage: this.girl.movementDecision.reason,
-    emotion: this.girl.movementDecision.emotion,
-  },
-        });
+              girlMessage: girlReason,
+              girlEmotion: destPlayerLeft ? "neutral" : this.girl.movementDecision.emotion,
+              timeLeft: remainingSeconds,
+            },
+          });
 
-        this.timer = setTimeout(() => this.setState("girlMoving", 20), 5000);
+          if (remainingSeconds-- > 0) {
+            this.timer = setTimeout(tick, 1000);
+          } else {
+            this.setState("girlMoving", 20);
+          }
+        };
+
+        tick();
         break;
       }
 
@@ -260,31 +355,69 @@ if (result.win) {
     } else {
      
       // GIRLS MESSAGE
-   
+
       message = player.latestGirlMessage || "…";
-      speakingDuration = 5;
+
+      // Cap girl response length
+      if (message.length > 800) {
+        const cutoff = message.lastIndexOf(" ", 800);
+        message = message.slice(0, cutoff > 0 ? cutoff : 800) + "…";
+      }
+
+      {
+        const msgLen = message.length;
+        const minDur = 4;
+        const maxDur = 35;
+        const base = 2;
+        const cps = 20;
+        const est = base + msgLen / cps;
+        const clamped = Math.max(minDur, Math.min(est, maxDur));
+        speakingDuration = Math.round(clamped * (0.9 + Math.random() * 0.2));
+      }
 
       console.log(
-        `💬 [Room ${this.gameRoomId}] Girl responding to ${player.name}: "${message}" (5s)`
+        `💬 [Room ${this.gameRoomId}] Girl responding to ${player.name}: "${message}" (${speakingDuration}s)`
       );
     }
 
     let remainingSeconds = speakingDuration;
 
+    let playerLeft = false;
+
     const tick = () => {
+  // Check if player disconnected mid-speaking
+  const stillActive = this.players.getActivePlayers().some((p) => p.name === player.name);
+  if (!stillActive && !playerLeft) {
+    playerLeft = true;
+    console.log(`🚪 [Room ${this.gameRoomId}] ${player.name} left during their speaking phase`);
+
+    if (!showingGirlResponse) {
+      // Player was speaking — skip to girl response as "..." for 3s
+      showingGirlResponse = true;
+      message = "...";
+      remainingSeconds = 3;
+    } else if (remainingSeconds > 3) {
+      // Girl was responding with time left — replace with "..." for 3s
+      message = "...";
+      remainingSeconds = 3;
+    }
+    // If girl response has <=3s left, let it finish naturally
+  }
+
   let emotionToSend = "neutral";
 
-  if (!showingGirlResponse) {
+  if (playerLeft) {
+    emotionToSend = "neutral";
+  } else if (!showingGirlResponse) {
 
     const halfPoint = Math.floor(speakingDuration / 2);
 
     if (remainingSeconds <= speakingDuration - halfPoint) {
-      emotionToSend = player.latestGirlListeningEmotion;   //send during second half as a reaction
+      emotionToSend = player.latestGirlListeningEmotion;
     }
 
   } else {
-   
-    emotionToSend = player.latestGirlResponseEmotion;     
+    emotionToSend = player.latestGirlResponseEmotion;
   }
       this.broadcastRoom({
         action: "playerSpeakingTick",
@@ -293,11 +426,11 @@ if (result.win) {
           slot: player.slot,
           style: player.style,
 
-          latestMessage: message,          // changes based on phase
+          latestMessage: message,
           isGirlResponse: showingGirlResponse,
 
           timeLeft: remainingSeconds,
-          girlEmotion: emotionToSend, 
+          girlEmotion: emotionToSend,
         },
       });
 
@@ -305,7 +438,7 @@ if (result.win) {
   this.timer = setTimeout(tick, 1000);
 } else {
 
-  if (player.latestMessage === "Player missed their turn") {
+  if (playerLeft || player.latestMessage === "Player missed their turn") {
     showingGirlResponse = false;
     currentIndex++;
     speakNext();
@@ -317,7 +450,7 @@ if (result.win) {
     showingGirlResponse = true;
     speakNext();
   } else {
-    // done with both phases ,next player
+    // done with both phases, next player
     showingGirlResponse = false;
     currentIndex++;
     speakNext();
@@ -332,6 +465,58 @@ if (result.win) {
   speakNext();
 }
 
+
+  onPlayerSubmitted(player) {
+    if (this.state !== "playersInputting") return;
+    if (player.latestMessage === "Player missed their turn") return;
+    if (this.pendingResponses.has(player.name)) return;
+
+    const entry = { promise: null, result: null };
+
+    entry.promise = processPlayerMessage(this.girl, player, this.gameRoomId)
+      .then((result) => {
+        entry.result = result;
+        console.log(
+          `⚡ [Room ${this.gameRoomId}] Early response ready for ${player.name}`
+        );
+        this.tryEndInputEarly();
+      })
+      .catch((err) => {
+        console.error(`LLM error for ${player.name}:`, err);
+        entry.result = {
+          user: player.name,
+          response: "...",
+          listeningEmotion: "neutral",
+          responseEmotion: "neutral",
+        };
+        this.tryEndInputEarly();
+      });
+
+    this.pendingResponses.set(player.name, entry);
+  }
+
+  tryEndInputEarly() {
+    if (this.state !== "playersInputting") return;
+
+    const activePlayers = this.players.getActivePlayers();
+    if (activePlayers.length === 0) return;
+
+    const allSubmitted = activePlayers.every((p) =>
+      this.pendingResponses.has(p.name)
+    );
+    if (!allSubmitted) return;
+
+    const allResolved = [...this.pendingResponses.values()].every(
+      (e) => e.result !== null
+    );
+    if (!allResolved) return;
+
+    console.log(
+      `⚡ [Room ${this.gameRoomId}] All players ready, skipping timer`
+    );
+    clearTimeout(this.timer);
+    this.setState("preparingPlayerSpeaking");
+  }
 
   onPlayerJoined(player) {
     if (this.players.countPlayers() >= 2 && this.state === "awaitingPlayers") {

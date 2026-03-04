@@ -9,9 +9,17 @@ const EMOTION_OPTIONS = [
   "neutral",
 ];
 
-const tempPersonality = `Bold, playful, observant, slightly teasing. Never neutral or robotic. Uses vivid phrasing, short impactful sentences but like a real 22 year old girl. Shows emotion and attitude.
+const BODY_DESCRIPTIONS = [
+  "pink dress",
+  "white dress",
+  "dark purple dress",
+];
 
-Behavior: Leads conversations, reacts to details, challenges people, and keeps tension alive. Avoid filler or generic statements. Use only basic words and punctuation like you're texting`;
+const HAIR_DESCRIPTIONS = [
+  "purple crow-like hair with freckles",
+  "dirty blonde with a dread and green hair tie",
+  "green hair with a gold ruby necklace",
+];
 
 export class Girl {
   constructor(broadcast, players) {
@@ -23,7 +31,17 @@ export class Girl {
     this.x = this.center.x;
     this.y = this.center.y;
     this.speed = 25;
-    this.personality = tempPersonality;
+    this.personality = "";
+    // trait-based profile (adjectives, not nouns — keeps 8B models from fixating)
+    this.traits = [];
+    this.conversationStyle = "";
+    this.politicalLean = "neutral"; // left, right, or neutral
+    this.recentEvents = []; // if shy, random things from last few days
+    this.familyFacts = [];
+
+    // rolling memory of notable facts generated during conversation turns
+    this.memoryBank = [];
+
     this.broadcast = broadcast;
     this.players = players;
     this.movementDecision = { destination: "center", reason: "", emotion: "" };
@@ -36,6 +54,13 @@ export class Girl {
 
     return [head, hair, body];
   }
+  getLookDescription() {
+    const [, hair, body] = this.style;
+    const outfit = BODY_DESCRIPTIONS[body] || "a cute dress";
+    const hairDesc = HAIR_DESCRIPTIONS[hair] || "styled hair";
+    return `${hairDesc}, wearing a ${outfit}`;
+  }
+
   generateRandomEmotion() {
     const i = Math.floor(Math.random() * EMOTION_OPTIONS.length);
     return EMOTION_OPTIONS[i];
@@ -65,12 +90,20 @@ export class Girl {
     } else if (destination === "center") {
       target = this.center;
     } else {
+      const destLower = destination.trim().toLowerCase();
       const player = players
         .getActivePlayers()
-        .find((p) => p.name === destination);
-      target = player
-        ? this.getChairPosition(player.slot)
-        : { x: this.x, y: this.y };
+        .find((p) => p.name.toLowerCase() === destLower);
+      if (!player) {
+        console.warn(`⚠️ Unknown destination "${destination}", treating as stay`);
+        target = { x: this.x, y: this.y };
+        this.movementDecision.reason = `wait, where'd ${destination} go? guess they couldn't handle me`;
+        this.movementDecision.destination = "stay";
+        destination = "stay";
+      } else {
+        destination = player.name;
+        target = this.getChairPosition(player.slot);
+      }
     }
 
     const dx = target.x - this.x;
@@ -105,6 +138,7 @@ export class Girl {
     this.x = this.center.x;
     this.y = this.center.y;
     this.emotion = "neutral";
+    this.memoryBank = []; // clear memory on reset
 
     this.movementDecision = {
       destination: "center",
@@ -122,6 +156,28 @@ export class Girl {
       },
     });
   }
+  getPersonaReference() {
+    const parts = [];
+    if (this.traits && this.traits.length) parts.push(`Traits: ${this.traits.join(", ")}`);
+    if (this.conversationStyle) parts.push(`Style: ${this.conversationStyle}`);
+    parts.push(`Political leaning: ${this.politicalLean}`);
+    if (this.recentEvents && this.recentEvents.length)
+      parts.push(`Recent events: ${this.recentEvents.join(", ")}`);
+    if (this.familyFacts && this.familyFacts.length)
+      parts.push(`Family facts: ${this.familyFacts.join(", ")}`);
+    if (this.memoryBank && this.memoryBank.length)
+      parts.push(`Memories: ${this.memoryBank.join(", ")}`);
+    return parts.join("\n");
+  }
+
+  addMemory(fact) {
+    if (!fact || typeof fact !== "string") return;
+    this.memoryBank.push(fact);
+    if (this.memoryBank.length > 15) {
+      this.memoryBank.shift();
+    }
+  }
+
   getState() {
     return {
       x: this.x,
@@ -129,6 +185,13 @@ export class Girl {
       name: this.name,
       style: this.style,
       emotion: this.emotion,
+      personality: this.personality,
+      traits: this.traits,
+      conversationStyle: this.conversationStyle,
+      politicalLean: this.politicalLean,
+      recentEvents: this.recentEvents,
+      familyFacts: this.familyFacts,
+      memoryBank: this.memoryBank,
     };
   }
 }

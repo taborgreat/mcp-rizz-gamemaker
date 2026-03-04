@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export default function GameRoomsList() {
+export default function GameRoomsList({ onRoomSelected }) {
   const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedRoom, setSelectedRoom] = useState(null);
@@ -22,7 +22,6 @@ export default function GameRoomsList() {
     }
   };
 
-  // Only fetch once on mount
   useEffect(() => {
     fetchRooms();
   }, []);
@@ -36,96 +35,40 @@ export default function GameRoomsList() {
       return;
     }
     gmWindow.gml_Script_gmcallback_setRoomSelected("", "", String(roomId));
+    if (onRoomSelected) onRoomSelected(roomId);
   };
 
   return (
-    <div
-      style={{
-        background: "#111",
-        color: "white",
-        padding: "1rem",
-        height: "70vh",
-        display: "flex",
-        flexDirection: "column",
-        boxSizing: "border-box",
-      }}
-    >
-      {/* 🔄 Refresh Button */}
+    <div className="rooms-list">
+      <h3 className="rooms-list-title">Servers</h3>
+
       <button
+        className={`rooms-refresh-btn ${refreshing ? "refreshing" : ""}`}
         onClick={fetchRooms}
         disabled={refreshing}
-        style={{
-          alignSelf: "center",
-          background: "#1a1a1a",
-          color: "#ddd",
-          border: "1px solid #333",
-          borderRadius: "6px",
-          padding: "8px 16px",
-          fontWeight: "bold",
-          cursor: refreshing ? "wait" : "pointer",
-          marginBottom: "10px",
-          width: "100%",
-          transition: "all 0.2s ease",
-          opacity: refreshing ? 0.6 : 1,
-        }}
-        onMouseEnter={(e) => {
-          if (!refreshing) e.currentTarget.style.background = "#262626";
-        }}
-        onMouseLeave={(e) => {
-          if (!refreshing) e.currentTarget.style.background = "#1a1a1a";
-        }}
       >
-        {refreshing ? "Refreshing..." : "🔄 Refresh Rooms"}
+        {refreshing ? "Refreshing..." : "Refresh"}
       </button>
 
-
-      <div
-        style={{
-          flex: 1,
-          overflowY: "auto",
-          background: "#222",
-          borderRadius: "8px",
-          padding: "8px",
-          minHeight: 0,
-
-        }}
-      >
+      <div className="rooms-scroll">
         {loading ? (
-          <p style={{ color: "#aaa", textAlign: "center" }}>Loading rooms...</p>
+          <p className="rooms-empty">Loading rooms...</p>
         ) : rooms.length === 0 ? (
-          <p style={{ color: "#aaa", textAlign: "center" }}>No rooms available</p>
+          <p className="rooms-empty">No rooms available</p>
         ) : (
           rooms.map((room) => {
             const isSelected = selectedRoom === room.roomId;
+            const isFull = room.currentPlayers >= room.maxPlayers;
             return (
               <div
                 key={room.roomId}
+                className={`rooms-item ${isSelected ? "selected" : ""} ${isFull ? "full" : ""}`}
                 onClick={() => handleRoomClick(room.roomId)}
-                style={{
-                  background: isSelected ? "#333" : "#1a1a1a",
-                  border: isSelected
-                    ? "1px solid #777"
-                    : "1px solid transparent",
-                  borderRadius: "6px",
-                  padding: "8px",
-                  marginBottom: "6px",
-                  textAlign: "center",
-                  cursor: "pointer",
-                  transition: "background 0.1s",
-                }}
-                onMouseEnter={(e) => {
-                  if (!isSelected)
-                    e.currentTarget.style.background = "#262626";
-                }}
-                onMouseLeave={(e) => {
-                  if (!isSelected)
-                    e.currentTarget.style.background = "#1a1a1a";
-                }}
               >
-                <div style={{ fontWeight: "bold" }}>Room {room.roomId}</div>
-                <div style={{ color: "#aaa", fontSize: "0.85rem" }}>
-                  {room.currentPlayers}/{room.maxPlayers} players
-                </div>
+                <span className="rooms-item-name">Room {room.roomId}</span>
+                <span className="rooms-item-count">
+                  {room.currentPlayers}/{room.maxPlayers}
+                </span>
               </div>
             );
           })

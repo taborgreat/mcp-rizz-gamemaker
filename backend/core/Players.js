@@ -42,9 +42,10 @@ export class Players {
       latestMessage: "Player missed their turn",
       isSpectator,
       style,
-      latestGirlMessage: "...", //replce with defaults ike in generalGirlThoughts
+      latestGirlMessage: "...",
       latestGirlListeningEmotion: "neutral",
       latestGirlResponseEmotion: "neutral",
+      chatHistory: [],
     };
 
     this.players.set(ws, player);
@@ -219,6 +220,14 @@ export class Players {
       player.latestGirlListeningEmotion = DEFAULTS.latestGirlListeningEmotion;
       player.latestGirlResponseEmotion = DEFAULTS.latestGirlResponseEmotion;
       player.currentText = DEFAULTS.currentText;
+      player.chatHistory = [];
+    }
+  }
+
+  static pushChatHistory(player, role, content) {
+    player.chatHistory.push({ role, content });
+    while (player.chatHistory.length > 4) {
+      player.chatHistory.shift();
     }
   }
 }

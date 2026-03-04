@@ -1,0 +1,126 @@
+.legal-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(to bottom, #d36ab5 0%, #d36ab5 80px, #000 80px, #000 100%);
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+.legal-header {
+    background: #d36ab5;
+    padding: 0.8rem 1.5rem;
+    display: flex;
+    align-items: flex-end;
+    height: 65px;
+}
+
+.legal-back {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.legal-back:hover {
+    opacity: 0.7;
+}
+
+.legal-content {
+    flex: 1;
+    max-width: 800px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 3rem;
+}
+
+.legal-content h1 {
+    font-size: 2rem;
+    margin-bottom: 0.25rem;
+    margin-top: 0.5rem;
+    color: #fff;
+}
+
+.legal-updated {
+    color: #888;
+    font-size: 0.85rem;
+    margin-bottom: 2rem;
+}
+
+.legal-content section {
+    margin-bottom: 1.75rem;
+}
+
+.legal-content h2 {
+    font-size: 1.15rem;
+    margin-bottom: 0.5rem;
+    color: #e8e8e8;
+}
+
+.legal-content p {
+    color: #ccc;
+    line-height: 1.7;
+    margin-bottom: 0.5rem;
+}
+
+.legal-content ul {
+    color: #ccc;
+    line-height: 1.7;
+    padding-left: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.legal-content li {
+    margin-bottom: 0.3rem;
+}
+
+.legal-content a {
+    color: #d36ab5;
+    text-decoration: none;
+}
+
+.legal-content a:hover {
+    text-decoration: underline;
+}
+
+.legal-footer {
+    background: #111;
+    padding: 1rem;
+    text-align: center;
+    font-size: 0.85rem;
+}
+
+.legal-footer a {
+    color: #888;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.legal-footer a:hover {
+    color: #d36ab5;
+}
+
+.legal-footer-divider {
+    color: #444;
+    margin: 0 0.75rem;
+}
+
+@media (max-width: 600px) {
+    .legal-content {
+        padding: 1.25rem 1rem 2rem;
+    }
+
+    .legal-content h1 {
+        font-size: 1.5rem;
+    }
+
+    .legal-header {
+        height: 50px;
+    }
+
+    .legal-back {
+        font-size: 1.5rem;
+    }
+}
