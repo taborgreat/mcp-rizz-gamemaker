@@ -243,3 +243,46 @@ export async function extractRoundFacts(roundSummary, roomId, existingFacts = []
     return { facts: [] };
   }
 }
+
+// Generate the girl's opening line when she walks on stage for the first time each game
+export async function generateGirlIntroMessage(girl) {
+  const traitStr = girl.traits && girl.traits.length
+    ? girl.traits.join(", ")
+    : "confident, real";
+
+  const messages = [
+    {
+      role: "system",
+      content: `You're ${girl.name}. ${girl.personality}
+You are: ${traitStr}. ${girl.conversationStyle}.
+Introduce yourself in your own words, then end with a question. 2-3 sentences max. Sound like yourself, not a generic host. Be unique!
+Emotions: ${girl.emotions.join(", ")}
+Reply as JSON only:
+{"introMessage":"your opening line","introEmotion":"your emotion"}`,
+    },
+    { role: "user", content: "Introduce yourself and ask the guys something." },
+  ];
+
+  const response = await client.chat.completions.create({
+    model: MODEL,
+    messages,
+    response_format: { type: "json_object" },
+  });
+
+  const raw = response.choices[0].message.content;
+  try {
+    const parsed = JSON.parse(raw);
+    return {
+      introMessage: parsed.introMessage || "…",
+      introEmotion: safeEmotion(parsed.introEmotion),
+    };
+  } catch {
+    const extracted = extractJSON(raw);
+    if (extracted) return {
+      introMessage: extracted.introMessage || "…",
+      introEmotion: safeEmotion(extracted.introEmotion),
+    };
+    console.error("Failed to parse girl intro response:", raw);
+    return { introMessage: "Alright. I'm here. Let's see what you've got.", introEmotion: "neutral" };
+  }
+}

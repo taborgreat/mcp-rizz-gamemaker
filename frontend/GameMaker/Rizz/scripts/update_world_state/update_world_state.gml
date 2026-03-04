@@ -18,7 +18,7 @@ function update_world_state(world) {
         global.gameState = world.gameState;
     }
 
-    var state = global.gameState;
+    var _state = global.gameState;
 
     //--------------------------------------------
     // 1. Players / Chairs
@@ -28,12 +28,30 @@ function update_world_state(world) {
         var chair = global.chairs[i];
         var playerForSlot = find_player_by_slot(i + 1);
 
-        if (playerForSlot != undefined) {
-            // If there's no occupant, create one
-            if (!instance_exists(chair.occupant) || chair.occupant == noone) {
-                chair.occupant = instance_create_layer(chair.x, chair.y, "Players", obj_player);
-                chair.occupant.name = playerForSlot.name;
+        // Slots 0 and 3 enter from the left; slots 1 and 2 enter from the right
+        var _enter_x = (i == 0 || i == 3) ? -150 : room_width + 150;
 
+        // During girl entrance states no players are shown — clear any seated ones
+        if (_state == "girlEntering" || _state == "girlIntro") {
+            if (instance_exists(chair.occupant) && chair.occupant != noone) {
+                var _occ = chair.occupant;
+                if (_occ.walk_state != "walking_out") {
+                    _occ.exit_x = (_occ.x < room_width / 2) ? -150 : room_width + 150;
+                    _occ.walk_state = "walking_out";
+                }
+                chair.occupant = noone;
+            }
+            continue;
+        }
+
+        if (playerForSlot != undefined) {
+            // If there's no seated occupant, walk one in from their assigned side
+            if (!instance_exists(chair.occupant) || chair.occupant == noone) {
+                chair.occupant = instance_create_layer(_enter_x, chair.y, "Players", obj_player);
+                chair.occupant.target_x = chair.x;
+                chair.occupant.target_y = chair.y;
+                chair.occupant.walk_state = "walking_in";
+                chair.occupant.name = playerForSlot.name;
                 switch (i + 1) {
                     case 1: chair.occupant.sprite_index = spr_player_1; break;
                     case 2: chair.occupant.sprite_index = spr_player_2; break;
@@ -41,12 +59,18 @@ function update_world_state(world) {
                     case 4: chair.occupant.sprite_index = spr_player_4; break;
                 }
             } else {
-                // If occupant exists, only update the name (and recreate only if the identity changed)
                 if (chair.occupant.name != playerForSlot.name) {
-                    // Replace occupant only when the player actually changed
-                    var oldOcc = chair.occupant;
-                    instance_destroy(oldOcc);
-                    chair.occupant = instance_create_layer(chair.x, chair.y, "Players", obj_player);
+                    // Different player in this slot — send the old one walking out,
+                    // bring the new one walking in from their slot's assigned side (spectator exchange)
+                    var _oldOcc = chair.occupant;
+                    if (instance_exists(_oldOcc)) {
+                        _oldOcc.exit_x = (_oldOcc.x < room_width / 2) ? -150 : room_width + 150;
+                        _oldOcc.walk_state = "walking_out";
+                    }
+                    chair.occupant = instance_create_layer(_enter_x, chair.y, "Players", obj_player);
+                    chair.occupant.target_x = chair.x;
+                    chair.occupant.target_y = chair.y;
+                    chair.occupant.walk_state = "walking_in";
                     chair.occupant.name = playerForSlot.name;
                     switch (i + 1) {
                         case 1: chair.occupant.sprite_index = spr_player_1; break;
@@ -55,14 +79,19 @@ function update_world_state(world) {
                         case 4: chair.occupant.sprite_index = spr_player_4; break;
                     }
                 } else {
-                    // same player, just update fields we care about
+                    // Same player — keep name in sync
                     chair.occupant.name = playerForSlot.name;
                 }
             }
         } else {
-            // Only destroy occupant when no player is present and an occupant exists.
+            // No player for this slot — send occupant walking off-screen, then free the slot
             if (instance_exists(chair.occupant) && chair.occupant != noone) {
-                instance_destroy(chair.occupant);
+                var _occ = chair.occupant;
+                if (_occ.walk_state != "walking_out") {
+                    _occ.exit_x = (_occ.x < room_width / 2) ? -150 : room_width + 150;
+                    _occ.walk_state = "walking_out";
+                }
+                // Free the chair immediately so a new arrival can fill it right away
                 chair.occupant = noone;
             }
         }
@@ -86,11 +115,19 @@ function update_world_state(world) {
     // 3. Visual indicators / HUD messages
     // Use prevGameState to avoid repeated destroy/create churn
     //--------------------------------------------
-    switch (state) {
+
+    // Curtains: closed during awaitingPlayers/countdown, open for everything else
+    if (global.prevGameState != _state) {
+        var _curtains_closed = (_state == "awaitingPlayers" || _state == "countdown");
+        with (obj_curtain_left)  state = _curtains_closed ? "closing" : "opening";
+        with (obj_curtain_right) state = _curtains_closed ? "closing" : "opening";
+    }
+
+    switch (_state) {
         case "awaitingPlayers":
             global.statusText = "Waiting for more players...";
             // Only destroy if we actually left the previous "playerSpeaking" or "girlSpeaking" state
-            if (global.prevGameState != state) {
+            if (global.prevGameState != _state) {
                 if (instance_exists(obj_speaking)) instance_destroy(obj_speaking);
                 if (instance_exists(obj_girlSpeaking)) instance_destroy(obj_girlSpeaking);
             }
@@ -100,10 +137,25 @@ function update_world_state(world) {
             global.statusText = "Game starting in " + string(global.timeLeft);
             break;
 
+        case "girlEntering":
+            global.statusText = undefined;
+            // Clean up any leftover speaking boxes when she walks on
+            if (global.prevGameState != _state) {
+                if (instance_exists(obj_speaking)) instance_destroy(obj_speaking);
+            }
+            break;
+
+        case "girlIntro":
+            global.statusText = undefined;
+            // obj_speaking is created by the girlIntro message handler; do NOT destroy it here
+            // because the first tick and the stateChange can arrive in the same frame, causing a flash
+            break;
+
         case "playersInputting":
-         
+
             // Create input objects only when we actually enter this state
             if (global.prevGameState != "playersInputting") {
+                if (instance_exists(obj_speaking)) instance_destroy(obj_speaking);
                 if (!instance_exists(obj_playerMessageInput))
                     instance_create_layer(0, 0, "Instances", obj_playerMessageInput);
                 if (!instance_exists(obj_playerMessageRemaining))
@@ -114,22 +166,22 @@ function update_world_state(world) {
         case "playerSpeaking":
             global.statusText = undefined;
             // Don't destroy playerMessageRemaining repeatedly — only when leaving the state
-            if (global.prevGameState != state) {
+            if (global.prevGameState != _state) {
                 if (instance_exists(obj_playerMessageRemaining)) instance_destroy(obj_playerMessageRemaining);
             }
             break;
 
         case "girlSpeaking":
             global.statusText = undefined;
-            if (global.prevGameState != state) {
+            if (global.prevGameState != _state) {
                 if (instance_exists(obj_speaking)) instance_destroy(obj_speaking);
             }
-		
+
             break;
 
         case "girlMoving":
             global.statusText = undefined;
-            if (global.prevGameState != state) {
+            if (global.prevGameState != _state) {
                 if (instance_exists(obj_speaking)) instance_destroy(obj_speaking);
             }
             break;

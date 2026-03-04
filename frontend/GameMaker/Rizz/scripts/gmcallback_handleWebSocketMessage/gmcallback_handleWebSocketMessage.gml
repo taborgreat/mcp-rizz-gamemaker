@@ -109,7 +109,8 @@ function gmcallback_handleWebSocketMessage(rawJson) {
                 o.last_timeleft = global.timeLeft;
 				o.speaker_style = global.currentSpeakerStyle;
 				o.speaker_slot = global.currentSpeakerSlot;
-				
+				o.show_portrait = true;
+
             } else {
                 with (obj_speaking) {
                     // MESSAGE CHANGED
@@ -129,6 +130,7 @@ function gmcallback_handleWebSocketMessage(rawJson) {
                     speaker = global.displaySpeakerName;
 					speaker_style = global.currentSpeakerStyle;
 					speaker_slot = global.currentSpeakerSlot;
+					show_portrait = true;
 
                 }
             }
@@ -136,43 +138,48 @@ function gmcallback_handleWebSocketMessage(rawJson) {
         }
 
         case "girlSpeaking": {
+            if (global.gameState != "girlSpeaking") break;
             global.girlMessage = msg.params.girlMessage;
 			global.girlEmotion = msg.params.girlEmotion;
             global.statusText = undefined;
 
+            var _tgt_slot  = msg.params.targetSlot;
+            var _tgt_style = msg.params.targetStyle;
+            var _has_target = (!is_undefined(_tgt_slot) && _tgt_slot > 0
+                && is_array(_tgt_style) && array_length(_tgt_style) >= 3);
+
             // Create once if needed, otherwise update fields.
             if (!instance_exists(obj_speaking)) {
                 var o = instance_create_layer(80, 144, "GUI", obj_speaking);
-                o.speaker = global.girlName;
-                o.full_text = global.girlMessage;
-                o.visible_chars = 0;
-                o.char_timer = 0;
-                o.last_timeleft = global.timeLeft;
-				o.speaker_style = global.girlStyle;
-			
-				
+                o.speaker        = global.girlName;
+                o.full_text      = global.girlMessage;
+                o.visible_chars  = 0;
+                o.char_timer     = 0;
+                o.last_timeleft  = global.timeLeft;
+                o.speaker_style  = _has_target ? _tgt_style : global.girlStyle;
+                o.speaker_slot   = _has_target ? _tgt_slot  : 0;
+                o.show_portrait  = _has_target;
+                // Set girl-side immediately so the box doesn't flash on the player side for frame 1
+                if (instance_exists(o.bg)) o.bg.girlSpeaking = true;
             } else {
                 with (obj_speaking) {
-                    // MESSAGE CHANGED
                     if (full_text != global.girlMessage) {
-                        full_text = global.girlMessage;
+                        full_text    = global.girlMessage;
                         visible_chars = 0;
-                        char_timer = 0;
+                        char_timer   = 0;
                     }
-
-                    // NEW SPEAKING ROUND (timeLeft jumped up)
                     if (global.timeLeft > last_timeleft) {
                         visible_chars = 0;
-                        char_timer = 0;
+                        char_timer   = 0;
                     }
-
                     last_timeleft = global.timeLeft;
-                    speaker = global.girlName;
-					speaker_style = global.girlStyle;
-					
+                    speaker       = global.girlName;
+                    speaker_style = _has_target ? _tgt_style : global.girlStyle;
+                    speaker_slot  = _has_target ? _tgt_slot  : 0;
+                    show_portrait = _has_target;
                 }
             }
-			break;
+            break;
         }
 
         case "updateGirl": {
@@ -216,6 +223,55 @@ function gmcallback_handleWebSocketMessage(rawJson) {
 
         case "playerLeft": {
             show_debug_message("Player left: " + msg.params.name);
+            break;
+        }
+
+        case "girlEntering": {
+            // Snap girl instance to the off-screen start position, then let her lerp to center
+            if (instance_exists(obj_girl)) {
+                obj_girl.x        = msg.params.startX;
+                obj_girl.y        = msg.params.startY;
+                obj_girl.target_x = msg.params.targetX;
+                obj_girl.target_y = msg.params.targetY;
+            }
+            break;
+        }
+
+        case "girlIntro": {
+            // Show girl's opening line using the same speaking box as girlSpeaking (no player portrait)
+            if (global.gameState != "girlIntro") break;
+            global.girlEmotion = msg.params.girlEmotion;
+            global.girlMessage = msg.params.girlMessage;
+            global.timeLeft    = msg.params.timeLeft;
+
+            if (!instance_exists(obj_speaking)) {
+                var _o = instance_create_layer(80, 144, "GUI", obj_speaking);
+                _o.speaker       = global.girlName;
+                _o.full_text     = global.girlMessage;
+                _o.visible_chars = 0;
+                _o.char_timer    = 0;
+                _o.last_timeleft = global.timeLeft;
+                _o.speaker_style = global.girlStyle;
+                _o.show_portrait = false;
+                // Set girl-side immediately so the box doesn't flash on the player side for frame 1
+                if (instance_exists(_o.bg)) _o.bg.girlSpeaking = true;
+            } else {
+                with (obj_speaking) {
+                    if (full_text != global.girlMessage) {
+                        full_text     = global.girlMessage;
+                        visible_chars = 0;
+                        char_timer    = 0;
+                    }
+                    if (global.timeLeft > last_timeleft) {
+                        visible_chars = 0;
+                        char_timer    = 0;
+                    }
+                    last_timeleft = global.timeLeft;
+                    speaker       = global.girlName;
+                    speaker_style = global.girlStyle;
+                    show_portrait = false;
+                }
+            }
             break;
         }
 

@@ -15,3 +15,5 @@ bg.depth -=10 //move in front of portraits on same layer
 //mouth timing
 mouth_timer = 0;
 mouth_opened = true;
+
+show_portrait = true; // set false for girlSpeaking/girlIntro (girl has her own portrait object)

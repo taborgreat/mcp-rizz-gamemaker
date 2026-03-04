@@ -19,7 +19,7 @@ export default function GameMakerWrapper({ isConnected = false }) {
                     viewportMeta.name = 'viewport';
                     iframeDoc.head.appendChild(viewportMeta);
                 }
-                viewportMeta.content = 'width=device-width, initial-scale=1.0';
+                viewportMeta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0';
 
                 // 2. Prevent input zooming
                 let inputFixStyle = iframeDoc.getElementById('input-fix');
@@ -27,71 +27,186 @@ export default function GameMakerWrapper({ isConnected = false }) {
                 inputFixStyle = iframeDoc.createElement('style');
                 inputFixStyle.id = 'input-fix';
                 inputFixStyle.textContent = `
-  /* Anchor the wrapper to the bottom center */
-/* Anchor the wrapper to the bottom center */
-.form-wrapper {
-  position: absolute !important;
-  left: 0 !important;
-  right: 0 !important;
-  bottom: 100% !important;
+/* ── Name-entry form (pre-game) ── */
+#form-wrapper {
+  position: fixed !important;
+  left: 50% !important;
+  top: auto !important;
+  bottom: 10% !important;
+  transform: translateX(-50%) !important;
   width: 90% !important;
-  max-width: 500px !important;
-  margin: 0 auto !important;
-  padding: 8px !important;
+  max-width: 520px !important;
+  padding: 0 !important;
   box-sizing: border-box !important;
-  transform: translateY(-280%) !important;
   pointer-events: auto !important;
   z-index: 9999 !important;
+}
+
+@media (max-width: 480px) {
+  #form-wrapper {
+    width: 94% !important;
+    bottom: 8% !important;
+  }
+  .simple-form input[name="username"] {
+    padding: 13px 14px !important;
+    font-size: 16px !important;
+  }
+  .simple-form button[type="submit"] {
+    min-width: 70px !important;
+    padding: 13px 16px !important;
+    font-size: 13px !important;
+  }
+}
+
+/* ── In-game message input ── */
+.message-wrapper {
+  position: fixed !important;
+  left: 50% !important;
+  top: auto !important;
+  bottom: 12% !important;
+  transform: translateX(-50%) !important;
+  width: 90% !important;
+  max-width: 520px !important;
+  box-sizing: border-box !important;
+  pointer-events: auto !important;
+  z-index: 9999 !important;
+}
+
+.message-form {
+  display: flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  width: 100% !important;
+  margin: 0 !important;
+  border-radius: 16px !important;
+  overflow: hidden !important;
+  background: rgba(10, 0, 20, 0.55) !important;
+  backdrop-filter: blur(24px) saturate(1.4) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(1.4) !important;
+  border: 1px solid rgba(211, 106, 181, 0.4) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.07) !important;
+}
+
+.message-form input[name="playerMessage"] {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  padding: 18px 20px !important;
+  font-size: 16px !important;
+  line-height: 1.5 !important;
+  border: none !important;
+  border-right: 1px solid rgba(211, 106, 181, 0.25) !important;
+  border-radius: 0 !important;
+  outline: none !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+  background: transparent !important;
+  color: #fff !important;
+  caret-color: #d36ab5 !important;
+  touch-action: manipulation !important;
+  -webkit-appearance: none !important;
+  -webkit-text-size-adjust: 100% !important;
+  font-family: sans-serif !important;
+}
+
+.message-form input[name="playerMessage"]::placeholder {
+  color: rgba(255, 255, 255, 0.35) !important;
+}
+
+.message-form input[name="playerMessage"]:focus {
+  background: rgba(211, 106, 181, 0.06) !important;
+}
+
+.message-form button[type="submit"] {
+  flex: 0 0 auto !important;
+  min-width: 88px !important;
+  padding: 18px 28px !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
+  border: none !important;
+  background: rgba(211, 106, 181, 0.65) !important;
+  color: #fff !important;
+  cursor: pointer !important;
+  margin: 0 !important;
+  white-space: nowrap !important;
+  transition: background 0.2s ease !important;
+  touch-action: manipulation !important;
+  -webkit-appearance: none !important;
+  font-family: sans-serif !important;
+}
+
+.message-form button[type="submit"]:hover,
+.message-form button[type="submit"]:active {
+  background: rgba(255, 10, 239, 0.75) !important;
 }
 
 .simple-form {
   display: flex !important;
   flex-direction: row !important;
-  flex-wrap: nowrap !important;        /* Critical: prevents wrapping */
+  flex-wrap: nowrap !important;
   width: 100% !important;
   margin: 0 !important;
-  border-radius: 8px !important;
+  border-radius: 16px !important;
   overflow: hidden !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+  background: rgba(10, 0, 20, 0.55) !important;
+  backdrop-filter: blur(24px) saturate(1.4) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(1.4) !important;
+  border: 1px solid rgba(211, 106, 181, 0.4) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.07) !important;
   height: auto !important;
 }
 
-/* Input: takes available space */
 .simple-form input[name="username"] {
-  flex: 1 1 auto !important;           /* Grow and shrink, but has content */
-  min-width: 0 !important;             /* Allows flex item to shrink below content size */
-  padding: clamp(12px, 3vw, 18px) clamp(12px, 3vw, 16px) !important;
-  font-size: clamp(22px, 4vw, 34px) !important;
-  line-height: 1.4 !important;
-  border: 2px solid #aaa !important;
-  border-right: none !important;
-  border-radius: 8px 0 0 8px !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  padding: clamp(10px, 3.5vw, 18px) clamp(12px, 4vw, 20px) !important;
+  font-size: 16px !important;
+  line-height: 1.5 !important;
+  border: none !important;
+  border-right: 1px solid rgba(211, 106, 181, 0.25) !important;
+  border-radius: 0 !important;
   outline: none !important;
   margin: 0 !important;
   box-sizing: border-box !important;
-  background: white !important;
-  color: #333 !important;
+  background: transparent !important;
+  color: #fff !important;
+  caret-color: #d36ab5 !important;
+  touch-action: manipulation !important;
+  -webkit-appearance: none !important;
+  -webkit-text-size-adjust: 100% !important;
 }
 
-/* Button: never collapses, fixed min width */
+.simple-form input[name="username"]::placeholder {
+  color: rgba(255, 255, 255, 0.35) !important;
+}
+
+.simple-form input[name="username"]:focus {
+  background: rgba(211, 106, 181, 0.06) !important;
+}
+
 .simple-form button[type="submit"] {
-  flex: 0 0 auto !important;           /* Doesn't grow or shrink */
-  min-width: 80px !important;          /* Ensures button stays visible */
-  padding: 0 clamp(20px, 6vw, 40px) !important;
-  font-size: clamp(12px, 4vw, 18px) !important;  /* Fixed: was 12x */
-  font-weight: 600 !important;
-  border: 2px solid #aaa !important;
-  background: #390000ff !important;
-  color: white !important;
+  flex: 0 0 auto !important;
+  min-width: clamp(60px, 18vw, 88px) !important;
+  padding: clamp(10px, 3.5vw, 18px) clamp(12px, 5vw, 28px) !important;
+  font-size: clamp(12px, 3vw, 14px) !important;
+  font-weight: 700 !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
+  border: none !important;
+  background: rgba(211, 106, 181, 0.65) !important;
+  color: #fff !important;
   cursor: pointer !important;
   margin: 0 !important;
   white-space: nowrap !important;
   transition: background 0.2s ease !important;
+  touch-action: manipulation !important;
+  -webkit-appearance: none !important;
 }
 
 .simple-form button[type="submit"]:hover,
-.simple-form button[type="submit"]:focus {
-  background: #ff0aefff !important;
+.simple-form button[type="submit"]:active {
+  background: rgba(255, 10, 239, 0.75) !important;
 }
 `;
                 iframeDoc.head.appendChild(inputFixStyle);

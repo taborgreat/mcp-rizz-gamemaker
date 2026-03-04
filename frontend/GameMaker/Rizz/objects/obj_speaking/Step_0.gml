@@ -6,7 +6,12 @@ ideal_progress = clamp(ideal_progress, 0, 1);
 var ideal_limit = floor(total * ideal_progress);
 
 
-char_timer += 1;
+// Hold text until the box has finished expanding
+if (instance_exists(bg) && bg.image_yscale < bg.target_yscale * 0.95) {
+    char_timer = 0;
+} else {
+    char_timer += 1;
+}
 var typed = floor(char_timer * (chars_per_second / room_speed));
 
 // FINAL LIMIT — client types freely but never goes past ideal_limit

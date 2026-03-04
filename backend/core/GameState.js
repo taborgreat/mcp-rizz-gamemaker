@@ -1,7 +1,7 @@
 import { roomGameWins, roomResets, roomRoundsPlayed, roomTurnsTotal, roomTurnsMissed, roomTurnsSuccess } from "../metricsServer.js";
 
 import { collectAndApplyPlayerResponses, runAndApplyMovementDecision, processPlayerMessage } from "./utils/generateGirlThoughts.js";
-import { generateGirlIdentity } from "./LLM.js";
+import { generateGirlIdentity, generateGirlIntroMessage } from "./LLM.js";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -14,6 +14,8 @@ export class GameState {
     this.timer = null;
     this.gameRoomId = gameRoomId;
     this.pendingResponses = new Map();
+    this.isFirstRound = true;
+    this.girlIntroGenPromise = null;
   }
 
   broadcastRoom(message) {
@@ -51,18 +53,18 @@ export class GameState {
 
       case "countdown": {
         this.girl.style = this.girl.generateRandomStyle();
+        this.isFirstRound = true; // new girl each countdown → show intro once
 
         generateGirlIdentity()
           .then((identity) => {
             this.girl.name = identity.name;
             this.girl.personality = identity.personality;
-[[]]            // additional profile fields
             this.girl.traits = identity.traits || [];
             this.girl.conversationStyle = identity.conversationStyle || "";
             this.girl.politicalLean = identity.politicalLean || "neutral";
             this.girl.recentEvents = identity.recentEvents || [];
             this.girl.familyFacts = identity.familyFacts || [];
-            this.girl.memoryBank = []; // clear memory for new girl
+            this.girl.memoryBank = [];
 
             console.log(
               `💁 [Room ${this.gameRoomId}] Girl: ${identity.name} — ${identity.personality}`
@@ -80,10 +82,25 @@ export class GameState {
                 destination: "stay",
               },
             });
+
+            // Chain intro generation now that personality is set
+            this.girlIntroGenPromise = generateGirlIntroMessage(this.girl)
+              .then((result) => {
+                this.girl.introMessage = result.introMessage;
+                this.girl.introEmotion = result.introEmotion;
+                console.log(`🎤 [Room ${this.gameRoomId}] Girl intro ready: "${result.introMessage}"`);
+              })
+              .catch((err) => {
+                console.error("Failed to generate girl intro:", err);
+                this.girl.introMessage = "…well, here I am.";
+                this.girl.introEmotion = "neutral";
+              });
           })
           .catch((err) => {
             console.error("Failed to generate girl identity:", err);
             this.girl.name = "Mia";
+            this.girl.introMessage = "…well, here I am.";
+            this.girl.introEmotion = "neutral";
             this.broadcastWorld();
           });
 
@@ -91,9 +108,68 @@ export class GameState {
         break;
       }
 
+      case "girlEntering": {
+        // Tell clients to snap girl to off-screen and walk to center (she uses her natural slow lerp)
+        this.broadcastRoom({
+          action: "girlEntering",
+          params: {
+            startX: -100,
+            startY: this.girl.center.y,
+            targetX: this.girl.center.x,
+            targetY: this.girl.center.y,
+          },
+        });
+        // Wait ~4 s for the walk animation, then show the intro line
+        this.timer = setTimeout(() => this.setState("girlIntro"), 4000);
+        break;
+      }
+
+      case "girlIntro": {
+        // Snap girl to center on backend now that the walk animation is done
+        this.girl.x = this.girl.center.x;
+        this.girl.y = this.girl.center.y;
+
+        // Wait for intro generation (kicked off during countdown) if still running
+        if (this.girlIntroGenPromise) {
+          await this.girlIntroGenPromise;
+          this.girlIntroGenPromise = null;
+        }
+
+        const introMsg = this.girl.introMessage || "…well, here I am.";
+        const introEmotion = this.girl.introEmotion || "neutral";
+        console.log(`🎤 [Room ${this.gameRoomId}] Girl intro: "${introMsg}"`);
+
+        // Dynamic duration similar to girlSpeaking
+        const msgLen = introMsg.length;
+        const introDuration = Math.round(
+          Math.max(4, Math.min(2 + msgLen / 20, 15)) * (0.9 + Math.random() * 0.2)
+        ) + 2;
+
+        let remainingSeconds = introDuration;
+        const tick = () => {
+          this.broadcastRoom({
+            action: "girlIntro",
+            params: {
+              girlMessage: introMsg,
+              girlEmotion: introEmotion,
+              timeLeft: remainingSeconds,
+            },
+          });
+
+          if (remainingSeconds-- > 0) {
+            this.timer = setTimeout(tick, 1000);
+          } else {
+            this.setState("playersInputting");
+          }
+        };
+        tick();
+        break;
+      }
+
       case "playersInputting":
+        this.isFirstRound = false;
         this.pendingResponses = new Map();
-        this.startPlayersInputting(duration || 20);
+        this.startPlayersInputting(duration || 25);
         break;
 
       case "preparingPlayerSpeaking": {
@@ -181,6 +257,17 @@ export class GameState {
         let remainingSeconds = girlSpeakingDuration;
         let destPlayerLeft = false;
 
+        // Look up target player once so the frontend can show their portrait
+        const initialDest = this.girl.movementDecision.destination;
+        let targetSlot = -1;
+        let targetStyle = [];
+        if (initialDest !== "stay" && initialDest !== "center") {
+          const tp = this.players.getActivePlayers().find(
+            (p) => p.name.toLowerCase() === initialDest.toLowerCase()
+          );
+          if (tp) { targetSlot = tp.slot; targetStyle = tp.style || []; }
+        }
+
         const tick = () => {
           // Check if chosen player left during girl speaking
           const dest = this.girl.movementDecision.destination;
@@ -194,6 +281,8 @@ export class GameState {
               this.girl.movementDecision.destination = "stay";
               this.girl.movementDecision.reason = girlReason;
               remainingSeconds = 2;
+              targetSlot = -1;
+              targetStyle = [];
               console.log(`🚪 [Room ${this.gameRoomId}] ${dest} left during girlSpeaking`);
             }
           }
@@ -204,6 +293,8 @@ export class GameState {
               girlMessage: girlReason,
               girlEmotion: destPlayerLeft ? "neutral" : this.girl.movementDecision.emotion,
               timeLeft: remainingSeconds,
+              targetSlot,
+              targetStyle,
             },
           });
 
@@ -283,6 +374,7 @@ if (result.win) {
     const tick = () => {
       this.broadcastRoom({ action: "countdownTick", params: { timeLeft } });
       if (timeLeft-- > 0) this.timer = setTimeout(tick, 1000);
+      else if (this.isFirstRound) this.setState("girlEntering");
       else this.setState("playersInputting");
     };
     tick();

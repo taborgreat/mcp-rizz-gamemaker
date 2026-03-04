@@ -45,6 +45,8 @@ export class Girl {
     this.broadcast = broadcast;
     this.players = players;
     this.movementDecision = { destination: "center", reason: "", emotion: "" };
+    this.introMessage = "";
+    this.introEmotion = "neutral";
   }
 
   generateRandomStyle() {

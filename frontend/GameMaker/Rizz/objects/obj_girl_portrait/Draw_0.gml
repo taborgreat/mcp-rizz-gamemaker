@@ -18,6 +18,7 @@ if (body_sprite  == -1) body_sprite  = spr_girl_body_0;
 if (emotion_sprite == -1) emotion_sprite = spr_girl_emotion_neutral;
 
 if (global.gameState != "girlMoving" &&
+    global.gameState != "girlEntering" &&
     global.gameState != "playersInputting" &&
     global.gameState != "awaitingPlayers" &&
 	global.gameState != "preparingPlayerSpeaking" &&

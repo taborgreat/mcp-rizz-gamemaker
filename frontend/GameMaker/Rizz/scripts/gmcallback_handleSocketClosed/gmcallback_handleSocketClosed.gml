@@ -42,7 +42,7 @@
 
     var o = instance_find(obj_gameController, 0);
 
-o.alarm[1] = game_get_speed(gamespeed_fps) * 1.8;
+o.alarm[1] = game_get_speed(gamespeed_fps) * 1;
 
 
 	   

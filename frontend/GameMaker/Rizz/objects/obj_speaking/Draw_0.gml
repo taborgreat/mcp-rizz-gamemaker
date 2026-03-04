@@ -1,7 +1,8 @@
 
 
 
-if (speaker_style != undefined) {
+// show_portrait is false for girlSpeaking/girlIntro (girl has her own portrait object)
+if (speaker_style != undefined && show_portrait) {
 
     var head_i  = speaker_style[0];
     var face_i  = speaker_style[1];
@@ -14,16 +15,16 @@ if (speaker_style != undefined) {
 	var spr_mouth_open = asset_get_index("spr_player_mouth_" + string(mouth_i) + "_open");
 
     // Fallback if sprite doesn't exist
-    if (spr_head  == -1) spr_head  = spr_player_head_0;
-    if (spr_face  == -1) spr_face  = spr_player_face_0;
-    if (spr_mouth == -1) spr_mouth = spr_player_mouth_0;
-	if (spr_mouth == -1) spr_mouth = spr_player_mouth_0_open;
-	if (spr_shirt == -1) spr_shirt = spr_player_shirt_1; //needs to match slot
+    if (spr_head      == -1) spr_head      = spr_player_head_0;
+    if (spr_face      == -1) spr_face      = spr_player_face_0;
+    if (spr_mouth     == -1) spr_mouth     = spr_player_mouth_0;
+	if (spr_mouth_open == -1) spr_mouth_open = spr_player_mouth_0_open;
+	if (spr_shirt     == -1) spr_shirt     = spr_player_shirt_1; //needs to match slot
 
 	var spr_mouth_final = spr_mouth;
 
 // only animate mouth when not the girl and text is being revealed
-	if (speaker != global.girlName 
+	if (speaker != global.girlName
 	&& string_length(full_text) >= visible_chars
 	&& full_text != "Player missed their turn")
 	{

@@ -18,13 +18,13 @@ if (variable_global_exists("currentSpeakerSlot")) {
 
 
 // girl
-if (instance_exists(obj_girl) && global.gameState!="awaitingPlayers" && global.gameState!="countdown")
+if (instance_exists(obj_girl) && global.gameState!="awaitingPlayers" && global.gameState!="countdown" && global.gameState!="girlEntering")
 {
     spot2_target_x = obj_girl.x;
     spot2_target_y = obj_girl.y;
 	spot2.visible = true;
 } else {
-	spot2.visible = false;	
+	spot2.visible = false;
 }
 
 with (spot1) {
