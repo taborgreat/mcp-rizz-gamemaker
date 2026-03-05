@@ -138,8 +138,6 @@ export class Rooms {
     players.removePlayer(ws);
     state.onPlayerLeft(player);
     roomPlayers.labels(player.gameRoomId).dec();
-    sleep(500);
-    state.broadcastWorld();
   }
   getRoomsSummaries() {
     const summaries = [];

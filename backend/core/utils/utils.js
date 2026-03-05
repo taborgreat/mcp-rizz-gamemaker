@@ -76,10 +76,12 @@ export function cleanGirlResponse(input) {
   if (!input || typeof input !== "string") return "...";
 
   let text = input
-    // strip emojis and misc symbols
-    .replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}\u200d\ufe0f]/gu, "")
-    // em dash / en dash → ", "
-    .replace(/\s*[—–]\s*/g, ", ")
+    // strip emojis — replace with space so adjacent words don't merge
+    .replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}][\u200d\ufe0f\u{1F3FB}-\u{1F3FF}]*/gu, " ")
+    // remove any leftover ZWJ / variation selectors on their own
+    .replace(/[\u200d\ufe0f]/g, "")
+    // em dash / en dash / any Unicode dash → ", "
+    .replace(/\s*[\u2010-\u2015\u2212\u2E3A\u2E3B\uFE58\uFE63\uFF0D—–]\s*/g, ", ")
     // collapse multiple spaces
     .replace(/  +/g, " ")
     // collapse repeated commas/punctuation from removals

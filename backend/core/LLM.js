@@ -14,6 +14,17 @@ const client = new OpenAI({
 });
 const MODEL = "goekdenizguelmez/JOSIEFIED-Qwen3:8b-q4_k_m";
 
+const LLM_TIMEOUT_MS = 15000;
+
+function withTimeout(promise, ms = LLM_TIMEOUT_MS) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("LLM call timed out")), ms)
+    ),
+  ]);
+}
+
 function extractJSON(text) {
   const match = text.match(/\{[\s\S]*\}/);
   if (match) {
@@ -59,40 +70,36 @@ export async function runPlayerConversation(
   playerMessage,
   roomId
 ) {
-  const messages = [
-    { role: "system", content: systemPrompt },
-    ...chatHistory,
-    { role: "user", content: playerMessage },
-  ];
-
-  const response = await client.chat.completions.create({
-    model: MODEL,
-    messages,
-    response_format: { type: "json_object" },
-  });
-
+  const fallback = { response: "...", listeningEmotion: "neutral", responseEmotion: "neutral" };
+  let raw = "";
   try {
-    const roomIdStr = String(roomId);
-    totalLLMCalls.inc({ roomId: roomIdStr });
-    if (response.usage?.total_tokens) {
-      llmTokensUsed.observe({ roomId: roomIdStr }, response.usage.total_tokens);
+    const messages = [
+      { role: "system", content: systemPrompt },
+      ...chatHistory,
+      { role: "user", content: playerMessage },
+    ];
+
+    const response = await withTimeout(client.chat.completions.create({
+      model: MODEL,
+      messages,
+      response_format: { type: "json_object" },
+    }));
+
+    try {
+      const roomIdStr = String(roomId);
+      totalLLMCalls.inc({ roomId: roomIdStr });
+      if (response.usage?.total_tokens) {
+        llmTokensUsed.observe({ roomId: roomIdStr }, response.usage.total_tokens);
+      }
+    } catch (err) {
+      console.error("Metrics error:", err);
     }
-  } catch (err) {
-    console.error("Metrics error:", err);
-  }
 
-  const raw = response.choices[0].message.content;
-  try {
+    raw = response.choices[0].message.content;
     return JSON.parse(raw);
-  } catch {
-    const extracted = extractJSON(raw);
-    if (extracted) return extracted;
-    console.error("Failed to parse player conversation response:", raw);
-    return {
-      response: "...",
-      listeningEmotion: "neutral",
-      responseEmotion: "neutral",
-    };
+  } catch (err) {
+    console.error("runPlayerConversation failed:", err.message);
+    return extractJSON(raw) ?? fallback;
   }
 }
 
@@ -122,46 +129,38 @@ Rules:
     { role: "user", content: `Who is ${name}?` },
   ];
 
-  const response = await client.chat.completions.create({
-    model: MODEL,
-    messages,
-    response_format: { type: "json_object" },
-  });
-
-  const raw = response.choices[0].message.content;
+  const fallback = {
+    name,
+    personality: "Chill but confident, says whatever's on her mind.",
+    traits: ["confident", "blunt", "playful", "impatient", "real"],
+    conversationStyle: "Says what she thinks, no filter.",
+    politicalLean: "neutral",
+    recentEvents: [],
+    familyFacts: [],
+  };
+  let raw = "";
   try {
-    const parsed = JSON.parse(raw);
+    const response = await withTimeout(client.chat.completions.create({
+      model: MODEL,
+      messages,
+      response_format: { type: "json_object" },
+    }));
+    raw = response.choices[0].message.content;
+    const p = JSON.parse(raw);
     return {
       name,
-      personality: parsed.personality,
-      traits: parsed.traits || [],
-      conversationStyle: parsed.conversationStyle || "",
-      politicalLean: parsed.politicalLean || "neutral",
-      recentEvents: parsed.recentEvents || [],
-      familyFacts: parsed.familyFacts || [],
+      personality: p.personality,
+      traits: p.traits || [],
+      conversationStyle: p.conversationStyle || "",
+      politicalLean: p.politicalLean || "neutral",
+      recentEvents: p.recentEvents || [],
+      familyFacts: p.familyFacts || [],
     };
-  } catch {
-    const extracted = extractJSON(raw);
-    if (extracted)
-      return {
-        name,
-        personality: extracted.personality,
-        traits: extracted.traits || [],
-        conversationStyle: extracted.conversationStyle || "",
-        politicalLean: extracted.politicalLean || "neutral",
-        recentEvents: extracted.recentEvents || [],
-        familyFacts: extracted.familyFacts || [],
-      };
-    console.error("Failed to parse girl personality response:", raw);
-    return {
-      name,
-      personality: "Chill but confident, says whatever's on her mind.",
-      traits: ["confident", "blunt", "playful", "impatient", "real"],
-      conversationStyle: "Says what she thinks, no filter.",
-      politicalLean: "neutral",
-      recentEvents: [],
-      familyFacts: [],
-    };
+  } catch (err) {
+    console.error("generateGirlIdentity failed:", err.message);
+    const p = extractJSON(raw);
+    if (p) return { name, personality: p.personality, traits: p.traits || [], conversationStyle: p.conversationStyle || "", politicalLean: p.politicalLean || "neutral", recentEvents: p.recentEvents || [], familyFacts: p.familyFacts || [] };
+    return fallback;
   }
 }
 
@@ -175,30 +174,30 @@ export async function runMovementDecision(
     { role: "user", content: roundSummary },
   ];
 
-  const response = await client.chat.completions.create({
-    model: MODEL,
-    messages,
-    response_format: { type: "json_object" },
-  });
-
+  const fallback = { destination: "stay", reason: "...", emotion: "neutral" };
+  let raw = "";
   try {
-    const roomIdStr = String(roomId);
-    totalLLMCalls.inc({ roomId: roomIdStr });
-    if (response.usage?.total_tokens) {
-      llmTokensUsed.observe({ roomId: roomIdStr }, response.usage.total_tokens);
+    const response = await withTimeout(client.chat.completions.create({
+      model: MODEL,
+      messages,
+      response_format: { type: "json_object" },
+    }));
+
+    try {
+      const roomIdStr = String(roomId);
+      totalLLMCalls.inc({ roomId: roomIdStr });
+      if (response.usage?.total_tokens) {
+        llmTokensUsed.observe({ roomId: roomIdStr }, response.usage.total_tokens);
+      }
+    } catch (err) {
+      console.error("Metrics error:", err);
     }
-  } catch (err) {
-    console.error("Metrics error:", err);
-  }
 
-  const raw = response.choices[0].message.content;
-  try {
+    raw = response.choices[0].message.content;
     return JSON.parse(raw);
-  } catch {
-    const extracted = extractJSON(raw);
-    if (extracted) return extracted;
-    console.error("Failed to parse movement decision response:", raw);
-    return { destination: "stay", reason: "...", emotion: "neutral" };
+  } catch (err) {
+    console.error("runMovementDecision failed:", err.message);
+    return extractJSON(raw) ?? fallback;
   }
 }
 
@@ -217,30 +216,29 @@ export async function extractRoundFacts(roundSummary, roomId, existingFacts = []
     { role: "user", content: roundSummary },
   ];
 
-  const response = await client.chat.completions.create({
-    model: MODEL,
-    messages,
-    response_format: { type: "json_object" },
-  });
-
+  let raw = "";
   try {
-    const roomIdStr = String(roomId);
-    totalLLMCalls.inc({ roomId: roomIdStr });
-    if (response.usage?.total_tokens) {
-      llmTokensUsed.observe({ roomId: roomIdStr }, response.usage.total_tokens);
+    const response = await withTimeout(client.chat.completions.create({
+      model: MODEL,
+      messages,
+      response_format: { type: "json_object" },
+    }));
+
+    try {
+      const roomIdStr = String(roomId);
+      totalLLMCalls.inc({ roomId: roomIdStr });
+      if (response.usage?.total_tokens) {
+        llmTokensUsed.observe({ roomId: roomIdStr }, response.usage.total_tokens);
+      }
+    } catch (err) {
+      console.error("Metrics error:", err);
     }
-  } catch (err) {
-    console.error("Metrics error:", err);
-  }
 
-  const raw = response.choices[0].message.content;
-  try {
+    raw = response.choices[0].message.content;
     return JSON.parse(raw);
-  } catch {
-    const extracted = extractJSON(raw);
-    if (extracted) return extracted;
-    console.error("Failed to parse round facts response:", raw);
-    return { facts: [] };
+  } catch (err) {
+    console.error("extractRoundFacts failed:", err.message);
+    return extractJSON(raw) ?? { facts: [] };
   }
 }
 
@@ -263,26 +261,20 @@ Reply as JSON only:
     { role: "user", content: "Introduce yourself and ask the guys something." },
   ];
 
-  const response = await client.chat.completions.create({
-    model: MODEL,
-    messages,
-    response_format: { type: "json_object" },
-  });
-
-  const raw = response.choices[0].message.content;
+  const fallback = { introMessage: "Alright. I'm here. Let's see what you've got.", introEmotion: "neutral" };
+  let raw = "";
   try {
-    const parsed = JSON.parse(raw);
-    return {
-      introMessage: parsed.introMessage || "…",
-      introEmotion: safeEmotion(parsed.introEmotion),
-    };
-  } catch {
-    const extracted = extractJSON(raw);
-    if (extracted) return {
-      introMessage: extracted.introMessage || "…",
-      introEmotion: safeEmotion(extracted.introEmotion),
-    };
-    console.error("Failed to parse girl intro response:", raw);
-    return { introMessage: "Alright. I'm here. Let's see what you've got.", introEmotion: "neutral" };
+    const response = await withTimeout(client.chat.completions.create({
+      model: MODEL,
+      messages,
+      response_format: { type: "json_object" },
+    }));
+    raw = response.choices[0].message.content;
+    const p = JSON.parse(raw);
+    return { introMessage: p.introMessage || "…", introEmotion: safeEmotion(p.introEmotion) };
+  } catch (err) {
+    console.error("generateGirlIntroMessage failed:", err.message);
+    const p = extractJSON(raw);
+    return p ? { introMessage: p.introMessage || "…", introEmotion: safeEmotion(p.introEmotion) } : fallback;
   }
 }

@@ -5,3 +5,4 @@ switch (section) {
     case "mouth": global.playerMouth = (global.playerMouth + direction + 4) mod 4; break;
 }
 with (obj_playerFace) update_sprite();
+audio_play_sound(snd_tick, 1, false);

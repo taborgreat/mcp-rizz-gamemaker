@@ -140,8 +140,40 @@ export class Girl {
     this.x = this.center.x;
     this.y = this.center.y;
     this.emotion = "neutral";
-    this.memoryBank = []; // clear memory on reset
+    this.memoryBank = [];
+    this.introMessage = "";
+    this.introEmotion = "neutral";
+    this.name = "…";
+    this.personality = "";
+    this.traits = [];
+    this.conversationStyle = "";
+    this.recentEvents = [];
+    this.familyFacts = [];
 
+    this.movementDecision = {
+      destination: "center",
+      reason: "",
+      emotion: "neutral",
+    };
+
+    broadcast(players.players, {
+      action: "updateGirl",
+      params: {
+        name: this.name,
+        x: this.x,
+        y: this.y,
+        destination: "center",
+      },
+    });
+  }
+
+  // Resets position/emotion only — keeps name and identity intact for next round
+  resetPositionOnly() {
+    const { broadcast, players } = this;
+    this.x = this.center.x;
+    this.y = this.center.y;
+    this.emotion = "neutral";
+    this.memoryBank = [];
     this.movementDecision = {
       destination: "center",
       reason: "",

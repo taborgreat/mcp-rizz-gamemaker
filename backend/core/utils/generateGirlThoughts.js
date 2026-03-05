@@ -189,13 +189,14 @@ You are: ${traitStr}.
 ${memoryStr ? memoryStr + "\n" : ""}${prevNote ? prevNote + "\n" : ""}
 Pick who you're leaning toward from the conversation below.
 Choose a player name, "stay" (not feeling anyone), or "center" (step back).
-For "reason", speak directly TO that person — short and specific about what they said.
+For "reason", write a SHORT NEW reaction (1-2 sentences) — what you're thinking NOW after the conversation.
+Do NOT copy, quote, or rephrase anything already said above. Say something fresh.
 ${prevNote ? "Use different wording than last time.\n" : ""}
 Players: ${activePlayers.map((p) => p.name).join(", ")}
 Emotions: ${girl.emotions.join(", ")}
 
 Reply as JSON only (reason 30-200 chars):
-{"destination":"player name, stay, or center","reason":"what you'd say to them directly","emotion":"how you feel"}`.trim();
+{"destination":"player name, stay, or center","reason":"your NEW reaction, not a repeat of anything above","emotion":"how you feel"}`.trim();
 
   const decision = await runMovementDecision(
     movementSystemPrompt,

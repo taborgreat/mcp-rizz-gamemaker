@@ -52,6 +52,9 @@ function update_world_state(world) {
                 chair.occupant.target_y = chair.y;
                 chair.occupant.walk_state = "walking_in";
                 chair.occupant.name = playerForSlot.name;
+                if (_state != "awaitingPlayers" && _state != "countdown" && _state != "girlEntering" && _state != "girlIntro") {
+                    audio_play_sound(snd_enter, 1, false);
+                }
                 switch (i + 1) {
                     case 1: chair.occupant.sprite_index = spr_player_1; break;
                     case 2: chair.occupant.sprite_index = spr_player_2; break;
@@ -66,12 +69,18 @@ function update_world_state(world) {
                     if (instance_exists(_oldOcc)) {
                         _oldOcc.exit_x = (_oldOcc.x < room_width / 2) ? -150 : room_width + 150;
                         _oldOcc.walk_state = "walking_out";
+                        if (_state != "awaitingPlayers" && _state != "countdown" && _state != "girlEntering" && _state != "girlIntro") {
+                            audio_play_sound(snd_leave, 1, false);
+                        }
                     }
                     chair.occupant = instance_create_layer(_enter_x, chair.y, "Players", obj_player);
                     chair.occupant.target_x = chair.x;
                     chair.occupant.target_y = chair.y;
                     chair.occupant.walk_state = "walking_in";
                     chair.occupant.name = playerForSlot.name;
+                    if (_state != "awaitingPlayers" && _state != "countdown" && _state != "girlEntering" && _state != "girlIntro") {
+                        audio_play_sound(snd_enter, 1, false);
+                    }
                     switch (i + 1) {
                         case 1: chair.occupant.sprite_index = spr_player_1; break;
                         case 2: chair.occupant.sprite_index = spr_player_2; break;
@@ -90,6 +99,9 @@ function update_world_state(world) {
                 if (_occ.walk_state != "walking_out") {
                     _occ.exit_x = (_occ.x < room_width / 2) ? -150 : room_width + 150;
                     _occ.walk_state = "walking_out";
+                    if (_state != "awaitingPlayers" && _state != "countdown" && _state != "girlEntering" && _state != "girlIntro") {
+                        audio_play_sound(snd_leave, 1, false);
+                    }
                 }
                 // Free the chair immediately so a new arrival can fill it right away
                 chair.occupant = noone;
@@ -121,6 +133,13 @@ function update_world_state(world) {
         var _curtains_closed = (_state == "awaitingPlayers" || _state == "countdown");
         with (obj_curtain_left)  state = _curtains_closed ? "closing" : "opening";
         with (obj_curtain_right) state = _curtains_closed ? "closing" : "opening";
+        var _prev_closed = variable_global_exists("curtainWasClosed") ? global.curtainWasClosed : true;
+        if (_prev_closed && !_curtains_closed) {
+            audio_play_sound(snd_curtain_open, 1, false);
+        } else if (!_prev_closed && _curtains_closed && _state != "awaitingPlayers" && _state != "countdown") {
+            audio_play_sound(snd_curtain_close, 1, false);
+        }
+        global.curtainWasClosed = _curtains_closed;
     }
 
     switch (_state) {

@@ -71,6 +71,11 @@ function gmcallback_handleWebSocketMessage(rawJson) {
         case "countdownTick": {
             global.timeLeft = msg.params.timeLeft;
             global.statusText = "Game starting in " + string(global.timeLeft);
+            if (global.timeLeft < 5) {
+                audio_play_sound(snd_timer_close, 1, false);
+            } else {
+                audio_play_sound(snd_timer, 1, false);
+            }
             break;
         }
 
@@ -79,6 +84,9 @@ function gmcallback_handleWebSocketMessage(rawJson) {
 			global.statusText = string(global.timeLeft);
             //global.statusText = "Leave a message(" + string(global.timeLeft) + ")";
 
+            if (global.timeLeft < 5) {
+                audio_play_sound(snd_timer_close, 1, false);
+            }
             if (global.timeLeft <= 0) {
                 cleanup_input_form();
             }
@@ -139,8 +147,10 @@ function gmcallback_handleWebSocketMessage(rawJson) {
 
         case "girlSpeaking": {
             if (global.gameState != "girlSpeaking") break;
+            var _prevMsg = variable_global_exists("girlMessage") ? global.girlMessage : "";
             global.girlMessage = msg.params.girlMessage;
 			global.girlEmotion = msg.params.girlEmotion;
+            if (global.girlMessage == "..." && _prevMsg != "...") audio_play_sound(snd_boo, 1, false);
             global.statusText = undefined;
 
             var _tgt_slot  = msg.params.targetSlot;

@@ -35,6 +35,7 @@ global.playerTextDraft = playerText2;
 
 
 if (html_element_interaction(form)) {
+    audio_play_sound(snd_input, 1, false);
     html_submit_player_input(form);
     html_element_cleanup(wrapper, true);
 	 global.inputForm = undefined;

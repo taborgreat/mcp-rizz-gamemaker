@@ -26,6 +26,7 @@ if (is_undefined(global.roomSelectedAttempt)) {
 html_submit(form, "submit", btn_label, !form_is_loading, form_is_loading ? "loading" : "");
 
 if (html_element_interaction(form)) {
+    audio_play_sound(snd_kiss, 1, false);
     html_submit_name_connect(form);
 	global.html_name_wrapper = wrapper; 
     
