@@ -1,9 +1,8 @@
 import { useEffect, useState, useRef } from "react";
 
-export default function ChatRoom({ socket, slotColors, players, spectators, playerName }) {
+export default function ChatRoom({ socket, slotColors, players, spectators, playerName, showSpectatorMessages }) {
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState("");
-    const [showSpectatorMessages, setShowSpectatorMessages] = useState(false);
 
     const spectatorsRef = useRef(spectators);
     const playersRef = useRef(players);
@@ -113,20 +112,6 @@ export default function ChatRoom({ socket, slotColors, players, spectators, play
 
     return (
         <div style={{ display: "flex", flexDirection: "column", height: "100%", width: "100%" }}>
-            {!isSelfSpectator && (
-                <div style={{ marginBottom: "6px", display: "flex", justifyContent: "flex-end" }}>
-                    <label style={{ color: "white", fontSize: "0.9rem" }}>
-                        <input
-                            type="checkbox"
-                            checked={showSpectatorMessages}
-                            onChange={() => setShowSpectatorMessages(!showSpectatorMessages)}
-                            style={{ marginRight: "0.4rem" }}
-                        />
-                        Hide Spectators
-                    </label>
-                </div>
-            )}
-
             <div
                 style={{
                     flex: 1,

@@ -1,7 +1,8 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function GameMakerWrapper({ isConnected = false }) {
     const iframeRef = useRef(null);
+    const [iframeReady, setIframeReady] = useState(false);
 
     useEffect(() => {
         const iframe = iframeRef.current;
@@ -264,6 +265,36 @@ export default function GameMakerWrapper({ isConnected = false }) {
         };
     }, [isConnected]); // Re-run when connection status changes
 
+    useEffect(() => {
+        const iframe = iframeRef.current;
+        if (!iframe) return;
+
+        const onLoad = () => {
+            // Wait for GM canvas to actually render
+            const check = setInterval(() => {
+                try {
+                    const canvas = iframe.contentDocument?.getElementById("canvas");
+                    if (canvas) {
+                        clearInterval(check);
+                        setIframeReady(true);
+                    }
+                } catch (e) {
+                    clearInterval(check);
+                    setIframeReady(true);
+                }
+            }, 200);
+
+            // Fallback timeout
+            setTimeout(() => {
+                clearInterval(check);
+                setIframeReady(true);
+            }, 4000);
+        };
+
+        iframe.addEventListener("load", onLoad);
+        return () => iframe.removeEventListener("load", onLoad);
+    }, []);
+
     return (
         <div
             style={{
@@ -274,19 +305,46 @@ export default function GameMakerWrapper({ isConnected = false }) {
                 alignItems: "center",
                 background: "#000",
                 overflow: "hidden",
+                position: "relative",
             }}
         >
+            {!iframeReady && (
+                <div
+                    style={{
+                        position: "absolute",
+                        inset: 0,
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        background: "#000",
+                        zIndex: 10,
+                    }}
+                >
+                    <div style={{
+                        color: "#d36ab5",
+                        fontSize: "1.2rem",
+                        fontWeight: 600,
+                        letterSpacing: "2px",
+                        animation: "pulse 1.5s ease-in-out infinite",
+                    }}>
+                        LOADING...
+                        <style>{`@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }`}</style>
+                    </div>
+                </div>
+            )}
             <iframe
                 id="gameFrame"
                 ref={iframeRef}
                 src="/GameMaker/build/index.html"
                 title="GameMaker Game"
+                allow="autoplay"
                 style={{
                     border: "none",
                     width: "100%",
                     height: "100%",
                     display: "block",
                     overflow: "hidden",
+                    opacity: iframeReady ? 1 : 0,
                 }}
             />
         </div>

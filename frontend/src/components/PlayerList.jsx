@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export default function PlayerList({ socket, onPlayersUpdate, slotColors, onSelfJoin }) {
+export default function PlayerList({ socket, onPlayersUpdate, slotColors, onSelfJoin, hideSpectators }) {
     const [players, setPlayers] = useState([]);
     const [roomId, setRoomId] = useState(null);
     const [selfName, setSelfName] = useState(null);
@@ -116,7 +116,7 @@ export default function PlayerList({ socket, onPlayersUpdate, slotColors, onSelf
                     );
                 })}
 
-                {spectators.length > 0 && (
+                {spectators.length > 0 && !hideSpectators && (
                     <>
                         <hr style={{ border: "none", borderTop: "1px solid #444" }} />
                         {spectators.map((p) => (

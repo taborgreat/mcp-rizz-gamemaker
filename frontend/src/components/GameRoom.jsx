@@ -5,6 +5,7 @@ import GameMakerWrapper from "./GameMakerWrapper";
 import ChatRoom from "./ChatRoom";
 import PlayerList from "./PlayerList";
 import GameRoomsList from "./GameRoomsList";
+import SettingsMenu from "./SettingsMenu";
 
 export default function GameRoom() {
     const [socketReady, setSocketReady] = useState(false);
@@ -13,6 +14,8 @@ export default function GameRoom() {
     const [spectators, setSpectators] = useState([]);
     const [playerName, setPlayerName] = useState(null);
     const [showRoomList, setShowRoomList] = useState(false);
+    const [showSettings, setShowSettings] = useState(false);
+    const [showSpectatorMessages, setShowSpectatorMessages] = useState(false);
 
     const slotColors = {
         1: "#4da6ff",
@@ -82,7 +85,7 @@ export default function GameRoom() {
                     >
                         GOT RIZZ
                     </div>
-                    <div>⚙️</div>
+                    <div onClick={() => setShowSettings(true)}>⚙️</div>
                 </div>
             ) : (
                 <>
@@ -125,6 +128,7 @@ export default function GameRoom() {
                             setPlayers(players);
                             setSpectators(spectators);
                         }}
+                        hideSpectators={showSpectatorMessages}
                     />
                 </aside>
 
@@ -160,6 +164,7 @@ export default function GameRoom() {
                         spectators={spectators}
                         players={players}
                         slotColors={slotColors}
+                        showSpectatorMessages={showSpectatorMessages}
                     />
                 </aside>
 
@@ -251,6 +256,15 @@ export default function GameRoom() {
             )}
 
 
+
+            {showSettings && (
+                <SettingsMenu
+                    onClose={() => setShowSettings(false)}
+                    showSpectatorMessages={showSpectatorMessages}
+                    onToggleSpectators={() => setShowSpectatorMessages(prev => !prev)}
+                    isSelfSpectator={spectators?.some(s => s.name === playerName)}
+                />
+            )}
 
             <footer className="ad-banner">AD BANNER</footer>
         </div >

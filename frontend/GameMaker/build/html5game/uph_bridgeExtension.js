@@ -6,7 +6,7 @@
       if (typeof playerName !== "string")
         playerName = String(playerName || "Player");
 
-      window.socket = new WebSocket("ws://localhost:8082"); //injected from /frontend/injectENV.js
+      window.socket = new WebSocket("wss://rizz.tabors.site/ws/"); //injected from /frontend/injectENV.js
 
       socket.onopen = () => {
         try {
@@ -104,6 +104,7 @@
     }
   };
 })();
+
 
 function safeGameMakerCall(fnName, ...args) {
   const start = Date.now();
