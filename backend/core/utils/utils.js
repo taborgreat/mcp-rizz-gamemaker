@@ -76,8 +76,8 @@ export function cleanGirlResponse(input) {
   if (!input || typeof input !== "string") return "...";
 
   let text = input
-    // strip emojis — replace with space so adjacent words don't merge
-    .replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}][\u200d\ufe0f\u{1F3FB}-\u{1F3FF}]*/gu, " ")
+    // strip emojis — replace with space so adjacent words don't merge, replace with a space to avoid joining words
+    .replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}][\u200d\ufe0f\u{1F3FB}-\u{1F3FF}]*/gu, "  ")
     // remove any leftover ZWJ / variation selectors on their own
     .replace(/[\u200d\ufe0f]/g, "")
     // em dash / en dash / any Unicode dash → ", "
@@ -91,6 +91,9 @@ export function cleanGirlResponse(input) {
 
   // strip leading/trailing commas or spaces left over
   text = text.replace(/^[,\s]+|[,\s]+$/g, "").trim();
+
+  // remove surrounding quotes
+  text = text.replace(/^["']+|["']+$/g, "").trim();
 
   return text || "...";
 }
