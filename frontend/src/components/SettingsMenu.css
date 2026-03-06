@@ -72,6 +72,13 @@
     gap: 0.5rem;
 }
 
+.settings-hint {
+    margin: 0.4rem 0 0;
+    color: #666;
+    font-size: 0.75rem;
+    font-style: italic;
+}
+
 .settings-toggle {
     width: 36px;
     height: 20px;

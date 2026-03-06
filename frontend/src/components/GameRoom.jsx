@@ -83,7 +83,7 @@ export default function GameRoom() {
                         className={`rizz-logo clickable`}
                         onClick={handleBack}
                     >
-                        GOT RIZZ
+                        RIZZ OFF
                     </div>
                     <div onClick={() => setShowSettings(true)}>⚙️</div>
                 </div>
@@ -105,7 +105,7 @@ export default function GameRoom() {
                             zIndex: 1000, // keep above iframe or other elements
                         }}
                     >
-                        GOT RIZZ
+                        RIZZ OFF
 
                     </header>
 
@@ -210,7 +210,7 @@ export default function GameRoom() {
                             <div className="info-card-body">
                                 <h3>About</h3>
                                 <p>
-                                    Got Rizz is a multiplayer party game where every round plays out
+                                    RIZZ OFF is a multiplayer party game where every round plays out
                                     differently. Each girl has her own personality, her own style, and her
                                     own way of reacting to what you say. The conversations are fully
                                     generative so nothing is scripted, and the game goes in whatever

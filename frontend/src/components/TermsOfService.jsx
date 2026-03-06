@@ -8,7 +8,7 @@ export default function TermsOfService() {
     return (
         <div className="legal-page">
             <header className="legal-header">
-                <Link to="/" className="legal-back">GOT RIZZ</Link>
+                <Link to="/" className="legal-back">RIZZ OFF</Link>
             </header>
 
             <div className="legal-content">
@@ -18,7 +18,7 @@ export default function TermsOfService() {
                 <section>
                     <h2>1. Acceptance of Terms</h2>
                     <p>
-                        By accessing or playing Got Rizz ("the Game"), you agree to be bound by these
+                        By accessing or playing RIZZ OFF ("the Game"), you agree to be bound by these
                         Terms of Service. If you do not agree to these terms, do not use the Game.
                     </p>
                 </section>
@@ -26,7 +26,7 @@ export default function TermsOfService() {
                 <section>
                     <h2>2. Age Disclaimer & Content Warning</h2>
                     <p>
-                        Got Rizz uses uncensored language models to generate in-game character dialogue.
+                        RIZZ OFF uses uncensored language models to generate in-game character dialogue.
                         The content produced during gameplay may include mature language, sexual themes,
                         profanity, or other adult content. This Game is <strong>not recommended for players
                         under 18 without adult supervision</strong>.
@@ -60,18 +60,18 @@ export default function TermsOfService() {
                 <section>
                     <h2>4. Game Content & Disclaimer</h2>
                     <p>
-                        Got Rizz uses uncensored language models to generate character dialogue and
+                        RIZZ OFF uses uncensored language models to generate character dialogue and
                         interactions in real time. The content produced during gameplay is entirely
                         unpredictable and may include profanity, sexual language, controversial opinions,
                         or other mature content. This content does not reflect the views, beliefs, or
-                        endorsements of Got Rizz or its team.
+                        endorsements of RIZZ OFF or its team.
                     </p>
                     <p>
-                        Got Rizz is <strong>not responsible</strong> for any content generated during
+                        RIZZ OFF is <strong>not responsible</strong> for any content generated during
                         gameplay. We do not moderate, pre-screen, or filter generated dialogue. You
                         play at your own risk and acknowledge that the Game may produce content that
                         is offensive, inappropriate, or inaccurate. By using the Game, you waive any
-                        claims against Got Rizz related to generated content.
+                        claims against RIZZ OFF related to generated content.
                     </p>
                 </section>
 
@@ -79,7 +79,7 @@ export default function TermsOfService() {
                     <h2>5. Intellectual Property</h2>
                     <p>
                         All game assets, code, artwork, character designs, and branding associated with
-                        Got Rizz are the property of Got Rizz. You may not copy, distribute, modify, or
+                        RIZZ OFF are the property of RIZZ OFF. You may not copy, distribute, modify, or
                         create derivative works from any part of the Game without written permission.
                     </p>
                 </section>
@@ -96,7 +96,7 @@ export default function TermsOfService() {
                 <section>
                     <h2>7. Limitation of Liability</h2>
                     <p>
-                        To the fullest extent permitted by law, Got Rizz shall not be liable for any
+                        To the fullest extent permitted by law, RIZZ OFF shall not be liable for any
                         indirect, incidental, special, consequential, or punitive damages arising from
                         your use of the Game, including but not limited to loss of data or interruption
                         of service.
@@ -128,7 +128,7 @@ export default function TermsOfService() {
                         <a href="mailto:taborgreat@gmail.com">taborgreat@gmail.com</a>.
                     </p>
                     <p>
-                        Got Rizz<br />
+                        RIZZ OFF<br />
                         Portland, Oregon, USA
                     </p>
                 </section>

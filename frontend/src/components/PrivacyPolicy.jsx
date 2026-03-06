@@ -8,7 +8,7 @@ export default function PrivacyPolicy() {
     return (
         <div className="legal-page">
             <header className="legal-header">
-                <Link to="/" className="legal-back">GOT RIZZ</Link>
+                <Link to="/" className="legal-back">RIZZ OFF</Link>
             </header>
 
             <div className="legal-content">
@@ -18,7 +18,7 @@ export default function PrivacyPolicy() {
                 <section>
                     <h2>1. Information We Collect</h2>
                     <p>
-                        Got Rizz collects minimal data. We do <strong>not</strong> track you across the
+                        RIZZ OFF collects minimal data. We do <strong>not</strong> track you across the
                         web, use analytics platforms, or build user profiles. The only information we
                         collect is:
                     </p>
@@ -71,7 +71,7 @@ export default function PrivacyPolicy() {
                 <section>
                     <h2>5. Cookies & Tracking</h2>
                     <p>
-                        Got Rizz does <strong>not</strong> use cookies, tracking pixels, or third-party
+                        RIZZ OFF does <strong>not</strong> use cookies, tracking pixels, or third-party
                         analytics. We may use browser local storage to save basic preferences like
                         display settings. No tracking technologies are used.
                     </p>
@@ -80,7 +80,7 @@ export default function PrivacyPolicy() {
                 <section>
                     <h2>6. Content Warning & Age Considerations</h2>
                     <p>
-                        Got Rizz uses uncensored language models that may generate mature content including
+                        RIZZ OFF uses uncensored language models that may generate mature content including
                         profanity, sexual themes, and other adult language. The Game is not recommended for
                         players under 18 without adult supervision. We do not knowingly collect personal
                         information from children under 13. If you believe a child has provided personal
@@ -114,7 +114,7 @@ export default function PrivacyPolicy() {
                         <a href="mailto:taborgreat@gmail.com">taborgreat@gmail.com</a>.
                     </p>
                     <p>
-                        Got Rizz<br />
+                        RIZZ OFF<br />
                         Portland, Oregon, USA
                     </p>
                 </section>

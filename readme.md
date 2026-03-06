@@ -1,4 +1,4 @@
-# Got Rizz
+# RIZZ OFF
 
 Browser-based multiplayer social AI game powered by **MCP (Model Context Protocol)**.
 
@@ -6,7 +6,7 @@ Browser-based multiplayer social AI game powered by **MCP (Model Context Protoco
 
 ## Game Overview
 
-**Got Rizz** is a 2–4 player social AI party game where players compete in real time to win over the affection of the **AI girl** in the center of the scene.
+**RIZZ OFF** is a 2–4 player social AI party game where players compete in real time to win over the affection of the **AI girl** in the center of the scene.
 
 Each player takes turns trying to “rizz” (charm or flirt with) her through clever dialogue.  
 She **remembers** what you say, **responds dynamically**, and **moves toward** the player she feels the strongest connection with.  

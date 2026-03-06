@@ -259,8 +259,17 @@ export default function GameMakerWrapper({ isConnected = false }) {
         iframe.addEventListener('load', injectStyles);
         const interval = setInterval(injectStyles, 500);
 
+        // After layout changes, nudge GM to recalculate canvas size
+        // This prevents WebGL context loss on rapid resize
+        const resizeTimer = setTimeout(() => {
+            try {
+                iframe.contentWindow?.dispatchEvent(new Event('resize'));
+            } catch (e) {}
+        }, 100);
+
         return () => {
             clearInterval(interval);
+            clearTimeout(resizeTimer);
             iframe.removeEventListener('load', injectStyles);
         };
     }, [isConnected]); // Re-run when connection status changes

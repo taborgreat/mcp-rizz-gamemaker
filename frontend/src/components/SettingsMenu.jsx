@@ -63,6 +63,7 @@ export default function SettingsMenu({ onClose, showSpectatorMessages, onToggleS
                         />
                         <span className="volume-value">{muted ? 0 : volume}</span>
                     </div>
+                    <p className="settings-hint">Audio may be unavailable on some mobile devices.</p>
                 </div>
 
                 {!isSelfSpectator && (
