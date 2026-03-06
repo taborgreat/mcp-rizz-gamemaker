@@ -106,7 +106,14 @@ export default function GameRoom() {
                         }}
                     >
                         RIZZ OFF
-
+                        <div style={{
+                            fontSize: "1rem",
+                            fontWeight: "normal",
+                            color: "black",
+                            marginTop: "0.1rem",
+                        }}>
+                            May The Best Rizz Win
+                        </div>
                     </header>
 
                 </>
